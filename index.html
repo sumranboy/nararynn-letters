@@ -343,7 +343,7 @@ async function saySeq(parts,tok){try{speechSynthesis.cancel()}catch(_){}await wa
     else if(!(p[1]==='th'&&Voice.n&&!Voice.th))await new Promise(res=>{const u=mkU(p);let fin=false;const end=()=>{if(!fin){fin=true;res()}};u.onend=u.onerror=end;try{speechSynthesis.speak(u)}catch(_){end()}setTimeout(end,1500+p[0].length*120)})}}
 const tid=t=>'w-'+t.trim().replace(/\s+/g,'-');
 const eid=t=>'e-'+t.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');  // Dad's English line clips: e-hi-sky-what-do-you-want-to-play
-const un=()=>(S.set&&S.set.uname)||'Mali';
+const un=()=>(S.set&&S.set.uname)||'Twinkle';
 const hush=()=>{sayTok++;stopClip();try{speechSynthesis.cancel()}catch(_){}};
 /* ---- letter sounds recorded in a real voice (phonics). Kept on this device. ---- */
 const CLIPS={},CLIPBUF={},PACK={};let clipSrc=null,PACKS=[];
