@@ -1140,7 +1140,10 @@ function parent(){hush();show('parent');const b=$('#pbody');const days=[];for(le
   const FVIDS=[...'abcdefghijklmnopqrstuvwxyz'].map(l=>'en-'+l).concat(TH.map(t=>thId(t[0])),CHEERS.map(c=>c[0]));
   const fvLabel=id=>id.slice(0,3)==='en-'?id.slice(3).toUpperCase()+id.slice(3):id.slice(0,3)==='th-'?TH[+id.slice(3)-1][0]:'💬'+(+id.slice(6));
   const fvDraw=()=>{const cnt=p=>FVIDS.filter(i=>i.startsWith(p)&&CLIPS[i]).length;$('#fv-count').innerHTML=`On this iPad: English <b>${cnt('en-')}</b> of 26 · Thai <b>${cnt('th-')}</b> of 44 · Cheers <b>${cnt('cheer-')}</b> of 10 · Words and talk <b>${Object.keys(CLIPS).filter(k=>/^(w|bday|e)-/.test(k)).length}</b>`;
-    const g=$('#fv-grid');g.innerHTML='';FVIDS.forEach(id=>g.append(h('button',{class:'it'+(CLIPS[id]?' ok':'')+(id.slice(0,3)==='th-'?' th':''),title:id,onclick:()=>{if(FVREC)return fvRecord(id);$('#fv-msg').textContent=id+(CLIPS[id]?' (family voice)':PACK[id]?' (voice pack)':' (not added yet, uses the usual voice)');hush();if(hasClip(id))playClip(id)}},fvLabel(id))))};
+    const g=$('#fv-grid');g.innerHTML='';let grp0='';
+    const GRP={'en-':'English letters: played when your child learns each letter.','th-':'Thai letters: played in the Thai letter games.','che':'Cheers: 💖 played when your child does well, 💪 when it is time to try again. Say them in any language.'};
+    FVIDS.forEach(id=>{const grp=id.slice(0,3),c=CHEERS.find(x=>x[0]===id);if(FVREC&&grp!==grp0){grp0=grp;g.append(h('div',{style:'flex-basis:100%;font-weight:700;margin-top:10px;color:#4a3a78'},GRP[grp]))}
+    g.append(h('button',{class:'it'+(CLIPS[id]?' ok':'')+(grp==='th-'?' th':''),title:id,style:FVREC?'height:auto;min-width:110px;padding:8px 10px;font-size:17px;line-height:1.2':'',onclick:()=>{if(FVREC)return fvRecord(id);$('#fv-msg').textContent=id+(CLIPS[id]?' (family voice)':PACK[id]?' (voice pack)':' (not added yet, uses the usual voice)');hush();if(hasClip(id))playClip(id)}},FVREC?(c?(c[2]==='p'?'💖 ':'💪 '):'')+fvSay(id):fvLabel(id)))})};
   // words to read for each box; the child's nickname replaces Sky
   const fvSay=id=>{if(id.startsWith('en-')){const l=id.slice(3);return l+', '+KW[l][0]+', /'+HOW[l].split(' ')[0]+'/'}if(id.startsWith('th-')){const t=TH[+id.slice(3)-1];return t[0]+' '+t[1]}return CHEERS.find(c=>c[0]===id)[3].replace(/\bSky\b/g,nick()).replace(/สกาย/g,nick())};
   const fvBig=t=>'<div style="font-size:32px;font-weight:800;margin:6px 0;color:#4a3a78">'+esc(t)+'</div>';
@@ -1148,7 +1151,7 @@ function parent(){hush();show('parent');const b=$('#pbody');const days=[];for(le
     try{hush();m.innerHTML='Get ready to say:'+fvBig(fvSay(id));await wait(1800);beep([880],'sine',.2,.12);await wait(260);m.innerHTML='🔴 Say it now:'+fvBig(fvSay(id));
       await recordClip(id,id.startsWith('th-')?2800:3500);m.innerHTML='Saved. Playing it back. Tap the box again to redo.'+fvBig(fvSay(id));fvDraw();await playClip(id)}
     catch(e){m.textContent='Could not use the microphone. Allow the microphone for this page, then try again.';fvDraw()}};
-  $('#fv-rec').onclick=e=>{FVREC=!FVREC;e.target.classList.toggle('on',FVREC);e.target.textContent='🎙️ Record here: '+(FVREC?'On':'Off');$('#fv-msg').textContent=FVREC?'Record here is on. Tap a box to see the words to read.':''};
+  $('#fv-rec').onclick=e=>{FVREC=!FVREC;e.target.classList.toggle('on',FVREC);e.target.textContent='🎙️ Record here: '+(FVREC?'On':'Off');$('#fv-msg').textContent=FVREC?'Record here is on. Each box shows what to say. Tap one, wait for the beep, then say it.':'';fvDraw()};
   $('#fv-in').onchange=async e=>{const files=[...e.target.files];let ok=0;const bad=[];
     for(const f of files){const id=f.name.replace(/\.[^.]+$/,'').trim().toLowerCase().replace(/\s+/g,'-');if(!FVIDS.includes(id)&&!/^(w|bday|e)-/.test(id)){bad.push(f.name);continue}
       try{const url=await new Promise((res,rej)=>{const fr=new FileReader();fr.onload=()=>res(fr.result);fr.onerror=rej;fr.readAsDataURL(f)});await clipSave(id,url);ok++}catch(_){bad.push(f.name)}}
