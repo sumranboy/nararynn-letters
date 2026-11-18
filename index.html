@@ -1,0 +1,3458 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Sky's Letters">
+<title>Sky's Letters</title>
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="icon" href="icon-180.png">
+<meta name="theme-color" content="#bfe9ff">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<style>
+:root{--pink:#ff6fb5;--purple:#9b6bff;--sun:#ffd447;--mint:#4fd3a8;--blue:#58b7ff;--ink:#4a3a78;--line:#e3d4f7}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+html,body{margin:0;height:100%;overflow:hidden;touch-action:none;overscroll-behavior:none}
+body{font-family:ui-rounded,"Arial Rounded MT Bold","Avenir Next Rounded",SkyThai,"Trebuchet MS",system-ui,sans-serif;font-weight:700;color:var(--ink);
+ background:linear-gradient(160deg,#bfe9ff 0%,#ffe3f4 55%,#fff6c9 100%)}
+button{font:inherit;color:inherit;border:0;cursor:pointer;touch-action:manipulation}
+.scr{position:fixed;inset:0;z-index:1;display:none;flex-direction:column;align-items:center;padding:max(10px,env(safe-area-inset-top)) 12px max(10px,env(safe-area-inset-bottom))}
+.scr.on{display:flex}
+.th{font-family:SkyThai,"Thonburi",sans-serif}
+.round{border-radius:999px}
+.btn{background:var(--sun);box-shadow:0 6px 0 #d9a800;border-radius:26px;font-size:34px;min-width:84px;height:76px;padding:0 18px;display:inline-flex;align-items:center;justify-content:center}
+.btn:active{transform:translateY(4px);box-shadow:0 2px 0 #d9a800}
+.btn.pink{background:var(--pink);box-shadow:0 6px 0 #d54a90;color:#fff}
+.btn.small{font-size:24px;height:56px;min-width:56px;border-radius:18px}
+.pulse{animation:pulse 1s ease-in-out infinite}
+@keyframes pulse{50%{transform:scale(1.12)}}
+@keyframes bob{50%{transform:translateY(-6%)}}
+@keyframes jump{0%,100%{transform:translateY(0) rotate(0)}25%{transform:translateY(-22%) rotate(-8deg)}50%{transform:translateY(0) rotate(0)}75%{transform:translateY(-14%) rotate(8deg)}}
+@keyframes shake{20%,60%{transform:translateX(-10px)}40%,80%{transform:translateX(10px)}}
+@keyframes pop{0%{transform:scale(.2);opacity:0}70%{transform:scale(1.15)}100%{transform:scale(1);opacity:1}}
+@keyframes fall{to{transform:translate(var(--dx),110vh) rotate(720deg)}}
+@keyframes rise{to{transform:translateY(-130vh)}}
+@keyframes twinkle{50%{opacity:.25;transform:scale(.7)}}
+@keyframes blink{0%,92%,100%{transform:scaleY(1)}96%{transform:scaleY(.1)}}
+@keyframes wobble{0%,100%{transform:rotate(-6deg)}50%{transform:rotate(6deg) scale(1.06)}}
+@keyframes ring{0%{transform:translate(-50%,-50%) scale(.6);opacity:.9}100%{transform:translate(-50%,-50%) scale(2.2);opacity:0}}
+/* Mali the unicorn */
+.mali{display:block;height:100%;width:auto;animation:bob 2.4s ease-in-out infinite;overflow:visible}
+.mali .eye{transform-box:fill-box;transform-origin:center;animation:blink 4s infinite}
+.mali .m-open{display:none}
+.mali.cheer{animation:jump .9s ease-in-out 2}
+.mali.cheer .m-open{display:block}.mali.cheer .m-smile{display:none}
+/* welcome */
+#welcome{padding:0;justify-content:flex-end;background:linear-gradient(#8fd0ff,#d9f1ff 55%,#fff3d1)}
+#welcome .art{position:absolute;inset:0;width:100%;height:100%}
+#welcome .card{position:relative;margin-bottom:max(3vh,env(safe-area-inset-bottom));text-align:center;display:flex;flex-direction:column;align-items:center;gap:1.2vh}
+.title{font-size:min(11vw,13vh,96px);line-height:1;letter-spacing:1px;text-shadow:0 4px 0 #fff,0 8px 0 rgba(155,107,255,.35)}
+.title span{display:inline-block}
+.from{font-size:min(5vw,5.5vh,40px);background:#fff;color:var(--pink);padding:.35em 1em;border-radius:999px;box-shadow:0 5px 0 #ffc2dd}
+/* birthday */
+#bday{background:radial-gradient(circle at 50% 30%,#6a4bd6,#2a1a6b 70%);color:#fff;justify-content:center;overflow:hidden}
+#bday .star{position:absolute;color:#ffe89a;animation:twinkle 2s infinite}
+#gift{font-size:min(44vw,44vh);animation:wobble 1s ease-in-out infinite;background:none;line-height:1}
+#bparty{display:none;flex-direction:column;align-items:center;gap:1.5vh;z-index:2}
+#bday.open #gift{display:none}#bday.open #bparty{display:flex}
+.hb{font-size:min(9vw,9vh,80px);text-align:center;line-height:1.1}
+.hb span{display:inline-block;animation:bob 1.2s ease-in-out infinite}
+.hb .name{font-size:1.5em;color:#fff3a6;text-shadow:0 4px 0 #ff8fc7,0 8px 0 #8a5cd6}
+#cake{height:min(34vh,50vw)}
+#cake .flame{cursor:pointer;transform-box:fill-box;transform-origin:50% 100%;animation:wobble .5s infinite}
+#brow{display:flex;align-items:flex-end;gap:3vw;height:min(34vh,50vw)}
+.balloon{position:absolute;bottom:-20vh;font-size:min(14vw,110px);animation:rise linear forwards}
+/* home */
+#hometop{width:100%;display:flex;align-items:center;justify-content:space-between;gap:10px}
+.pill{background:#fff;border-radius:999px;padding:8px 18px;font-size:min(5vw,30px);box-shadow:0 4px 0 var(--line)}
+.name{font-size:min(6.2vw,7vh,60px);text-shadow:0 3px 0 #fff;white-space:nowrap}
+#homemid{flex:1;width:100%;max-width:1100px;display:flex;align-items:center;gap:2vw;min-height:0}
+#homemali{height:min(34vh,30vw);flex:none}
+#tracks{flex:1;display:flex;flex-direction:column;gap:1.6vh;min-width:0}
+.track{display:flex;gap:2vw;align-items:stretch}
+.lv{flex:1;position:relative;border-radius:30px;padding:1.8vh 8px;background:#fff;box-shadow:0 8px 0 var(--line);display:flex;flex-direction:column;align-items:center;gap:.4vh;min-width:0;border:5px solid #fff}
+.lv:active{transform:translateY(4px)}
+.lv .ic{font-size:min(9vh,5.6vw,84px);line-height:1.15;white-space:nowrap}
+.lv .nm{font-size:min(3.2vh,4vw,26px)}
+.lv .pr{font-size:min(2.8vh,3.4vw,22px);color:#8a7bb5}
+.lv.c5{background:#ffeeda}.lv.c6{background:#fff}.lv.c7{background:#e9fbff}.lv.c8{background:#ffe9f6}.lv.c0{background:#ffe6f2}.lv.c1{background:#fff3c4}.lv.c2{background:#dff6ff}.lv.c3{background:#e6ffe9}.lv.c4{background:#efe6ff}
+.lv.lock{filter:grayscale(.75);opacity:.6}
+.lv.lock::after{content:"🔒";position:absolute;right:8px;top:4px;font-size:min(5vh,40px)}
+#hold{position:relative;overflow:hidden;font-size:16px;background:#ffffffaa;border-radius:999px;padding:8px 14px;color:#8a7bb5}
+#hold i{position:absolute;left:0;top:0;bottom:0;width:0;background:#c9b6ff88}
+@media (orientation:portrait){#homemid{flex-direction:column;justify-content:center;gap:3vh}#homemali{height:24vh}#tracks{flex:none;width:100%;gap:2vh}.lv{padding:2vh 6px}.lv .ic{font-size:min(7vh,6.6vw,72px)}#homemali{height:18vh}}
+.secsw{display:flex;gap:12px;justify-content:center}
+.secb{flex:1;max-width:320px;font-size:min(4.6vh,5vw,36px);padding:1.2vh 10px;border-radius:999px;background:#ffffff90;color:#8a7bb5;box-shadow:0 5px 0 var(--line)}
+.secb.on{background:var(--pink);color:#fff;box-shadow:0 5px 0 #d54a90}
+#bg{position:fixed;inset:0;z-index:0;overflow:hidden;pointer-events:none}
+#bg i{position:absolute;font-style:normal;line-height:1;will-change:transform}
+@keyframes bgdrift{from{transform:translateX(-25vw)}to{transform:translateX(125vw)}}
+@keyframes bgdriftb{from{transform:translateX(125vw) scaleX(-1)}to{transform:translateX(-25vw) scaleX(-1)}}
+@keyframes bgrise{from{transform:translateY(20vh)}to{transform:translateY(-130vh)}}
+@keyframes bgbob{50%{transform:translateY(-3vh) rotate(4deg)}}
+@keyframes bgsway{0%,100%{transform:rotate(-7deg)}50%{transform:rotate(7deg)}}
+@keyframes bgflit{0%{transform:translate(0,0)}25%{transform:translate(9vw,-7vh)}50%{transform:translate(17vw,2vh)}75%{transform:translate(7vw,8vh)}100%{transform:translate(0,0)}}
+body.dark .name,body.dark #lvtitle,body.dark .barT{color:#fff;text-shadow:none}
+@media (prefers-reduced-motion:reduce){#bg i{animation:none!important}}
+#locked{justify-content:center;gap:2vh;text-align:center;padding:24px}
+#locked .mm{height:min(30vh,220px)}
+#locked .big{font-size:min(6vw,40px)}#locked .sm{font-size:min(4.4vw,24px);font-weight:400;max-width:600px}
+/* level */
+.bar{width:100%;display:flex;align-items:center;gap:12px}
+.bar .sp{flex:1}
+#lvtitle{font-size:min(7vw,6vh,48px)}
+#bubbles{flex:none;display:flex;flex-wrap:wrap;gap:min(2.2vw,18px);justify-content:center;max-width:1000px;padding:1.5vh 0}
+.bub{width:min(17vw,15vh,128px);height:min(17vw,15vh,128px);border-radius:50%;background:#fff;box-shadow:0 7px 0 var(--line);display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:min(6vw,5.2vh,44px);line-height:1.05}
+.bub small{font-size:.4em;color:#8a7bb5;white-space:nowrap}
+.bub.done{background:#fff3a6;box-shadow:0 7px 0 #e8c545}
+.bub.now{background:var(--pink);color:#fff;box-shadow:0 7px 0 #d54a90;animation:pulse 1.1s infinite}
+.bub.now small{color:#fff}
+.bub.lock{opacity:.45}
+#chips{flex:1;min-height:0;overflow:auto;touch-action:pan-y;display:flex;flex-wrap:wrap;gap:8px;justify-content:center;align-content:flex-start;max-width:1000px;padding:8px}
+.chip{min-width:52px;height:52px;padding:0 10px;border-radius:16px;background:#ffffffb0;font-size:28px;display:flex;align-items:center;justify-content:center;color:#a99cc9}
+.chip.ok{background:var(--mint);color:#fff}
+.chip.hard{background:#ffb347;color:#fff}
+.chip .eng{height:.95em}
+/* play */
+#dots{display:flex;gap:6px;flex:1;justify-content:center;flex-wrap:wrap}
+#dots i{width:18px;height:18px;border-radius:50%;background:#fff;box-shadow:inset 0 0 0 3px var(--line)}
+#dots i.d{background:var(--sun);box-shadow:none}#dots i.c{background:var(--pink);box-shadow:none;transform:scale(1.25)}
+#pmali{height:min(11vh,90px);flex:none}
+#stage{flex:1;width:100%;min-height:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1.5vh;position:relative}
+.wrap{position:relative;height:min(100%,94vw);aspect-ratio:1;max-height:100%;background:#fff;border-radius:36px;box-shadow:0 8px 0 var(--line);flex:0 1 auto;min-height:0}
+.wrap canvas{position:absolute;inset:0;width:100%;height:100%;border-radius:36px}
+.wrap .tag{position:absolute;left:14px;top:8px;font-size:min(7vw,6vh,52px);pointer-events:none}
+.wrap .emo{position:absolute;right:14px;top:4px;font-size:min(10vw,8vh,76px);pointer-events:none}
+.wrap .tools{position:absolute;left:12px;bottom:12px;display:flex;gap:10px}
+.dotring{position:absolute;width:9%;height:9%;border-radius:50%;border:5px solid #29c36a;pointer-events:none;animation:ring 1.3s ease-out infinite}
+.prompt{background:#fff;border-radius:34px;box-shadow:0 8px 0 var(--line);padding:1.5vh 4vw;min-width:min(70vw,420px);min-height:min(30vh,300px);display:flex;align-items:center;justify-content:center;gap:3vw;font-size:min(22vh,26vw,190px);line-height:1.15;text-align:center}
+.prompt .eng{height:.9em}
+.prompt .sm{font-size:.45em}
+.choices{display:flex;gap:min(3vw,26px);justify-content:center;flex-wrap:wrap}
+.ch{background:#fff;border-radius:30px;box-shadow:0 8px 0 var(--line);min-width:min(27vw,24vh,210px);height:min(27vw,24vh,210px);padding:0 14px;font-size:min(14vw,12vh,108px);display:flex;align-items:center;justify-content:center;border:6px solid #fff}
+.ch .eng{height:.85em}
+.ch.wide{font-size:min(10vw,9vh,84px)}
+.ch.no{animation:shake .4s;opacity:.35;pointer-events:none}
+.ch.yes{background:#d9ffe9;border-color:var(--mint);animation:pop .4s}
+.ch.glow{border-color:var(--sun);animation:pulse .8s infinite}
+.slots{display:flex;gap:12px}
+.slot{width:min(16vw,14vh,120px);height:min(16vw,14vh,120px);border-radius:22px;border:5px dashed #c9b6ff;display:flex;align-items:center;justify-content:center;font-size:min(12vw,10vh,90px);color:var(--purple)}
+.slot.f{border-style:solid;background:#f3ecff;animation:pop .3s}
+.slot .eng{height:.9em}
+.tile{background:var(--sun);box-shadow:0 7px 0 #d9a800;border-radius:22px;width:min(16vw,14vh,120px);height:min(16vw,14vh,120px);font-size:min(12vw,10vh,90px);display:flex;align-items:center;justify-content:center}
+.tile .eng{height:.9em}
+.tile.used{visibility:hidden}.tile.no{animation:shake .4s}.tile.glow{animation:pulse .8s infinite;background:#fff3a6}
+.eng{height:1em;width:auto;display:inline-block;vertical-align:middle;overflow:visible}
+.next{position:absolute;right:2vw;bottom:2vh;font-size:44px;width:110px;height:96px}
+.wrap .toolic{position:absolute;left:12px;top:8px;font-size:min(7vw,6vh,50px);pointer-events:none}
+.wrap .toolic.nudge{animation:pulse .5s 4}
+.penbadge{width:min(26vw,22vh,190px);height:min(26vw,22vh,190px);border-radius:28%;background:linear-gradient(135deg,#fff3a6,#ffd447);box-shadow:0 0 0 6px #fff,0 10px 0 6px #e8c545;display:flex;align-items:center;justify-content:center;font-size:min(15vw,13vh,120px);animation:pop .6s,wobble 1.2s .6s infinite}
+.bub.pen{background:#d9f3ff;box-shadow:0 7px 0 #7cc4ff}
+input{-webkit-user-select:text;user-select:text;font:inherit;color:inherit}
+#setup{justify-content:center;gap:2vh;overflow:auto;touch-action:pan-y}
+#setup .box{background:#fff;border-radius:30px;box-shadow:0 8px 0 var(--line);padding:22px 26px;width:min(92vw,560px);display:grid;gap:14px}
+#setup h1{margin:0;font-size:min(7vw,40px);text-align:center}
+#setup label{display:grid;gap:4px;font-size:20px}
+#setup label small{font-weight:400;color:#8a7bb5;font-size:15px}
+#setup input{font-size:26px;padding:12px 16px;border-radius:16px;border:4px solid var(--line);background:#fbf8ff;width:100%}
+#setup input:focus{outline:none;border-color:var(--pink)}
+#setup .mm{height:min(20vh,150px)}
+.wordstrip{position:absolute;top:4px;left:50%;transform:translateX(-50%);display:flex;gap:1px;font-size:min(6vh,6.5vw,46px);color:#cfc9ea;pointer-events:none;white-space:nowrap}
+.wordstrip .eng{height:1em}.wordstrip .dn{color:var(--purple)}.wordstrip .cu{color:var(--pink)}
+.board{max-width:min(96vw,760px)}
+.board .ch{min-width:min(26vw,20vh,180px);height:min(26vw,20vh,180px);font-size:min(13vw,10vh,92px)}
+.board .ch svg.shp{width:70%;height:70%}
+.ch.hit{border-color:var(--mint);background:#e9fff3}
+.ch.no2{animation:shake .4s}
+.pip{display:inline-flex;align-items:center;justify-content:center;width:1.1em;height:1.1em;border-radius:50%;background:#efe9ff;color:#b9aee0;font-size:.55em;margin-left:.25em}
+.pip.on{background:var(--mint);color:#fff}
+.bubble{background:#fff;border-radius:30px;box-shadow:0 8px 0 var(--line);padding:1.2vh 3vw;display:flex;align-items:center;gap:2vw;font-size:min(10vh,12vw,90px);line-height:1.1}
+.grade{width:min(24vw,20vh,170px);height:min(24vw,20vh,170px);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:min(11vw,9vh,80px);color:#fff;background:#7cc4ff;box-shadow:0 0 0 6px #fff,0 10px 0 6px #5aa6e0;animation:pop .6s}
+.grade.gAp{background:linear-gradient(135deg,#ffd447,#ff9e57);box-shadow:0 0 0 6px #fff,0 10px 0 6px #e8a800,0 0 40px #ffd447;animation:pop .6s,pulse 1s .6s infinite}
+.grade.gA{background:#4fd3a8;box-shadow:0 0 0 6px #fff,0 10px 0 6px #2fae85}
+.grade.gC{background:#c9b6ff;box-shadow:0 0 0 6px #fff,0 10px 0 6px #a48cf0}
+#prow{display:flex;gap:3vw;align-items:center;justify-content:center;flex-wrap:wrap}
+#pnew{font-size:min(4.2vw,4vh,30px);color:var(--purple)}
+.bub.ap{background:linear-gradient(135deg,#fff3a6,#ffd447);box-shadow:0 7px 0 #e8a800}
+.bub .g{font-size:.8em}
+#closet .cl{flex:1;min-height:0;width:100%;max-width:1100px;display:flex;gap:2vw;align-items:center}
+#clmali{height:min(56vh,44vw);flex:none}
+#clrows{flex:1;min-width:0;max-height:100%;overflow:auto;touch-action:pan-y;display:grid;gap:1.2vh;align-content:center}
+.clrow{display:flex;gap:10px;align-items:center;flex-wrap:wrap;background:#ffffffa8;border-radius:22px;padding:8px 12px}
+.clrow>b{font-size:30px;width:44px;text-align:center}
+.opt{width:64px;height:64px;border-radius:18px;background:#fff;box-shadow:0 5px 0 var(--line);font-size:32px;display:flex;align-items:center;justify-content:center;border:5px solid #fff;position:relative}
+.opt.on{border-color:var(--pink)}
+.opt.lock{opacity:.45}
+.opt .sw{width:36px;height:36px;border-radius:50%;border:3px solid #fff;box-shadow:0 0 0 2px #d9cdf2}
+.opt small{position:absolute;right:-6px;top:-8px;font-size:15px;background:var(--sun);border-radius:10px;padding:1px 5px}
+@media (orientation:portrait){#closet .cl{flex-direction:column}#clmali{height:30vh}#clrows{width:100%}}
+#pbody .qr{display:flex;gap:16px;align-items:center;flex-wrap:wrap}#pbody .qr img{width:220px;height:220px;image-rendering:pixelated;border-radius:12px;background:#fff}
+/* party + book */
+#party{justify-content:center;gap:2vh;text-align:center}
+#party .big{font-size:min(9vw,8vh,70px)}
+#pmali2{height:min(30vh,40vw)}
+.stk{width:min(22vw,20vh,170px);height:min(22vw,20vh,170px);border-radius:50%;background:radial-gradient(circle at 30% 25%,#fff,#ffe6f2 60%,#ffc2dd);border:6px dashed #fff;box-shadow:0 0 0 6px var(--pink),0 10px 0 6px #d54a90;display:flex;align-items:center;justify-content:center;font-size:min(12vw,11vh,96px);animation:pop .6s}
+#bookgrid{flex:1;overflow:auto;touch-action:pan-y;display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:14px;width:100%;max-width:900px;padding:14px;align-content:start}
+#bookgrid .stk{width:92px;height:92px;font-size:50px;animation:none;box-shadow:0 0 0 4px var(--pink)}
+#bookgrid .stk.no{filter:grayscale(1);opacity:.25;box-shadow:0 0 0 4px #ccc}
+/* parent */
+#parent{background:#fbf8ff;align-items:stretch;font-weight:400;font-family:system-ui,SkyThai,sans-serif;color:#222}
+#pbody{flex:1;overflow:auto;touch-action:pan-y;-webkit-overflow-scrolling:touch;font-size:20px;line-height:1.45;max-width:900px;width:100%;margin:0 auto;padding:0 6px 40px}
+#pbody h2{font-size:26px;margin:22px 0 8px;color:var(--ink)}
+#pbody .box{background:#fff;border-radius:18px;padding:14px 16px;box-shadow:0 2px 0 #e6def5;margin-bottom:10px}
+#pbody .grid{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+#pbody .it{min-width:40px;height:40px;border-radius:10px;background:#eee;color:#888;display:flex;align-items:center;justify-content:center;padding:0 8px;font-size:20px;font-weight:700}
+#pbody .it.ok{background:#4fd3a8;color:#fff}#pbody .it.hard{background:#ffb347;color:#fff}
+#pbody .meter{height:14px;background:#eee;border-radius:7px;overflow:hidden;margin:6px 0}
+#pbody .meter i{display:block;height:100%;background:var(--mint)}
+#pbody button.p{font-size:20px;background:#efe6ff;border-radius:14px;padding:12px 16px;margin:4px 6px 4px 0;font-weight:700;color:var(--ink)}
+#pbody button.p.on{background:var(--mint);color:#fff}
+#pbody button.p.danger{background:#ffe1e1;color:#b00020}
+#pbody .key{font-size:16px;color:#666}
+#fx{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:50}
+#fx i{position:absolute;top:-30px;width:14px;height:20px;border-radius:4px;animation:fall linear forwards}
+#fx b{position:absolute;font-size:44px;animation:pop .5s,twinkle .8s .5s 2;font-weight:400}
+</style></head><body>
+
+<div id="bg"></div>
+<section id="locked" class="scr"><div class="mm" id="lockmali"></div><div class="big" id="locktitle"></div><div class="sm" id="locktext"></div></section>
+
+<section id="setup" class="scr">
+ <div class="mm" id="setmali"></div>
+ <form class="box" id="setform">
+  <h1>Who is playing?</h1>
+  <label>Nickname <small>the name the app says out loud</small><input id="in-nick" autocomplete="off" autocapitalize="words" maxlength="16" placeholder="Nickname"></label>
+  <label>First name <small>to practice writing it (you can skip this)</small><input id="in-first" autocomplete="off" autocapitalize="words" maxlength="24" placeholder="First name"></label>
+  <label>Last name <small>to practice writing it (you can skip this)</small><input id="in-last" autocomplete="off" autocapitalize="words" maxlength="24" placeholder="Last name"></label>
+  <button class="btn pink" type="submit" style="font-size:40px;height:84px">▶️</button>
+  <div style="font-weight:400;font-size:15px;color:#8a7bb5;text-align:center">Names stay on this iPad only. Use English letters.</div>
+ </form>
+</section>
+
+<section id="welcome" class="scr"></section>
+
+<section id="bday" class="scr">
+ <button id="gift" aria-label="Open the present">🎁</button>
+ <div id="bparty">
+  <div class="hb" id="hbtext"></div>
+  <div id="brow"><div id="bmali" style="height:100%"></div><div id="cakebox"></div></div>
+  <button class="btn pink pulse" id="bgo" style="display:none;font-size:44px;width:150px;height:96px">▶️</button>
+ </div>
+</section>
+
+<section id="home" class="scr">
+ <div id="hometop">
+  <button class="pill" id="starpill">⭐ <span id="hstars">0</span></button>
+  <div class="name" id="hname"></div>
+  <button class="pill" id="bookbtn">📒 <span id="hstk">0</span></button>
+ </div>
+ <div id="homemid"><div id="homemali"></div><div id="tracks"></div></div>
+ <button id="hold"><i></i><span style="position:relative">👨‍👩‍👧 Parents: hold 2 seconds</span></button>
+</section>
+
+<section id="level" class="scr">
+ <div class="bar"><button class="btn small" id="lvback">🏠</button><div id="lvtitle"></div><div class="sp"></div><div id="lvmali" style="height:min(12vh,100px)"></div></div>
+ <div id="bubbles"></div>
+ <div id="chips"></div>
+</section>
+
+<section id="play" class="scr">
+ <div class="bar"><button class="btn small" id="quit">✖️</button><div id="dots"></div><div id="pmali"></div></div>
+ <div id="stage"></div>
+</section>
+
+<section id="party" class="scr">
+ <div id="prow"><div id="pmali2"></div><div id="pgrade"></div><div id="pstk"></div></div>
+ <div class="big" id="ptext"></div>
+ <div id="pnew"></div>
+ <div style="display:flex;gap:24px"><button class="btn" id="phome">🏠</button><button class="btn pink pulse" id="pnext" style="font-size:44px;width:140px">▶️</button></div>
+</section>
+
+<section id="book" class="scr">
+ <div class="bar"><button class="btn small" id="bookback">🏠</button><div id="lvtitle2" class="barT" style="font-size:min(7vw,6vh,48px)">📒 Stickers</div></div>
+ <div id="bookgrid"></div>
+</section>
+
+<section id="closet" class="scr">
+ <div class="bar"><button class="btn small" id="clback">🏠</button><div class="barT" style="font-size:min(7vw,6vh,48px)">🦄 My unicorn</div></div>
+ <div class="cl"><div id="clmali"></div><div id="clrows"></div></div>
+</section>
+
+<section id="parent" class="scr">
+ <div class="bar" style="padding:4px 6px"><button class="btn small" id="parback">⬅️</button><div style="font-size:28px;font-weight:700;color:var(--ink)">For Dad and Mom</div></div>
+ <div id="pbody"></div>
+</section>
+
+<div id="fx"></div>
+
+<script>
+'use strict';
+/* ================= helpers ================= */
+const $=s=>document.querySelector(s);
+const h=(tag,a={},...kids)=>{const e=document.createElement(tag);for(const k in a){if(k==='class')e.className=a[k];else if(k==='html')e.innerHTML=a[k];else if(k.slice(0,2)==='on')e.addEventListener(k.slice(2),a[k]);else e.setAttribute(k,a[k])}kids.flat().forEach(c=>c!=null&&e.append(c));return e};
+const rnd=n=>Math.floor(Math.random()*n);
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=rnd(i+1);[a[i],a[j]]=[a[j],a[i]]}return a};
+const pick=a=>a[rnd(a.length)];
+const coal=e=>{let a=[];try{a=e.getCoalescedEvents?e.getCoalescedEvents():[]}catch(_){}return a.length?a:[e]};
+const today=()=>{const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')};
+
+/* ================= saved progress (on this device only) ================= */
+const KEY='sky-letters-v2';
+function fresh(){let stars=0;try{stars=+localStorage.getItem('skystars')||0}catch(_){}
+  return {v:2,stars,stickers:[],rounds:{},items:{},days:{},bday:0,pen:0,penRounds:{},grades:{},wear:[],look:{wings:'',head:'',neck:'',body:'white',mane:'rainbow',horn:'gold',extra:''},sec:'en',set:{unlock:false,talk:'en',sounds:true,tool:'auto',ven:'',vth:'',pack:''}}}
+let S=fresh();
+try{const s=JSON.parse(localStorage.getItem(KEY));if(s&&s.v===2)S=Object.assign(fresh(),s,{set:Object.assign(fresh().set,s.set),look:Object.assign(fresh().look,s.look)})}catch(_){}
+/* the child: nickname (spoken), first and last name (for writing practice). Kept apart so "erase progress" does not forget who she is. */
+const NKEY='sky-letters-kid';let KID=null;
+try{const k=JSON.parse(localStorage.getItem(NKEY));if(k&&k.nick)KID=k}catch(_){}
+const nick=()=>KID?KID.nick:'Sky',isSky=()=>nick().toLowerCase()==='sky';
+const esc=t=>String(t).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+/* which writing tool right now: finger first, the magic pencil after she earns it (parent page can force one) */
+const PEN_AFTER=2;   // finished writing games (with a finger) before the pencil is earned
+const tool=()=>S.set.tool==='finger'?'finger':S.set.tool==='pen'?'pen':(S.pen?'pen':'finger');
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(_){}}
+
+/* ================= sound: beeps + the iPad's own voice ================= */
+let ac=null;
+function beep(notes,type='triangle',vol=.22,step=.13){try{ac=ac||new (window.AudioContext||window.webkitAudioContext)();if(ac.state==='suspended')ac.resume();
+  let t=ac.currentTime+.01;notes.forEach(n=>{const f=Array.isArray(n)?n[0]:n,d=Array.isArray(n)?n[1]:step;if(f){const o=ac.createOscillator(),g=ac.createGain();o.type=type;o.frequency.value=f;o.connect(g);g.connect(ac.destination);
+    g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(vol,t+.02);g.gain.exponentialRampToValueAtTime(.0001,t+d*.95);o.start(t);o.stop(t+d)}t+=d})}catch(_){}}
+const ding=()=>beep([659,880,1175]),boop=()=>beep([220,196],'sine',.18,.12),tick=()=>beep([880],'sine',.12,.06),fanfare=()=>beep([523,659,784,1047,784,1047],'triangle',.22,.14);
+const Voice={en:null,th:null,n:0};
+function pickVoices(){if(!('speechSynthesis' in window))return;const vs=speechSynthesis.getVoices();Voice.n=vs.length;if(!vs.length)return;
+  const L=v=>v.lang.replace('_','-').toLowerCase();
+  const best=(pre,exact,names)=>{let c=vs.filter(v=>L(v)===exact);if(!c.length)c=vs.filter(v=>L(v).startsWith(pre));if(!c.length)return null;
+    for(const n of names){const v=c.find(v=>v.name.includes(n));if(v)return v}return c[0]};
+  Voice.en=vs.find(v=>v.name===S.set.ven)||best('en','en-us',['Samantha','Ava','Allison','Zoe','Nicky','Susan','Google US']);
+  Voice.th=vs.find(v=>v.name===S.set.vth)||best('th','th-th',['Kanya','Narisa']);
+  Voice.all=vs}
+if('speechSynthesis' in window){pickVoices();speechSynthesis.onvoiceschanged=pickVoices}
+let sayTok=0;
+const wait=ms=>new Promise(r=>setTimeout(r,ms));
+function mkU([t,lang,rate]){const u=new SpeechSynthesisUtterance(isSky()?t:lang==='th'?t.replace(/ ?สกาย/g,''):t.replace(/\bSky\b/g,nick()));u.lang=lang==='th'?'th-TH':'en-US';const v=lang==='th'?Voice.th:Voice.en;if(v)u.voice=v;
+  u.rate=rate||(lang==='th'?.8:.9);u.pitch=1.15;return u}
+/* say(['Hello',['สวัสดี','th'],['cat','en',.5],['b','clip']])  each part: text, or [text, lang, speed], or a recorded letter sound */
+function say(parts){if(!('speechSynthesis' in window))return;if(!Voice.n)pickVoices();
+  parts=[].concat(parts).filter(Boolean).map(p=>typeof p==='string'?[p,'en']:p).filter(p=>p[1]!=='clip'||hasClip(p[0]));const tok=++sayTok;stopClip();
+  if(parts.some(p=>p[1]==='clip'))return saySeq(parts,tok);
+  const go=()=>{if(tok!==sayTok)return;for(const p of parts){if(p[1]==='th'&&Voice.n&&!Voice.th)continue;try{speechSynthesis.speak(mkU(p))}catch(_){}}};
+  try{if(speechSynthesis.speaking||speechSynthesis.pending){speechSynthesis.cancel();setTimeout(go,90)}else go()}catch(_){}}
+async function saySeq(parts,tok){try{speechSynthesis.cancel()}catch(_){}await wait(70);
+  for(const p of parts){if(tok!==sayTok)return;
+    if(p[1]==='clip'){await playClip(p[0]);await wait(140)}
+    else if(!(p[1]==='th'&&Voice.n&&!Voice.th))await new Promise(res=>{const u=mkU(p);let fin=false;const end=()=>{if(!fin){fin=true;res()}};u.onend=u.onerror=end;try{speechSynthesis.speak(u)}catch(_){end()}setTimeout(end,1500+p[0].length*120)})}}
+const hush=()=>{sayTok++;stopClip();try{speechSynthesis.cancel()}catch(_){}};
+/* ---- letter sounds recorded in a real voice (phonics). Kept on this device. ---- */
+const CLIPS={},CLIPBUF={},PACK={};let clipSrc=null,PACKS=[];
+const clipUrl=k=>CLIPS[k]||PACK[k],hasClip=k=>!!(CLIPS[k]||PACK[k]);
+/* ready-made voice packs live in the voices folder next to the app (see voices/packs.json). Family clips never go there. */
+async function packsLoad(){try{const r=await fetch('voices/packs.json',{cache:'no-cache'});if(!r.ok)return;PACKS=(await r.json()).packs||[];packUse(S.set.pack,false)}catch(_){}}
+function packUse(id,warm){for(const k in PACK){delete PACK[k];delete CLIPBUF[k]}const p=PACKS.find(x=>x.id===id);if(!p)return;
+  (p.clips||[]).forEach(k=>{PACK[k]='voices/'+p.id+'/'+k+'.'+(p.ext||'mp3');delete CLIPBUF[k]});
+  if(warm)(p.clips||[]).forEach((k,i)=>setTimeout(()=>fetch(PACK[k]).catch(()=>{}),i*60))}   // fetch once so it also works with no internet
+function stopClip(){try{clipSrc&&clipSrc.stop()}catch(_){}clipSrc=null}
+function adb(){return new Promise((res,rej)=>{const r=indexedDB.open('sky-letters-audio',1);r.onupgradeneeded=()=>r.result.createObjectStore('clips');r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)})}
+async function clipsLoad(){try{const db=await adb();await new Promise(res=>{const q=db.transaction('clips').objectStore('clips').openCursor();q.onsuccess=e=>{const c=e.target.result;if(c){CLIPS[c.key]=c.value;c.continue()}else res()};q.onerror=()=>res()})}catch(_){}}
+async function clipSave(k,url){CLIPS[k]=url;delete CLIPBUF[k];const db=await adb();await new Promise((res,rej)=>{const t=db.transaction('clips','readwrite');t.objectStore('clips').put(url,k);t.oncomplete=res;t.onerror=()=>rej(t.error)})}
+async function clipDel(k){delete CLIPS[k];delete CLIPBUF[k];try{const db=await adb();await new Promise(res=>{const t=db.transaction('clips','readwrite');t.objectStore('clips').delete(k);t.oncomplete=res;t.onerror=res})}catch(_){}}
+async function playClip(k){try{ac=ac||new (window.AudioContext||window.webkitAudioContext)();if(ac.state==='suspended')await ac.resume();
+    if(!CLIPBUF[k]){const bin=await (await fetch(clipUrl(k))).arrayBuffer();const buf=await new Promise((res,rej)=>ac.decodeAudioData(bin,res,rej));
+      const d=buf.getChannelData(0);let a=0,b=d.length-1;while(a<d.length&&Math.abs(d[a])<.03)a++;while(b>a&&Math.abs(d[b])<.03)b--;   // skip the quiet start and end
+      const off=Math.max(0,a/buf.sampleRate-.06),dur=Math.min(buf.duration-off,(b-a)/buf.sampleRate+.2);CLIPBUF[k]={buf,off,dur:dur>0.05?dur:buf.duration}}
+    const c=CLIPBUF[k];await new Promise(res=>{const src=ac.createBufferSource(),g=ac.createGain();g.gain.value=k.length===1?1.8:1.25;src.buffer=c.buf;src.connect(g);g.connect(ac.destination);clipSrc=src;src.onended=res;src.start(0,c.off,c.dur);setTimeout(res,(c.dur+.5)*1000)})}catch(_){}}
+async function recordClip(k,ms){const stream=await navigator.mediaDevices.getUserMedia({audio:true});const mr=new MediaRecorder(stream),chunks=[];mr.ondataavailable=e=>{if(e.data&&e.data.size)chunks.push(e.data)};
+  const stopped=new Promise(res=>mr.onstop=res);mr.start();await wait(ms);mr.stop();await stopped;stream.getTracks().forEach(t=>t.stop());
+  const blob=new Blob(chunks,{type:mr.mimeType||(chunks[0]&&chunks[0].type)||'audio/mp4'});
+  const url=await new Promise(res=>{const fr=new FileReader();fr.onload=()=>res(fr.result);fr.readAsDataURL(blob)});await clipSave(k,url)}
+document.addEventListener('visibilitychange',()=>{if(document.hidden)hush()});
+
+/* Mali's phrases, in English or Thai (parent page chooses) */
+const PH={
+ trace:['Trace it with your finger!','ใช้นิ้วลากตามเส้นเลยค่ะ'],
+ dot:['Start at the green dot.','เริ่มที่จุดสีเขียวนะคะ'],
+ watch:['Watch the star.','ดูดาวก่อนนะคะ'],
+ again:['One more time!','อีกครั้งนะคะ'],
+ retry:['Try again!','ลองอีกทีนะคะ'],
+ oops:["Oops! Let's try again.",'อุ๊ย ลองใหม่นะคะ'],
+ hello:['Hi Sky! What do you want to play?','สวัสดีค่ะ สกาย อยากเล่นอะไรดีคะ'],
+ locked:['Play the game before this one to open it.','เล่นเกมก่อนหน้านี้ก่อนนะคะ'],
+ done:['You finished! Great job, Sky!','เล่นจบแล้ว เก่งมากค่ะ สกาย'],
+ sticker:['Here is a new sticker!','ได้สติกเกอร์ใหม่ค่ะ'],
+ pickgame:['Pick a star to play.','เลือกดาวเพื่อเล่นเลยค่ะ'],
+ next:['Tap the arrow.','กดลูกศรเลยค่ะ'],
+ build:['Tap the letters to make the word.','กดตัวอักษรให้เป็นคำนะคะ'],
+ thisis:['This is','นี่คือ'],
+ which:['Which one is','อันไหนคือ'],
+ blend:['Put them together. What do they say?','รวมกันแล้วอ่านว่าอะไรคะ'],
+ readpick:['Read the word. Which picture is it?','อ่านคำนี้ แล้วเลือกรูปค่ะ'],
+ hearpick:['Find the word','หาคำว่า'],
+ book:['These are your stickers!','นี่คือสติกเกอร์ของหนูค่ะ'],
+ listen:['Listen again.','ฟังอีกครั้งนะคะ'],
+ yousay:['Now you say it!','พูดตามเลยค่ะ'],
+ gAp:['A plus! Perfect! You followed every step, Sky!','ได้เอบวก เก่งที่สุดเลยค่ะ สกาย'],
+ gA:['You got an A! So close to A plus.','ได้เอ เกือบได้เอบวกแล้วค่ะ'],
+ gB:['You got a B. Good work! Play again to get an A.','ได้บี เก่งค่ะ เล่นอีกครั้งให้ได้เอนะคะ'],
+ gC:['You finished! Listen carefully and play again for a better grade.','เล่นจบแล้วค่ะ ตั้งใจฟัง แล้วเล่นอีกครั้งนะคะ'],
+ newwear:['Your unicorn gets','ยูนิคอร์นได้'],
+ wearlock:['Finish more games to win this.','เล่นให้จบอีกหลายเกมก่อนนะคะ'],
+ wearlockA:['Get an A plus to win this.','ต้องได้เอบวกก่อนนะคะ'],
+ closet:['Dress up your unicorn!','แต่งตัวยูนิคอร์นได้เลยค่ะ'],
+ yourname:["Let's write your name.",'มาเขียนชื่อกันค่ะ'],
+ orderpad:['Write it on your order pad.','เขียนลงในใบสั่งอาหารนะคะ'],
+ yummy:['Yummy! Thank you!','อร่อยจัง ขอบคุณค่ะ'],
+ usepen:['Use your magic pencil!','ใช้ดินสอวิเศษนะคะ'],
+ pentrace:['Write on the dots with your pencil!','ใช้ดินสอเขียนตามเส้นประเลยค่ะ'],
+ sky:['Start at the sky line.','เริ่มที่เส้นท้องฟ้านะคะ'],
+ mid:['Start at the plane line.','เริ่มที่เส้นเครื่องบินนะคะ'],
+ between:['Start between the plane line and the grass line.','เริ่มระหว่างเส้นเครื่องบินกับเส้นหญ้านะคะ'],
+ penwon:['Wow, Sky! You write so well with your finger. Now you get the magic pencil! Pick up your pencil for the next game.','ว้าว สกาย เขียนด้วยนิ้วเก่งมาก ตอนนี้ได้ดินสอวิเศษแล้ว หยิบดินสอมาเขียนเกมต่อไปเลยค่ะ']};
+const PRAISE=[['Great job!','Wow, Sky!','You did it!','Super star!','Beautiful!','Amazing!','Yes!'],['เก่งมากค่ะ','สุดยอดเลย','เยี่ยมมากค่ะ','ถูกต้องค่ะ','เก่งจังเลย สกาย']];
+/* Mali's instructions: English always, Thai always, or Thai only inside the Thai part (parent page chooses) */
+const thaiTalk=()=>S.set.talk==='th'||(S.set.talk==='sec'&&S.sec==='th');
+const T=k=>thaiTalk()?[PH[k][1],'th']:[PH[k][0],'en'];
+/* cheer-up lines that can be recorded in a family voice (or come from a voice pack). p = praise, r = try again */
+const CHEERS=[['cheer-01','en','p','Great job, Sky!'],['cheer-02','en','p','Wow, Sky! You did it!'],['cheer-03','en','p','I am so proud of you!'],['cheer-04','en','p','That is beautiful writing!'],['cheer-05','en','r','Try again, you can do it!'],['cheer-06','en','r','Almost! One more time.'],
+ ['cheer-07','th','p','เก่งมากเลยลูก'],['cheer-08','th','p','สุดยอดเลย สกาย'],['cheer-09','th','p','แม่ภูมิใจในตัวหนูมาก'],['cheer-10','th','r','ลองอีกทีนะลูก หนูทำได้']];
+const cheer1=kind=>{const lang=S.sec==='th'?'th':'en';const pool=CHEERS.filter(c=>c[1]===lang&&c[2]===kind&&hasClip(c[0]));return pool.length?[pick(pool)[0],'clip']:null};
+const retry=()=>cheer1('r')||T('retry');
+const praise=()=>(Math.random()<.75&&cheer1('p'))||(thaiTalk()?[pick(PRAISE[1]),'th']:[pick(PRAISE[0]),'en']);
+
+/* ================= Mali, Sky's unicorn friend (original drawing) ================= */
+const BODY={white:['#fff','#e3d4f7'],pink:['#ffe3f1','#f5b8d6'],lavender:['#efe6ff','#cdb8f5'],mint:['#e2fbf0','#a9e6cb'],sky:['#e1f3ff','#a9d6f5'],peach:['#ffeeda','#f5cfa0']};
+const MANE={rainbow:['#c9b6ff','#8ee6c4','#ff9ecf','#ffd86b','#8fd3ff'],pink:['#ff8fc7','#ffc2e0','#ff6fb5','#ffd9ec','#ff9ecf'],purple:['#9b6bff','#c9b6ff','#b48cff','#e0d4ff','#8a5cd6'],ocean:['#58b7ff','#7fe0d0','#3d9bef','#a8ecff','#4fd3c8'],sunset:['#ff9e57','#ffd86b','#ff7e8a','#ffe89a','#ffb35c']};
+const HORN={gold:['#ffd447','#f0b400'],pink:['#ff9ecf','#ff6fb5'],silver:['#e6ecf5','#a9b6cc'],rainbow:['url(#hornrb)','#f0b400']};
+let MID=0;
+function mali(look){const U='g'+(++MID),L=look||S.look,B=BODY[L.body]||BODY.white,M=MANE[L.mane]||MANE.rainbow,H=HORN[L.horn]||HORN.gold;
+  const wingFill={fairy:['#ffd9ee','#ff8fc7'],rainbow:['url(#wingrb'+U+')','#b79bff'],gold:['#ffe89a','#f0b400']}[L.wings];
+  const wing=wingFill?`<g fill="${wingFill[0]}" stroke="${wingFill[1]}" stroke-width="3" stroke-linejoin="round"><path d="M64 158C30 100-10 130 8 168C-8 180 6 210 38 198C52 194 60 182 66 170Z"/><path d="M64 158C30 100-10 130 8 168C-8 180 6 210 38 198C52 194 60 182 66 170Z" transform="translate(200 0) scale(-1 1)"/><path d="M58 162C40 140 22 144 18 160M142 162C160 140 178 144 182 160" fill="none" opacity=".6"/></g>`:'';
+  const cape=L.neck==='cape'?`<path d="M62 146L26 224Q100 242 174 224L138 146Z" fill="#b79bff" stroke="#8a5cd6" stroke-width="3" stroke-linejoin="round"/>`:'';
+  const fl=(x,y,c)=>`<g transform="translate(${x} ${y})"><circle r="8" fill="${c}"/><circle r="3.4" fill="#fff3a6"/></g>`;
+  const head={flowers:fl(62,52,'#ff8fc7')+fl(78,43,'#b79bff')+fl(122,43,'#7cc4ff')+fl(138,52,'#ff8fc7'),
+    bow:`<g fill="#ff6fb5" stroke="#d54a90" stroke-width="2" stroke-linejoin="round"><path d="M56 44L34 30V58Z"/><path d="M56 44L78 30V58Z"/><circle cx="56" cy="44" r="6"/></g>`,
+    hearts:`<g fill="#ff6fb5"><path d="M146 48c-5-8-17-2-12 7l12 11 12-11c5-9-7-15-12-7z"/><path d="M128 36c-3-5-10-1-7 4l7 7 7-7c3-5-4-9-7-4z"/></g>`,
+    tiara:`<path d="M66 52L72 30L86 46L100 22L114 46L128 30L134 52Z" fill="#ffd447" stroke="#f0b400" stroke-width="2.5" stroke-linejoin="round"/><circle cx="100" cy="38" r="5" fill="#ff6fb5"/><circle cx="74" cy="42" r="3.5" fill="#7cc4ff"/><circle cx="126" cy="42" r="3.5" fill="#7cc4ff"/>`}[L.head]||'';
+  const neck={necklace:`<path d="M70 146Q100 170 130 146" fill="none" stroke="#ff8fc7" stroke-width="4" stroke-linecap="round"/><g fill="#fff3a6" stroke="#f0b400" stroke-width="1.5"><circle cx="80" cy="153" r="4"/><circle cx="120" cy="153" r="4"/></g><path d="M100 158c-3-5-10-1-7 4l7 7 7-7c3-5-4-9-7-4z" fill="#ff6fb5"/>`,
+    scarf:`<path d="M64 142Q100 164 136 142V154Q100 176 64 154Z" fill="#7cc4ff" stroke="#4d9bef" stroke-width="2.5" stroke-linejoin="round"/><path d="M118 158l14 26-16 2-6-24z" fill="#7cc4ff" stroke="#4d9bef" stroke-width="2.5" stroke-linejoin="round"/>`,
+    cape:`<path d="M66 144Q100 162 134 144" fill="none" stroke="#8a5cd6" stroke-width="6" stroke-linecap="round"/><circle cx="100" cy="155" r="6" fill="#ffd447" stroke="#f0b400" stroke-width="2"/>`}[L.neck]||'';
+  const st5='l3 6.6 7.2.8-5.4 4.8 1.6 7-6.4-3.7-6.4 3.7 1.6-7-5.4-4.8 7.2-.8z';
+  const extra={stars:`<g fill="#ffd447" stroke="#f0b400" stroke-width="1"><path d="M57 106${st5}"/><path d="M143 106${st5}"/></g>`,
+    glasses:`<g fill="rgba(255,111,181,.16)" stroke="#ff6fb5" stroke-width="4"><circle cx="76" cy="100" r="18"/><circle cx="124" cy="100" r="18"/><path d="M94 100h12" fill="none"/></g>`,
+    wand:`<path d="M134 204L170 150" stroke="#b79bff" stroke-width="6" stroke-linecap="round"/><path d="M170 132l4.5 10 10.8 1.2-8.1 7.2 2.4 10.6-9.6-5.6-9.6 5.6 2.4-10.6-8.1-7.2 10.8-1.2z" fill="#ffd447" stroke="#f0b400" stroke-width="2"/>`,
+    aura:`<g fill="#ffd447">${[[8,40],[196,30],[-2,110],[204,100],[26,-6],[176,-10],[10,214],[196,216]].map((p,i)=>`<path class="tw" style="animation:twinkle 1.4s ${i*.17}s infinite;transform-box:fill-box;transform-origin:center" d="M${p[0]} ${p[1]-9}l2.6 6.4 6.4 2.6-6.4 2.6-2.6 6.4-2.6-6.4-6.4-2.6 6.4-2.6z"/>`).join('')}</g>`}[L.extra]||'';
+  return `<svg class="mali" viewBox="-12 -24 228 256" aria-label="Mali the unicorn">
+<defs><linearGradient id="wingrb${U}" x1="0" x2="1" y1="0" y2="1"><stop offset="0" stop-color="#ff9ecf"/><stop offset=".35" stop-color="#ffe27a"/><stop offset=".7" stop-color="#8ee6c4"/><stop offset="1" stop-color="#8fd3ff"/></linearGradient><linearGradient id="hornrb${U}" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#ff7eb6"/><stop offset=".5" stop-color="#ffe27a"/><stop offset="1" stop-color="#7cc4ff"/></linearGradient></defs>
+${wing}${cape}
+<g><path d="M138 168q56-26 52 26q-4 26-30 24q20-14 8-32q-10-12-30-6z" fill="${M[2]}"/><path d="M140 176q42-14 38 22q-4 16-22 16q12-12 2-26q-6-8-18-4z" fill="${M[3]}"/><path d="M142 183q28-6 24 16q-2 10-14 10q6-9 0-17q-4-5-10-3z" fill="${M[4]}"/></g>
+<ellipse cx="100" cy="172" rx="46" ry="40" fill="${B[0]}" stroke="${B[1]}" stroke-width="3"/>
+<g fill="${B[0]}" stroke="${B[1]}" stroke-width="3"><rect x="64" y="186" width="26" height="38" rx="12"/><rect x="110" y="186" width="26" height="38" rx="12"/></g>
+<path d="M65 212h24v2a12 10 0 0 1-24 0z M111 212h24v2a12 10 0 0 1-24 0z" fill="#ffb3d9"/>
+<g><circle cx="94" cy="176" r="7" fill="#9fd8ff"/><circle cx="103" cy="172" r="9" fill="#9fd8ff"/><circle cx="112" cy="177" r="6.5" fill="#9fd8ff"/><rect x="90" y="176" width="26" height="8" rx="4" fill="#9fd8ff"/><path d="M103 183l1.8 4 4.2.4-3.2 2.8 1 4.2-3.8-2.3-3.8 2.3 1-4.2-3.2-2.8 4.2-.4z" fill="#ffd447"/></g>
+<path d="M50 62L40 18L80 44Z" fill="${B[0]}" stroke="${B[1]}" stroke-width="3" stroke-linejoin="round"/><path d="M52 52L47 30L68 44Z" fill="#ffc2dd"/>
+<path d="M150 62L160 18L120 44Z" fill="${B[0]}" stroke="${B[1]}" stroke-width="3" stroke-linejoin="round"/><path d="M148 52L153 30L132 44Z" fill="#ffc2dd"/>
+<path d="M100-18L86 40h28z" fill="${H[0].replace('hornrb','hornrb'+U)}" stroke="${H[1]}" stroke-width="2.5" stroke-linejoin="round"/><path d="M95 4l11 5M92 17l17 7M89 30l22 6" stroke="${H[1]}" stroke-width="2.5" stroke-linecap="round"/>
+<circle cx="100" cy="94" r="60" fill="${B[0]}" stroke="${B[1]}" stroke-width="3"/>
+<path d="M44 86q-22 30-6 66q6-22 20-34q-12-10-14-32z" fill="${M[0]}"/><path d="M40 70q-20 18-14 50q10-22 26-30q-10-8-12-20z" fill="${M[1]}"/>
+<path d="M62 44q-28 6-30 40q16-22 40-22q-10-6-10-18z" fill="${M[2]}"/><path d="M84 34q-26-2-36 24q20-12 40-6q-6-8-4-18z" fill="${M[3]}"/><path d="M104 36q-20-8-34 8q18-2 32 10q0-10 2-18z" fill="${M[4]}"/>
+${head}
+<g class="eye"><ellipse cx="76" cy="100" rx="11" ry="14" fill="#3b2a63"/><circle cx="72" cy="94" r="4.6" fill="#fff"/><circle cx="80" cy="105" r="2.2" fill="#fff"/></g>
+<g class="eye"><ellipse cx="124" cy="100" rx="11" ry="14" fill="#3b2a63"/><circle cx="120" cy="94" r="4.6" fill="#fff"/><circle cx="128" cy="105" r="2.2" fill="#fff"/></g>
+<path d="M62 88l-6-5M65 84l-3-7M138 88l6-5M135 84l3-7" stroke="#3b2a63" stroke-width="2.5" stroke-linecap="round"/>
+<ellipse cx="57" cy="118" rx="10" ry="6" fill="#ffc2dd"/><ellipse cx="143" cy="118" rx="10" ry="6" fill="#ffc2dd"/>
+<path class="m-smile" d="M91 122q9 9 18 0" fill="none" stroke="#3b2a63" stroke-width="3" stroke-linecap="round"/>
+<path class="m-open" d="M89 120q11 18 22 0z" fill="#ff7aa8" stroke="#3b2a63" stroke-width="3" stroke-linejoin="round"/>
+${neck}${extra}
+</svg>`}
+/* things she wins for her unicorn: one for each new game finished, and special ones for A+ grades */
+const WEAR=[['w1','wings','fairy','fairy wings','ปีกนางฟ้า'],['b1','body','pink','a pink coat','ตัวสีชมพู'],['h1','head','flowers','a flower crown','มงกุฎดอกไม้'],['m1','mane','pink','pink hair','ผมสีชมพู'],['n1','neck','necklace','a necklace','สร้อยคอ'],['o1','horn','pink','a pink horn','เขาสีชมพู'],['h2','head','bow','a bow','โบว์'],['b2','body','lavender','a purple coat','ตัวสีม่วง'],['w2','wings','rainbow','rainbow wings','ปีกสายรุ้ง'],['m2','mane','purple','purple hair','ผมสีม่วง'],['x1','extra','stars','star cheeks','แก้มดาว'],['n2','neck','scarf','a scarf','ผ้าพันคอ'],['b3','body','mint','a mint coat','ตัวสีเขียว'],['h3','head','hearts','heart clips','กิ๊บหัวใจ'],['o2','horn','silver','a silver horn','เขาสีเงิน'],['x2','extra','glasses','pink glasses','แว่นตาสีชมพู'],['m3','mane','ocean','ocean hair','ผมสีฟ้า'],['n3','neck','cape','a cape','ผ้าคลุม'],['b4','body','sky','a blue coat','ตัวสีฟ้า'],['x3','extra','wand','a magic wand','ไม้กายสิทธิ์'],['m4','mane','sunset','sunset hair','ผมสีส้ม'],['b5','body','peach','a peach coat','ตัวสีพีช'],['o3','horn','rainbow','a rainbow horn','เขาสายรุ้ง']];
+const WEAR_A=[['a1','head','tiara','a princess tiara','มงกุฎเจ้าหญิง',1],['a2','wings','gold','golden wings','ปีกทอง',3],['a3','extra','aura','magic sparkles','ประกายวิเศษ',6]];
+const SLOTS=[['wings','🪽',''],['head','👑',''],['neck','📿',''],['extra','✨',''],['body','🎨','white'],['mane','💇','rainbow'],['horn','🦄','gold']];
+const WICON={fairy:'🧚',rainbow:'🌈',gold:'🌟',flowers:'🌸',bow:'🎀',hearts:'💕',tiara:'👑',necklace:'📿',scarf:'🧣',cape:'🦸',stars:'⭐',glasses:'👓',wand:'🪄',aura:'✨'};
+const aplusCount=()=>Object.values(S.grades).filter(g=>g==='A+').length;
+const wearSay=w=>thaiTalk()?[w[4],'th']:[w[3],'en'];
+function give(w){S.wear.push(w[0]);S.look[w[1]]=w[2];return w}
+function putMali(id,onTap){const e=$(id);e.innerHTML=mali();if(onTap)e.onclick=onTap;return e.firstChild}
+function cheer(){document.querySelectorAll('.scr.on .mali').forEach(m=>{m.classList.remove('cheer');void m.getBoundingClientRect();m.classList.add('cheer');setTimeout(()=>m.classList.remove('cheer'),1900)})}
+function confetti(n=40){const fx=$('#fx');const cols=['#ff6fb5','#ffd447','#4fd3a8','#58b7ff','#9b6bff','#ff9e57'];
+  for(let i=0;i<n;i++){const e=h('i');e.style.left=rnd(100)+'vw';e.style.background=pick(cols);e.style.setProperty('--dx',(rnd(40)-20)+'vw');e.style.animationDuration=(1.6+Math.random()*1.6)+'s';e.style.animationDelay=(Math.random()*.4)+'s';fx.append(e);setTimeout(()=>e.remove(),3800)}}
+function sparkle(n=7){const fx=$('#fx');for(let i=0;i<n;i++){const e=h('b',{},pick(['⭐','✨','🌟','💖']));e.style.left=(10+rnd(80))+'vw';e.style.top=(10+rnd(70))+'vh';fx.append(e);setTimeout(()=>e.remove(),1500)}}
+
+/* ================= English letters: how each one is written, stroke by stroke =================
+   Grid: x 0-100. y 0 = top line, 50 = middle line, 100 = bottom line, 140 = tail. Each string is one stroke, in order. */
+const CAP={
+A:['M50 0 L15 100','M50 0 L85 100','M28 62 L72 62'],
+B:['M20 0 L20 100','M20 0 L48 0 Q76 0 76 25 Q76 50 48 50 L20 50 L52 50 Q84 50 84 75 Q84 100 52 100 L20 100'],
+C:['M80 20 A38 50 0 1 0 80 80'],
+D:['M20 0 L20 100','M20 0 L40 0 Q85 0 85 50 Q85 100 40 100 L20 100'],
+E:['M20 0 L20 100','M20 0 L78 0','M20 50 L68 50','M20 100 L78 100'],
+F:['M20 0 L20 100','M20 0 L78 0','M20 50 L66 50'],
+G:['M80 20 A38 50 0 1 0 87 58 L56 58'],
+H:['M20 0 L20 100','M80 0 L80 100','M20 50 L80 50'],
+I:['M50 0 L50 100','M30 0 L70 0','M30 100 L70 100'],
+J:['M66 0 L66 70 Q66 100 42 100 Q22 100 18 78'],
+K:['M20 0 L20 100','M78 0 L22 52 L80 100'],
+L:['M20 0 L20 100 L75 100'],
+M:['M15 0 L15 100','M15 0 L50 70 L85 0 L85 100'],
+N:['M20 0 L20 100','M20 0 L80 100 L80 0'],
+O:['M50 0 A38 50 0 0 0 50 100 A38 50 0 0 0 50 0'],
+P:['M20 0 L20 100','M20 0 L50 0 Q80 0 80 25 Q80 50 50 50 L20 50'],
+Q:['M50 0 A38 50 0 0 0 50 100 A38 50 0 0 0 50 0','M58 72 L88 104'],
+R:['M20 0 L20 100','M20 0 L50 0 Q80 0 80 25 Q80 50 50 50 L20 50 L80 100'],
+S:['M78 20 Q70 0 50 0 Q22 0 22 25 Q22 48 50 50 Q80 53 80 76 Q80 100 50 100 Q26 100 18 80'],
+T:['M50 0 L50 100','M15 0 L85 0'],
+U:['M20 0 L20 65 Q20 100 50 100 Q80 100 80 65 L80 0'],
+V:['M15 0 L50 100 L85 0'],
+W:['M8 0 L30 100 L50 30 L70 100 L92 0'],
+X:['M18 0 L82 100','M82 0 L18 100'],
+Y:['M15 0 L50 50','M85 0 L50 50 L50 100'],
+Z:['M18 0 L82 0 L18 100 L82 100']};
+const CC='M70 62 Q62 50 45 50 Q20 50 20 75 Q20 100 45 100 Q62 100 70 88';
+const LOW={
+a:[CC+' L70 50 L70 100'],
+b:['M22 0 L22 100 L22 72 Q24 50 47 50 Q72 50 72 75 Q72 100 47 100 Q26 100 22 80'],
+c:[CC],
+d:[CC+' L70 0 L70 100'],
+e:['M22 75 L70 75 Q70 50 45 50 Q20 50 20 75 Q20 100 45 100 Q62 100 70 88'],
+f:['M72 12 Q68 0 55 0 Q40 0 40 20 L40 100','M22 50 L62 50'],
+g:[CC+' L70 50 L70 118 Q70 140 46 140 Q30 140 22 128'],
+h:['M22 0 L22 100 L22 72 Q26 50 48 50 Q70 50 70 72 L70 100'],
+i:['M50 50 L50 100','M50 27 L50 29'],
+j:['M55 50 L55 118 Q55 140 35 140 Q22 140 16 128','M55 27 L55 29'],
+k:['M22 0 L22 100','M68 50 L22 78 L70 100'],
+l:['M50 0 L50 100'],
+m:['M12 50 L12 100 L12 70 Q14 50 32 50 Q50 50 50 70 L50 100 L50 70 Q52 50 70 50 Q88 50 88 70 L88 100'],
+n:['M22 50 L22 100 L22 72 Q26 50 48 50 Q70 50 70 72 L70 100'],
+o:['M50 50 A25 25 0 0 0 50 100 A25 25 0 0 0 50 50'],
+p:['M22 50 L22 140 L22 75 Q24 50 47 50 Q72 50 72 75 Q72 100 47 100 Q26 100 22 80'],
+q:[CC+' L70 50 L70 140'],
+r:['M28 50 L28 100 L28 72 Q32 50 52 50 Q64 50 70 60'],
+s:['M68 60 Q62 50 46 50 Q26 50 26 63 Q26 74 46 76 Q68 78 68 88 Q68 100 46 100 Q30 100 22 90'],
+t:['M48 8 L48 100','M26 50 L70 50'],
+u:['M22 50 L22 80 Q22 100 45 100 Q64 100 70 82 L70 50 L70 100'],
+v:['M20 50 L46 100 L72 50'],
+w:['M10 50 L28 100 L50 58 L72 100 L90 50'],
+x:['M24 50 L72 100','M72 50 L24 100'],
+y:['M22 50 L48 100','M74 50 L30 140'],
+z:['M24 50 L72 50 L24 100 L72 100']};
+const NS='http://www.w3.org/2000/svg';let sampSvg=null;const GC={};
+function glyph(ch){if(GC[ch])return GC[ch];const defs=CAP[ch]||LOW[ch];
+  if(!sampSvg){sampSvg=document.createElementNS(NS,'svg');sampSvg.setAttribute('style','position:absolute;width:0;height:0;overflow:hidden');document.body.append(sampSvg)}
+  let x0=1e9,x1=-1e9;
+  const strokes=defs.map(d=>{const p=document.createElementNS(NS,'path');p.setAttribute('d',d);sampSvg.append(p);const len=p.getTotalLength(),n=Math.max(1,Math.ceil(len));const pts=[];
+    for(let i=0;i<=n;i++){const q=p.getPointAtLength(len*i/n);pts.push([q.x,q.y]);x0=Math.min(x0,q.x);x1=Math.max(x1,q.x)}p.remove();return {d,len,pts}});
+  return GC[ch]={strokes,x0,x1,w:x1-x0,cap:!!CAP[ch]}}
+/* draw English text with the same school-style letters she traces */
+function eng(text,tall){let x=8,parts='';const low=tall||/[a-z]/.test(text);
+  for(const ch of text){if(ch===' '){x+=26;continue}const G=glyph(ch);parts+=`<g transform="translate(${(x-G.x0).toFixed(1)},0)">`+G.strokes.map(s=>`<path d="${s.d}"/>`).join('')+'</g>';x+=G.w+22}
+  const H=low?152:112;return `<svg class="eng" viewBox="0 -8 ${(x-6).toFixed(0)} ${H}"><g fill="none" stroke="currentColor" stroke-width="11" stroke-linecap="round" stroke-linejoin="round">${parts}</g></svg>`}
+
+const NAME={a:'ay',b:'bee',c:'see',d:'dee',e:'ee',f:'eff',g:'jee',h:'aitch',i:'eye',j:'jay',k:'kay',l:'el',m:'em',n:'en',o:'oh',p:'pee',q:'cue',r:'are',s:'ess',t:'tee',u:'you',v:'vee',w:'double you',x:'ex',y:'why',z:'zee'};
+/* letter sounds, spelled so the iPad voice can say them. Parent page has a test grid. Vowels use the picture word instead. */
+const SOUND={b:'buh',c:'kuh',d:'duh',f:'fuh',g:'guh',h:'huh',j:'juh',k:'kuh',l:'luh',m:'mmm',n:'nuh',p:'puh',q:'kwuh',r:'ruh',s:'suh',t:'tuh',v:'vuh',w:'wuh',x:'ks',y:'yuh',z:'zuh'};
+/* picture words: the first one for each letter matches her school's sound chart (a apple, b bat, c cat ... z zebra) */
+const KW={a:['apple','🍎','ant','🐜'],b:['bat','🏏','ball','⚽'],c:['cat','🐱','cake','🍰'],d:['dog','🐶','duck','🦆'],e:['Ed','👦','egg','🥚'],f:['fun','🎉','fish','🐟'],g:['game','🎲','goat','🐐'],h:['hat','🎩','horse','🐴'],i:['itch','🐒','insect','🐞'],j:['jug','🫙','jet','✈️'],k:['kite','🪁','key','🔑'],l:['lamp','💡','lion','🦁'],m:['man','👨','moon','🌙'],n:['nut','🥜','nose','👃'],o:['octopus','🐙','ox','🐂'],p:['pan','🍳','pig','🐷'],q:['queen','👸','question','❓'],r:['rat','🐀','rainbow','🌈'],s:['snake','🐍','sun','☀️'],t:['top','🔝','tiger','🐯'],u:['up','⬆️','umbrella','☂️'],v:['van','🚐','violin','🎻'],w:['wind','🌬️','whale','🐋'],x:['fox','🦊','box','📦'],y:['yellow','🟡','yo-yo','🪀'],z:['zebra','🦓','zero','0️⃣']};
+/* letter name, its sound, its picture word: the phonics drill */
+const sayLetter=c=>{const l=c.toLowerCase();if(hasClip('en-'+l))return [['en-'+l,'clip']];return [(c===l?'Little ':'Big ')+NAME[l]+'.',KW[l][0]+'.',saySound(l)]};
+const saySound=l=>CLIPS[l]?[l,'clip']:(S.set.sounds&&SOUND[l]?NAME[l]+' says '+SOUND[l]+'.':null);
+
+/* ================= Thai ================= */
+const TH=[['ก','ไก่','🐔'],['ข','ไข่','🥚'],['ฃ','ขวด','🍾'],['ค','ควาย','🐃'],['ฅ','คน','🧑'],['ฆ','ระฆัง','🔔'],['ง','งู','🐍'],['จ','จาน','🍽️'],['ฉ','ฉิ่ง','🎶'],['ช','ช้าง','🐘'],['ซ','โซ่','⛓️'],['ฌ','เฌอ','🌳'],['ญ','หญิง','👧'],['ฎ','ชฎา','👑'],['ฏ','ปฏัก','🗡️'],['ฐ','ฐาน','🏛️'],['ฑ','มณโฑ','👸'],['ฒ','ผู้เฒ่า','👴'],['ณ','เณร','🧘'],['ด','เด็ก','🧒'],['ต','เต่า','🐢'],['ถ','ถุง','🛍️'],['ท','ทหาร','💂'],['ธ','ธง','🚩'],['น','หนู','🐭'],['บ','ใบไม้','🍃'],['ป','ปลา','🐟'],['ผ','ผึ้ง','🐝'],['ฝ','ฝา','🍲'],['พ','พาน','🏆'],['ฟ','ฟัน','🦷'],['ภ','สำเภา','🚢'],['ม','ม้า','🐴'],['ย','ยักษ์','👹'],['ร','เรือ','⛵'],['ล','ลิง','🐒'],['ว','แหวน','💍'],['ศ','ศาลา','🛖'],['ษ','ฤๅษี','🧙'],['ส','เสือ','🐯'],['ห','หีบ','🧰'],['ฬ','จุฬา','🪁'],['อ','อ่าง','🛁'],['ฮ','นกฮูก','🦉']];
+const THM={};TH.forEach(t=>THM[t[0]]=t);
+/* how to say each consonant's name clearly */
+const CSAY={'ฃ':'ขอ','ฅ':'คอ','ฆ':'คอ','ฌ':'ชอ','ญ':'ยอ','ฎ':'ดอ','ฏ':'ตอ','ฐ':'ถอ','ฑ':'ทอ','ฒ':'ทอ','ณ':'นอ','ธ':'ทอ','ภ':'พอ','ศ':'สอ','ษ':'สอ','ฬ':'ลอ'};
+const cname=c=>CSAY[c]||(c+'อ');
+const thName=c=>cname(c)+' '+THM[c][1];
+const thId=c=>'th-'+String(TH.findIndex(t=>t[0]===c)+1).padStart(2,'0');
+const thSay=c=>hasClip(thId(c))?[thId(c),'clip']:[thName(c),'th',.7];
+/* where the finger starts (the head of the letter), as a fraction of the letter's box */
+const DOT={'ก':[.08,.96],'ข':[.21,.32],'ฃ':[.2,.39],'ค':[.51,.49],'ฅ':[.52,.53],'ฆ':[.19,.39],'ง':[.68,.18],'จ':[.3,.54],'ฉ':[.22,.54],'ช':[.19,.35],'ซ':[.18,.41],'ฌ':[.17,.82],'ญ':[.22,.56],'ฎ':[.2,.54],'ฏ':[.2,.54],'ฐ':[.27,.38],'ฑ':[.17,.39],'ฒ':[.35,.48],'ณ':[.2,.82],'ด':[.51,.46],'ต':[.5,.49],'ถ':[.33,.82],'ท':[.18,.18],'ธ':[.08,.1],'น':[.18,.18],'บ':[.19,.18],'ป':[.19,.41],'ผ':[.25,.18],'ฝ':[.25,.41],'พ':[.17,.18],'ฟ':[.17,.41],'ภ':[.19,.82],'ม':[.2,.18],'ย':[.3,.16],'ร':[.6,.82],'ล':[.33,.82],'ว':[.71,.82],'ศ':[.49,.53],'ษ':[.15,.18],'ส':[.31,.83],'ห':[.19,.18],'ฬ':[.15,.27],'อ':[.36,.51],'ฮ':[.27,.54]};
+const VMK={'อา':c=>c+'า','อี':c=>c+'ี','อู':c=>c+'ู','อะ':c=>c+'ะ','อิ':c=>c+'ิ','อุ':c=>c+'ุ','เอ':c=>'เ'+c,'แอ':c=>'แ'+c,'โอ':c=>'โ'+c,'ออ':c=>c+'อ','ไอ':c=>'ไ'+c,'ใอ':c=>'ใ'+c,'เอา':c=>'เ'+c+'า','อำ':c=>c+'ำ','อึ':c=>c+'ึ','อือ':c=>c+'ือ','เออ':c=>'เ'+c+'อ','เอีย':c=>'เ'+c+'ีย','เอือ':c=>'เ'+c+'ือ','อัว':c=>c+'ัว'};
+/* example for each vowel: consonant, picture */
+const VEX={'อา':['ก','🐦'],'อี':['ด','👍'],'อู':['ป','🦀'],'อะ':['ก',''],'อิ':['ต',''],'อุ':['ด',''],'เอ':['ท',''],'แอ':['พ','🛶'],'โอ':['บ','🎀'],'ออ':['ค',''],'ไอ':['ป','🚶'],'ใอ':['บ','🍃'],'เอา':['ต','🍳'],'อำ':['ด','⚫'],'อึ':['ก',''],'อือ':['ม','✋'],'เออ':['จ','🤝'],'เอีย':['ล','👅'],'เอือ':['ร','⛵'],'อัว':['ว','🐮']};
+const vSay=v=>'สระ '+v+(v==='ไอ'?' ไม้มลาย':v==='ใอ'?' ไม้ม้วน':'');
+const WORDS={'กา':['ก','อา','🐦','crow'],'ตา':['ต','อา','👁️','eye'],'ขา':['ข','อา','🦵','leg'],'ยา':['ย','อา','💊','medicine'],'นา':['น','อา','🌾','rice field'],'ชา':['ช','อา','🍵','tea'],
+ 'ปู':['ป','อู','🦀','crab'],'งู':['ง','อู','🐍','snake'],'หู':['ห','อู','👂','ear'],'ดี':['ด','อี','👍','good'],'ผี':['ผ','อี','👻','ghost'],'สี':['ส','อี','🎨','color'],
+ 'ใบ':['บ','ใอ','🍃','leaf'],'ไฟ':['ฟ','ไอ','🔥','fire'],'ไป':['ป','ไอ','🚶','go'],'เตา':['ต','เอา','🍳','stove'],'เขา':['ข','เอา','⛰️','mountain'],'เรา':['ร','เอา','👨‍👩‍👧','we'],
+ 'โบ':['บ','โอ','🎀','bow'],'มือ':['ม','อือ','✋','hand'],'เรือ':['ร','เอือ','⛵','boat'],'เสือ':['ส','เอือ','🐯','tiger'],'วัว':['ว','อัว','🐮','cow'],'แพ':['พ','แอ','🛶','raft'],
+ 'ทะเล':[0,0,'🌊','sea'],'ตะปู':[0,0,'🔨','nail'],'กะทิ':[0,0,'🥥','coconut milk'],'มะลิ':[0,0,'🌼','jasmine'],'กาแฟ':[0,0,'☕','coffee'],'เวลา':[0,0,'⏰','time']};
+const CVC={cat:'🐱',hat:'🎩',bat:'🦇',map:'🗺️',van:'🚐',dog:'🐶',pot:'🍲',mop:'🧹',box:'📦',fox:'🦊',pig:'🐷',pin:'📌',six:'6️⃣',lip:'👄',kid:'🧒',sun:'☀️',bus:'🚌',cup:'🥤',bug:'🐛',nut:'🥜',bed:'🛏️',hen:'🐔',net:'🥅',pen:'🖊️',web:'🕸️',bag:'👜',log:'🪵',jet:'✈️',tub:'🛁',ten:'🔟',can:'🥫'};
+
+/* ================= what she has learned ================= */
+function rec(key,miss,ms,pen){if(!key)return;const it=S.items[key]||(S.items[key]={n:0,miss:0,ms:0});it.n++;it.miss+=miss;it.ms+=ms;it.lm=miss;it.lt=ms;it.last=Date.now();if(pen)it.pen=(it.pen||0)+1}
+const hardScore=k=>{const it=S.items[k];if(!it||!it.n)return 0;return (it.lm||0)*1.5+it.miss/it.n+(it.lt>45000?1:0)};
+const isHard=k=>hardScore(k)>=3;
+function weakest(keys,n){return keys.filter(k=>S.items[k]).sort((a,b)=>hardScore(b)-hardScore(a)||S.items[a].last-S.items[b].last).slice(0,n)}
+
+/* ================= the learning path: levels and rounds ================= */
+const CAP_R=['LTIH','FEDP','BRNM','KVWX','YZAU','COQG','SJ'],LOW_R=['coad','gqes','litu','jykf','rnmh','bpvw','xz'];
+const SND_R=['tbfn','miuc','oagd','serp','jlhk','vwyzqx'];   // same order as her class
+const CVC_R=[['cat','hat','bat','map','van'],['dog','pot','mop','box','fox'],['pig','pin','six','lip','kid'],['sun','bus','cup','bug','nut'],['bed','hen','net','pen','web'],['bag','log','jet','tub','ten','can']];
+const KK_R=['กงบป','ดตคอ','มนยร','ลสวจ','ขชซท','พฟผฝ','ถภหฮ','ศษธฉ','ฆฐณญ','ฌฑฒฬ','ฎฏฃฅ'];
+const SARA_R=[['อา','อี','อู'],['อะ','อิ','อุ'],['เอ','แอ','โอ','ออ'],['ไอ','ใอ','เอา','อำ'],['อึ','อือ','เออ','เอีย','เอือ','อัว']];
+const KAM_R=[['กา','ตา','ขา','ยา','นา','ชา'],['ปู','งู','หู','ดี','ผี','สี'],['ใบ','ไฟ','ไป','เตา','เขา','เรา'],['โบ','มือ','เรือ','เสือ','วัว','แพ'],['ทะเล','ตะปู','กะทิ','มะลิ','กาแฟ','เวลา']];
+const CONFUSE={c:'kqs',k:'cq',q:'ck',s:'cz',z:'s',g:'j',j:'g',e:'i',i:'e',u:'o',o:'u',x:'s'};
+const letterTile=l=>eng(l.toUpperCase()+l);
+
+function abcSteps(set,ri,all){const out=[];for(const c of set){out.push({type:'ten',ch:c,mode:1,key:'tr:'+c});out.push({type:'ten',ch:c,mode:2,key:'tr:'+c})}
+  weakest([...all.slice(0,ri).join('')].map(c=>'tr:'+c),set.length<4?2:1).forEach(k=>out.push({type:'ten',ch:k.slice(3),mode:2,key:k}));return out}
+function sndCard(l){const [w,e]=KW[l];const x=l==='x';return {type:'card',html:`<span style="color:var(--purple)">${letterTile(l)}</span><span>${e}</span>`,
+  say:hasClip('en-'+l)?[['en-'+l,'clip'],T('yousay')]:[NAME[l]+'.',w+'.',saySound(l),T('yousay')]}}
+function sndQuiz(l,pool,flip){const k=rnd(2)*2,w=KW[l][k],e=KW[l][k+1];const others=shuffle(pool.filter(o=>o!==l&&o!=='x'&&!(CONFUSE[l]||'').includes(o))).slice(0,2);
+  if(flip)return {type:'quiz',key:'snd:'+l,top:`<span style="color:var(--purple)">${letterTile(l)}</span>`,say:[NAME[l]+'.',saySound(l),'Which one starts with '+NAME[l]+'?'],
+    choices:shuffle([{html:e,ok:1},...others.map(o=>{const j=rnd(2)*2;return {html:KW[o][j+1],say:KW[o][j]}})]),after:[w+'!',NAME[l]+', '+w+'.']};
+  return {type:'quiz',key:'snd:'+l,top:`<span>${e}</span>`,say:[w+'.','What letter does '+w+' start with?'],
+    choices:shuffle([{html:letterTile(l),ok:1},...others.map(o=>({html:letterTile(o),say:NAME[o]}))]),after:[NAME[l]+'!',w+'.',saySound(l)]}}
+function sndSteps(set,ri){const pool=[...SND_R.slice(0,ri+1).join('')];const ls=[...set].filter(l=>l!=='x');const out=[...set].map(sndCard);
+  shuffle(ls).concat(shuffle(ls)).slice(0,6).forEach((l,i)=>out.push(sndQuiz(l,pool.length>3?pool:[...'tbfnmi'],i%2)));return out}
+function cvcSteps(words){const out=words.slice(0,5).map((w,i)=>({type:'build',word:w,key:'cvc:'+w,first:i===0}));
+  shuffle(words).slice(0,3).forEach(w=>{const o=shuffle(words.filter(x=>x!==w)).slice(0,2);
+    out.push({type:'quiz',key:'cvc:'+w,top:`<span style="color:var(--purple)">${eng(w)}</span>`,say:[T('readpick')],help:[[w,'en',.45],w],
+      choices:shuffle([{html:CVC[w],ok:1},...o.map(x=>({html:CVC[x],say:x}))]),after:[w+'!']})});return out}
+function kkSteps(set,ri){const out=[...set].map(c=>({type:'tth',text:c,key:'th:'+c}));
+  weakest([...KK_R.slice(0,ri).join('')].map(c=>'th:'+c),1).forEach(k=>out.push({type:'tth',text:k.slice(3),key:k}));return out}
+const EASYC=[...'กตปมดนรลบจ'];
+function saraCard(v){const [c,e]=VEX[v],s=VMK[v](c);return {type:'card',html:`<div><div class="th" style="color:var(--pink)">${v}</div><div class="th sm">${c} + ${v} = <span style="color:var(--purple)">${s}</span> ${e}</div></div>`,
+  say:[T('thisis'),[vSay(v),'th'],[cname(c)+' '+v+' '+s,'th',.7],['พูดตามเลยค่ะ','th']]}}
+function saraQuiz(v,set,blend){const others=shuffle(set.filter(o=>o!==v)).slice(0,2);
+  if(!blend)return {type:'quiz',key:'sv:'+v,top:'<span>👂</span>',say:[T('which'),[vSay(v),'th']],wide:1,
+    choices:shuffle([{html:`<span class="th">${v}</span>`,ok:1},...others.map(o=>({html:`<span class="th">${o}</span>`,say:[vSay(o),'th']}))]),after:[[vSay(v),'th']]};
+  const c=pick(EASYC),s=VMK[v](c);return {type:'quiz',key:'sv:'+v,top:`<span class="th">${c} + <span style="color:var(--pink)">${v}</span></span>`,say:[[cname(c)+' '+v,'th',.7],T('blend')],wide:1,
+    choices:shuffle([{html:`<span class="th">${s}</span>`,ok:1},...others.map(o=>({html:`<span class="th">${VMK[o](c)}</span>`,say:[VMK[o](c),'th']}))]),after:[[cname(c)+' '+v+' '+s,'th',.7]]}}
+function saraSteps(set){const out=set.map(saraCard);shuffle(set).concat(shuffle(set)).slice(0,6).forEach((v,i)=>out.push(saraQuiz(v,set,i%2)));return out}
+function kamSteps(words){const out=[],sh=shuffle(words);const wd=w=>`<span class="th">${w}</span>`;
+  sh.filter(w=>WORDS[w][0]).slice(0,3).forEach(w=>{const [c,v]=WORDS[w];const vs=shuffle(Object.keys(VMK).filter(o=>o!==v&&VMK[o](c)!==w)).slice(0,2);
+    out.push({type:'quiz',key:'tw:'+w,top:`<span class="th">${c} + <span style="color:var(--pink)">${v}</span></span>`,say:[[cname(c)+' '+v,'th',.7],T('blend')],wide:1,
+      choices:shuffle([{html:wd(w),ok:1},...vs.map(o=>({html:wd(VMK[o](c)),say:[VMK[o](c),'th']}))]),after:[[cname(c)+' '+v+' '+w,'th',.7],WORDS[w][3]]})});
+  shuffle(words).slice(0,3).forEach(w=>{const o=shuffle(words.filter(x=>x!==w)).slice(0,2);
+    out.push({type:'quiz',key:'tw:'+w,top:`<span class="th" style="color:var(--purple)">${w}</span>`,say:[T('readpick')],help:[[w,'th',.7]],
+      choices:shuffle([{html:WORDS[w][2],ok:1},...o.map(x=>({html:WORDS[x][2],say:[x,'th']}))]),after:[[w,'th'],WORDS[w][3]]})});
+  shuffle(words).slice(0,out.length<6?3:2).forEach(w=>{const o=shuffle(words.filter(x=>x!==w)).slice(0,2);
+    out.push({type:'quiz',key:'tw:'+w,top:`<span>👂</span><span>${WORDS[w][2]}</span>`,say:[T('hearpick'),[w,'th',.75]],wide:1,
+      choices:shuffle([{html:wd(w),ok:1},...o.map(x=>({html:wd(x),say:[x,'th']}))]),after:[[w,'th'],WORDS[w][3]]})});
+  const tw=pick(words);out.push({type:'tth',text:tw,key:'tw:'+tw,word:1});return out}
+
+/* ---- listen and do: following spoken directions, in order ---- */
+const OBJ=[['cat','🐱'],['dog','🐶'],['fish','🐟'],['bird','🐦'],['sun','☀️'],['moon','🌙'],['star','⭐'],['apple','🍎'],['ball','⚽'],['car','🚗'],['tree','🌳'],['flower','🌸'],['hat','🎩'],['cake','🍰'],['frog','🐸'],['key','🔑']];
+const THOBJ=[['แมว','🐱'],['หมา','🐶'],['ปลา','🐟'],['นก','🐦'],['ไก่','🐔'],['งู','🐍'],['ช้าง','🐘'],['ม้า','🐴'],['เสือ','🐯'],['ลิง','🐒'],['หมู','🐷'],['เต่า','🐢'],['ปู','🦀'],['ดอกไม้','🌸'],['ดาว','⭐'],['ลูกบอล','⚽']];
+const COLS={red:'#ff5a6e',blue:'#4d9bff',yellow:'#ffc928',green:'#44c76f'};
+const SHP={circle:'<circle cx="50" cy="50" r="42"/>',square:'<rect x="10" y="10" width="80" height="80" rx="12"/>',star:'<path d="M50 4l13.5 29.6 32.5 3.6-24.2 21.8 6.8 31.8L50 74.6 21.4 90.8l6.8-31.8L4 37.2l32.5-3.6z"/>',heart:'<path d="M50 90C10 60 4 38 16 22c10-13 28-10 34 4 6-14 24-17 34-4 12 16 6 38-34 68z"/>'};
+const shape=(c,sh)=>`<svg class="shp" viewBox="0 0 100 100" fill="${COLS[c]}">${SHP[sh]}</svg>`;
+const NUMW=['','one','two','three'];
+function lisItem(kind,i){const P=shuffle(OBJ).slice(0,6),B=P.map(o=>({id:o[0],html:o[1]})),[a,b,c]=P.map(o=>o[0]);const K='lis:'+kind;
+  if(kind==='one')return {type:'follow',key:K,board:B,seq:[a],say:['Tap the '+a+'.']};
+  if(kind==='two')return {type:'follow',key:K,board:B,seq:[a,b],say:['First, tap the '+a+'.','Then, tap the '+b+'.']};
+  if(kind==='three')return {type:'follow',key:K,board:B,seq:[a,b,c],say:['Tap the '+a+',','then the '+b+',','and then the '+c+'.']};
+  if(kind==='color'){const cs=Object.keys(COLS),ss=Object.keys(SHP);const t1=[pick(cs),pick(ss)];const all=[t1,[cs[(cs.indexOf(t1[0])+1)%4],t1[1]],[t1[0],ss[(ss.indexOf(t1[1])+1)%4]]];
+    while(all.length<6){const n=[pick(cs),pick(ss)];if(!all.some(x=>x[0]===n[0]&&x[1]===n[1]))all.push(n)}
+    const bd=shuffle(all).map(x=>({id:x.join(' '),html:shape(x[0],x[1])}));const t2=all[3+rnd(3)];
+    return i<2?{type:'follow',key:K,board:bd,seq:[t1.join(' ')],say:['Tap the '+t1.join(' ')+'.']}:{type:'follow',key:K,board:bd,seq:[t1.join(' '),t2.join(' ')],say:['Tap the '+t1.join(' ')+'.','Then tap the '+t2.join(' ')+'.']}}
+  if(kind==='tricky'){const v=i%4;if(v===0){const n=2+rnd(2);return {type:'follow',key:K,board:B,seq:Array(n).fill(a),say:['Tap the '+a+' '+NUMW[n]+' times.']}}
+    if(v===1)return {type:'follow',key:K,board:B,seq:[b,a],say:['Before you tap the '+a+', tap the '+b+'.']};
+    if(v===2)return {type:'follow',key:K,board:B,seq:[b,a],say:['Tap the '+a+' last. First, tap the '+b+'.']};
+    return {type:'follow',key:K,board:B,seq:[b,a],say:['Tap the '+a+' after you tap the '+b+'.']}}
+  if(kind==='letters'){const ls=shuffle([...'abdefghmnrst']).slice(0,3);const tiles=shuffle([ls[0].toUpperCase(),ls[0],ls[1].toUpperCase(),ls[1],ls[2].toUpperCase(),ls[2]]);const bd=tiles.map(t=>({id:t,html:eng(t,1)}));
+    const nm=t=>(t===t.toLowerCase()?'little ':'big ')+NAME[t.toLowerCase()];const q=shuffle(tiles).slice(0,i<3?2:3);
+    return {type:'follow',key:K,board:bd,seq:q,say:q.map((t,j)=>(j?'Then tap ':'Tap ')+nm(t)+'.')}}
+  const TP=shuffle(THOBJ).slice(0,6),TB=TP.map(o=>({id:o[0],html:o[1]})),[ta,tb,tc]=TP.map(o=>o[0]);
+  if(kind==='th1')return i<2?{type:'follow',key:K,board:TB,seq:[ta],say:[['แตะรูป '+ta,'th']]}:{type:'follow',key:K,board:TB,seq:[ta,tb],say:[['แตะรูป '+ta+' ก่อน','th'],['แล้วแตะรูป '+tb,'th']]};
+  if(i<3)return {type:'follow',key:K,board:TB,seq:[ta,tb,tc],say:[['แตะรูป '+ta,'th'],['แล้วแตะรูป '+tb,'th'],['แล้วแตะรูป '+tc,'th']]};
+  const cs=shuffle([...'กงบปดตคอมนยร']).slice(0,6),[ca,cb]=cs;return {type:'follow',key:K,board:cs.map(x=>({id:x,html:`<span class="th">${x}</span>`})),seq:[ca,cb],say:[['แตะ '+thName(ca),'th'],['แล้วแตะ '+thName(cb),'th']]}}
+const LIS_R=[['one','1 step'],['two','2 steps'],['color','colors'],['three','3 steps'],['tricky','tricky'],['letters','A a'],['th1','ไทย 1'],['th2','ไทย 2']];
+const lisSteps=kind=>[0,1,2,3,4].map(i=>lisItem(kind,i));
+
+/* ---- writing a whole word, one letter after another (her name, cafe orders) ---- */
+const latin=w=>[...String(w||'')].filter(c=>/[A-Za-z]/.test(c));
+function wordSteps(word,intro){const ls=latin(word);return ls.map((c,i)=>({type:'ten',ch:c,mode:S.items['tr:'+c]?2:1,key:'tr:'+c,word:ls,at:i,intro:i===0?intro:null}))}
+function nameRounds(){const out=[];if(!KID)return out;[KID.nick,KID.first,KID.last].forEach(w=>{const ls=latin(w);if(!ls.length)return;const n=Math.ceil(ls.length/7),size=Math.ceil(ls.length/n);
+    for(let i=0;i<ls.length;i+=size){const part=ls.slice(i,i+size);out.push({label:part.join(''),keys:[...new Set(part.map(c=>'tr:'+c))],steps:()=>part.map((c,j)=>({type:'ten',ch:c,mode:S.items['tr:'+c]?2:1,key:'tr:'+c,word:ls,at:i+j,intro:j===0?[T('yourname'),ls.join('')+'.']:null}))})}});return out}
+
+/* ---- the cafe: take the order (listen), then write it on the order pad ---- */
+const FOOD={egg:'🥚',pie:'🥧',milk:'🥛',rice:'🍚',soup:'🍲',cake:'🍰',pizza:'🍕',apple:'🍎',bread:'🍞',salad:'🥗',pancake:'🥞',cookie:'🍪',taco:'🌮',broccoli:'🥦',juice:'🧃',banana:'🍌',corn:'🌽',cheese:'🧀'};
+const THFOOD={'ไข่':'🥚','นม':'🥛','ปลา':'🐟','ไก่':'🍗','ข้าว':'🍚','ส้ม':'🍊','กล้วย':'🍌','ผัดไทย':'🍜','ต้มยำ':'🍲','น้ำ':'💧','ขนม':'🍪','แกง':'🍛'};
+const GUESTS=[...'🐻🐰🐱🐶🦊🐼🐸🐵🐨🐯'];
+const CAFE_R=[['egg','pie'],['milk','rice'],['soup','cake'],['pizza','apple'],['bread','salad'],['pancake'],['cookie','taco'],['broccoli']];
+const CAFE_TH=[['ไข่','นม'],['ปลา','ไก่'],['ข้าว','ส้ม'],['ผัดไทย'],['ต้มยำ','กล้วย']];
+function cafeSteps(words,ri){const out=[];words.forEach(w=>{const g=pick(GUESTS),two=ri>=2;const others=shuffle(Object.keys(FOOD).filter(f=>f!==w)).slice(0,5);const side=others[0];
+    const bd=shuffle([w,...others]).map(f=>({id:f,html:FOOD[f]}));
+    out.push({type:'follow',key:'cafe:order',guest:g,board:bd,seq:two?[w,side]:[w],say:two?['Hello! I would like '+w+', please.','And then '+side+'.']:['Hello! I would like '+w+', please.']});
+    wordSteps(w,[T('orderpad'),w+'.']).forEach((s,i,a)=>out.push(Object.assign(s,{food:FOOD[w]},i===a.length-1?{also:'cw:'+w}:{})));
+    out.push({type:'card',html:`<span>${g}</span><span>${FOOD[w]}</span><span>💖</span>`,say:[T('yummy')]})});return out}
+function cafeThSteps(words,ri){const out=[];words.forEach(w=>{const g=pick(GUESTS),two=ri>=1;const others=shuffle(Object.keys(THFOOD).filter(f=>f!==w)).slice(0,5);const side=others[0];
+    const bd=shuffle([w,...others]).map(f=>({id:f,html:THFOOD[f]}));
+    out.push({type:'follow',key:'cafe:th',guest:g,board:bd,seq:two?[w,side]:[w],say:two?[['สวัสดีค่ะ ขอ '+w+' ค่ะ','th'],['แล้วก็ขอ '+side+' ด้วยค่ะ','th']]:[['สวัสดีค่ะ ขอ '+w+' ค่ะ','th']]});
+    out.push({type:'tth',text:w,key:'cf:'+w,word:1,food:[THFOOD[w],w]});
+    out.push({type:'card',html:`<span>${g}</span><span>${THFOOD[w]}</span><span>💖</span>`,say:[['อร่อยจัง ขอบคุณค่ะ','th']]})});return out}
+
+const LEVELS=[
+ {id:'abc',c:0,icon:'A B C',name:'Write ABC',say:'A B C. Write the letters!',th:0,
+  rounds:[...CAP_R,...LOW_R].map((s,i,all)=>({label:[...s].join(' '),keys:[...s].map(c=>'tr:'+c),steps:()=>abcSteps(s,i,all)})),chip:k=>eng(k.slice(3)),tap:k=>sayLetter(k.slice(3))},
+ {id:'snd',c:1,icon:'🔊 cat',name:'Sounds and words',say:'Sounds and words!',needs:['abc',3],
+  rounds:[...SND_R.map((s,i)=>({label:[...s].join(' '),keys:[...s].map(c=>'snd:'+c),steps:()=>sndSteps(s,i)})),...CVC_R.map(w=>({label:w[0]+' '+w[1],keys:w.map(x=>'cvc:'+x),steps:()=>cvcSteps(w)}))],
+  chip:k=>k[0]==='s'?eng(k.slice(4)):eng(k.slice(4)),tap:k=>k[0]==='s'?[NAME[k.slice(4)]+'.',saySound(k.slice(4)),KW[k.slice(4)][0]+'.']:[[k.slice(4),'en',.5],k.slice(4)]},
+ {id:'kk',c:2,icon:'<span class="th">ก ข ค</span>',name:'<span class="th">เขียน ก ไก่</span>',say:[['กอ ไก่ ขอ ไข่','th'],'Write the Thai letters!'],th:1,
+  rounds:KK_R.map((s,i)=>({label:[...s].join(' '),keys:[...s].map(c=>'th:'+c),steps:()=>kkSteps(s,i)})),chip:k=>k.slice(3),tap:k=>[thSay(k.slice(3))],order:TH.map(t=>'th:'+t[0])},
+ {id:'sara',c:3,icon:'<span class="th">อา อี อู</span>',name:'<span class="th">สระ</span>',say:[['สระ','th'],'Thai vowels!'],th:1,needs:['kk',3],
+  rounds:SARA_R.map(s=>({label:s.slice(0,3).join(' '),keys:s.map(v=>'sv:'+v),steps:()=>saraSteps(s)})),chip:k=>k.slice(3),tap:k=>[[vSay(k.slice(3)),'th']]},
+ {id:'kam',c:4,icon:'<span class="th">กา ปู</span> 🦀',name:'<span class="th">อ่านคำ</span>',say:[['อ่านคำ','th'],'Read Thai words!'],th:1,needs:['sara',2],
+  rounds:KAM_R.map(w=>({label:w.slice(0,2).join(' '),keys:w.map(x=>'tw:'+x),steps:()=>kamSteps(w)})),chip:k=>k.slice(3),tap:k=>[[k.slice(3),'th'],WORDS[k.slice(3)][3]]}
+ ,{id:'name',c:5,icon:'✍️',name:'My name',say:"Let's write your name!",rounds:[],chip:k=>eng(k.slice(3),1),tap:k=>sayLetter(k.slice(3))}
+ ,{id:'lis',c:7,icon:'👂 ⭐',name:'Listen and do',say:'Listen, then do what I say!',
+  rounds:LIS_R.slice(0,6).map(r=>({label:r[1],keys:['lis:'+r[0]],steps:()=>lisSteps(r[0])})),chip:k=>esc((LIS_R.find(r=>r[0]===k.slice(4))||[])[1]||k),tap:k=>['Listening game.']}
+ ,{id:'listh',c:7,icon:'👂 ⭐',name:'<span class="th">ฟังแล้วทำตาม</span>',say:[['ฟังแล้วทำตาม','th'],'Listen, then do what I say!'],th:1,
+  rounds:LIS_R.slice(6).map(r=>({label:r[1],keys:['lis:'+r[0]],steps:()=>lisSteps(r[0])})),chip:k=>esc((LIS_R.find(r=>r[0]===k.slice(4))||[])[1]||k),tap:k=>[['ฟังแล้วทำตาม','th']]}
+ ,{id:'cafe',c:8,icon:'🍳 🥞',name:'Café',say:'Welcome to your café! Take the order, then write it down.',
+  rounds:CAFE_R.map((w,i)=>({label:w.join(' '),keys:['cafe:order',...w.map(x=>'cw:'+x)],steps:()=>cafeSteps(w,i)})),
+  chip:k=>k==='cafe:order'?'🍳':eng(k.slice(3),1),tap:k=>k==='cafe:order'?['Café orders.']:[k.slice(3)]}
+ ,{id:'cafeth',c:8,icon:'🍳 🍜',name:'<span class="th">ร้านอาหาร</span>',say:[['ร้านอาหาร','th'],'Take the order, then write it down.'],th:1,
+  rounds:CAFE_TH.map((w,i)=>({label:w.join(' '),keys:['cafe:th',...w.map(x=>'cf:'+x)],steps:()=>cafeThSteps(w,i)})),
+  chip:k=>k==='cafe:th'?'🍳':esc(k.slice(3)),tap:k=>k==='cafe:th'?[['ร้านอาหาร','th']]:[[k.slice(3),'th']]}];
+const LV={};LEVELS.forEach(l=>LV[l.id]=l);
+function kidChanged(){LV.name.rounds=nameRounds();LV.name.name=esc(nick())+"'s name";LV.cafe.name=esc(nick())+"'s Café";LV.cafeth.name='<span class="th">ร้านของ</span> '+esc(nick());document.title=nick()+"'s Letters";
+  const m=document.querySelector('meta[name="apple-mobile-web-app-title"]');if(m)m.content=nick()+"'s Letters"}
+const roundsDone=l=>l.rounds.filter((r,i)=>S.rounds[l.id+':'+i]).length;
+const levelOpen=l=>S.set.unlock||!l.needs||roundsDone(LV[l.needs[0]])>=l.needs[1];
+const roundOpen=(l,i)=>S.set.unlock||i===0||!!S.rounds[l.id+':'+(i-1)];
+const STICKERS=[...'🦄🌈⭐🎂🧁🍭🍓🍉🐱🐶🐰🐼🦋🐞🐢🐬🦊🐥🌸🌻🍦🎈🎀👑💎🚀🌙🍩🍪🐘🐯🐵🦉🐠🐙🍍🥭🍜🛺🐳🦕🪁🧸🎠💖🌟🎁🐧'];
+
+/* ================= moving backgrounds =================
+   A different one each time the app opens. English and Thai have their own. Better ones open as she finishes more games. */
+const BGS={en:[
+ {need:0,css:'linear-gradient(160deg,#bfe9ff,#ffe3f4 55%,#fff6c9)',items:[['☁️','drift',5,[4,40]],['🎈','rise',3],['🦋','flit',3,[20,70]],['🌈','still',1,[6,10]]]},
+ {need:0,css:'linear-gradient(#c9f0ff,#eaffdc 60%,#b9ecab)',items:[['🌷','sway',5,[80,90]],['🌻','sway',4,[78,90]],['🦋','flit',4,[20,70]],['🐝','flit',2,[30,60]],['☁️','drift',3,[4,22]]]},
+ {need:4,css:'linear-gradient(#aee8ff,#69c0f2 60%,#3f95da)',items:[['🐠','drift',3,[20,75]],['🐟','driftb',3,[25,80]],['🐢','drift',1,[55,75]],['🫧','rise',8],['🪸','sway',4,[82,90]],['🐙','bob',1,[70,80]]]},
+ {need:10,dark:1,css:'linear-gradient(#2a1a6b,#5b3cc4 70%,#8f6bff)',items:[['⭐','tw',14,[3,90]],['🚀','drift',1,[20,40]],['🪐','bob',1,[12,20]],['🌙','bob',1,[8,14]],['🛸','driftb',1,[50,70]]]},
+ {need:20,css:'linear-gradient(#ffc9e6,#ffe7b8 60%,#c9f0c0)',items:[['🏰','still',1,[52,56]],['🦄','drift',1,[30,50]],['✨','tw',10,[5,85]],['☁️','drift',3,[4,24]],['🎠','still',1,[66,70]]]}],
+ th:[
+ {need:0,css:'linear-gradient(#ffe9c7,#ffd6e4 55%,#a6e3d4)',items:[['🪷','bob',6,[78,90]],['🐸','bob',2,[80,88]],['🦋','flit',3,[20,60]],['☁️','drift',3,[4,22]],['🛕','still',1,[50,54]]]},
+ {need:0,css:'linear-gradient(#c9f0ff,#fff3c9 60%,#bdeeae)',items:[['🐘','drift',3,[62,80]],['🌴','sway',5,[60,74]],['🐒','bob',2,[30,50]],['☀️','still',1,[5,9]],['🦜','flit',2,[15,40]]]},
+ {need:4,css:'linear-gradient(#ffe7b8,#c4f0e2 55%,#74cbc4)',items:[['🛶','drift',3,[60,82]],['🥭','bob',3,[20,50]],['🍍','bob',2,[25,55]],['🥥','bob',2,[30,60]],['🐟','driftb',2,[78,90]],['🛺','drift',1,[86,88]]]},
+ {need:10,dark:1,css:'linear-gradient(#1c1447,#4a2f8f 60%,#c96aa8)',items:[['🏮','rise',9],['⭐','tw',12,[3,60]],['🌕','still',1,[6,10]],['🛕','still',1,[54,58]]]}]};
+const BGNOW={};
+function setBg(){const sec=S.sec==='th'?'th':'en',done=Object.keys(S.rounds).length;
+  if(!BGNOW[sec]){const ok=BGS[sec].filter(b=>done>=b.need);let pool=ok.filter(b=>BGS[sec].indexOf(b)!==(S.bgLast||{})[sec]);if(!pool.length)pool=ok;
+    const best=pool.filter(b=>b.need===Math.max(...pool.map(x=>x.need)));const pickd=Math.random()<.5?pick(best):pick(pool);BGNOW[sec]=pickd;S.bgLast=Object.assign({},S.bgLast,{[sec]:BGS[sec].indexOf(pickd)});save()}
+  const b=BGNOW[sec],el=$('#bg');if(el.dataset.k===sec+BGS[sec].indexOf(b))return;el.dataset.k=sec+BGS[sec].indexOf(b);el.innerHTML='';el.style.background=b.css;document.body.classList.toggle('dark',!!b.dark);
+  b.items.forEach(([e,kind,n,band])=>{for(let i=0;i<n;i++){const s=h('i',{},e);const y0=band?band[0]:0,y1=band?band[1]:90;
+    s.style.top=(kind==='rise'?100:y0+Math.random()*(y1-y0))+'vh';s.style.left=(kind==='drift'||kind==='driftb'?0:4+Math.random()*90)+'vw';s.style.fontSize=(kind==='tw'?14+rnd(18):kind==='still'&&'🏰🛕'.includes(e)?150:36+rnd(40))+'px';s.style.opacity=kind==='tw'?.9:.85;
+    const dur={drift:28+rnd(30),driftb:30+rnd(30),rise:14+rnd(14),bob:4+rnd(4),sway:3+rnd(3),flit:9+rnd(8),tw:1.5+Math.random()*2}[kind];
+    if(dur)s.style.animation={drift:'bgdrift',driftb:'bgdriftb',rise:'bgrise',bob:'bgbob',sway:'bgsway',flit:'bgflit',tw:'twinkle'}[kind]+' '+dur+'s '+(kind==='drift'||kind==='driftb'||kind==='rise'?'linear':'ease-in-out')+' -'+rnd(Math.ceil(dur))+'s infinite';
+    if(kind==='sway')s.style.transformOrigin='50% 100%';el.append(s)}})}
+
+/* ================= friend codes =================
+   On the web address, a new iPad needs a scan code. Each code is made on the owner's device, is different every time,
+   and stops opening the app on new iPads after its last day. Codes are signed, so nobody else can make them. */
+const PUB={x:'TtA4i26B_TlvpkpTsUz2dSKE2ypPPFOO22pEwD2yGe0',y:'VO5cWUwFnxBcGnOMR-08dCSBhsdhJ08_e2WrnQzr5Dw'},PASSKEY='sky-letters-pass',OWNKEY='sky-letters-owner',CODEKEY='sky-letters-codes';
+const b64u=buf=>btoa(String.fromCharCode(...new Uint8Array(buf))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
+const unb64u=t=>Uint8Array.from(atob(t.replace(/-/g,'+').replace(/_/g,'/')),c=>c.charCodeAt(0));
+const EC={name:'ECDSA',namedCurve:'P-256'},SG={name:'ECDSA',hash:'SHA-256'},enc=t=>new TextEncoder().encode(t),today0=()=>Math.floor(Date.now()/864e5);
+const gateOn=()=>location.protocol==='https:'||/[?&]gate=1/.test(location.search);
+const pubKey=()=>crypto.subtle.importKey('jwk',{kty:'EC',crv:'P-256',x:PUB.x,y:PUB.y,ext:true},EC,false,['verify']);
+const privKey=d=>crypto.subtle.importKey('jwk',{kty:'EC',crv:'P-256',x:PUB.x,y:PUB.y,d,ext:true},EC,false,['sign']);
+async function isOwnerKey(d){try{const sig=await crypto.subtle.sign(SG,await privKey(d),enc('owner'));return await crypto.subtle.verify(SG,await pubKey(),sig,enc('owner'))}catch(_){return false}}
+async function checkCode(code){const m=/^(\d+)\.([a-z0-9]+)\.([A-Za-z0-9_-]+)$/.exec(code||'');if(!m)return 'bad';
+  try{if(!await crypto.subtle.verify(SG,await pubKey(),unb64u(m[3]),enc(m[1]+'.'+m[2])))return 'bad'}catch(_){return 'bad'}
+  return +m[1]>=today0()?'ok':'old'}
+async function makeCode(days){const msg=(today0()+days)+'.'+Math.random().toString(36).slice(2,8);
+  return msg+'.'+b64u(await crypto.subtle.sign(SG,await privKey(localStorage.getItem(OWNKEY)),enc(msg)))}
+const isOwner=()=>{try{return !!localStorage.getItem(OWNKEY)}catch(_){return false}};
+async function gate(){if(!gateOn())return 'ok';const q=new URLSearchParams(location.search);
+  try{const own=q.get('owner');if(own&&await isOwnerKey(own)){localStorage.setItem(OWNKEY,own);localStorage.setItem(PASSKEY,'owner');history.replaceState(null,'',location.pathname+(q.get('gate')?'?gate=1':''))}
+    if(localStorage.getItem(PASSKEY))return 'ok';
+    const k=q.get('k');if(k){const r=await checkCode(k);if(r==='ok')localStorage.setItem(PASSKEY,'friend');return r}}catch(_){return 'bad'}
+  return 'none'}
+function locked(why){show('locked');putMali('#lockmali');$('#locktitle').textContent=why==='old'?'This scan code has ended':'This app needs a scan code';
+  $('#locktext').textContent=why==='old'?"Please ask Sky's family for a new code. Each code only works for a few days.":"Please ask Sky's family for a scan code, then scan it with this iPad's camera."}
+
+/* ================= screens ================= */
+let scr='welcome';
+function show(id){document.querySelectorAll('.scr').forEach(s=>s.classList.toggle('on',s.id===id));scr=id}
+
+/* ---- welcome: from Dad and Mom ---- */
+function setup(){show('setup');putMali('#setmali');if(KID){$('#in-nick').value=KID.nick;$('#in-first').value=KID.first||'';$('#in-last').value=KID.last||''}
+  $('#setform').onsubmit=e=>{e.preventDefault();const cap=v=>v.trim().replace(/\s+/g,' ');const n=cap($('#in-nick').value);if(!n){$('#in-nick').focus();return}
+    KID={nick:n,first:cap($('#in-first').value),last:cap($('#in-last').value)};try{localStorage.setItem(NKEY,JSON.stringify(KID))}catch(_){}
+    document.activeElement&&document.activeElement.blur();kidChanged();beep([523,659,784]);welcome()}}
+function welcome(){show('welcome');const w=$('#welcome');
+  w.innerHTML=`<svg class="art" viewBox="0 0 800 600" preserveAspectRatio="xMidYMid slice">
+  <circle cx="690" cy="90" r="52" fill="#ffe27a"/><g stroke="#ffe27a" stroke-width="8" stroke-linecap="round"><path d="M690 14v-12M690 178v-12M614 90h-12M778 90h-12M636 36l-9-9M753 153l-9-9M636 144l-9 9M753 27l-9 9"/></g>
+  <g fill="none" stroke-width="26"><path d="M90 470a310 310 0 0 1 620 0" stroke="#ff7eb6"/><path d="M116 470a284 284 0 0 1 568 0" stroke="#ffb35c"/><path d="M142 470a258 258 0 0 1 516 0" stroke="#ffe27a"/><path d="M168 470a232 232 0 0 1 464 0" stroke="#7fe0a8"/><path d="M194 470a206 206 0 0 1 412 0" stroke="#7cc4ff"/><path d="M220 470a180 180 0 0 1 360 0" stroke="#b79bff"/></g>
+  <g fill="#fff"><circle cx="80" cy="470" r="46"/><circle cx="130" cy="452" r="58"/><circle cx="186" cy="474" r="42"/><circle cx="614" cy="474" r="42"/><circle cx="668" cy="452" r="58"/><circle cx="722" cy="470" r="46"/>
+   <circle cx="150" cy="110" r="26"/><circle cx="184" cy="100" r="34"/><circle cx="222" cy="112" r="24"/><rect x="140" y="110" width="92" height="26" rx="13"/></g>
+  <path d="M0 600V500q200-50 400-30t400-10V600z" fill="#9be7a0"/><path d="M0 600V540q220-40 420-20t380-10V600z" fill="#7dd88a"/>
+  <g fill="#ff7eb6"><path d="M250 250c-14-20-44-4-30 20l30 28 30-28c14-24-16-40-30-20z"/><path d="M560 230c-10-14-32-3-22 14l22 20 22-20c10-17-12-28-22-14z"/></g>
+  <g fill="#ffd447"><path id="st" d="M0-16l4.7 10.4 11.3 1.2-8.4 7.6 2.4 11.2L0 8.6l-10 5.8 2.4-11.2-8.4-7.6 11.3-1.2z" transform="translate(330 150)"/><use href="#st" x="150" y="-40"/><use href="#st" x="-250" y="130"/><use href="#st" x="330" y="170"/></g>
+  </svg>
+  <div style="position:absolute;left:50%;top:44%;transform:translate(-50%,-50%);height:min(46vh,60vw)" id="wmali"></div>
+  <div class="card"><div class="title" id="wtitle"></div><div class="from" id="wfrom"></div>
+  <button class="btn pink pulse" id="wgo" style="font-size:48px;width:170px;height:100px;margin-top:1vh">▶️</button></div>`;
+  putMali('#wmali');
+  const cols=['#ff6fb5','#ff9e57','#f2b600','#39c58f','#58a6ff','#9b6bff'];
+  $('#wtitle').innerHTML=[...(nick()+"'s Letters")].map((c,i)=>c===' '?' ':`<span style="color:${cols[i%6]}">${esc(c)}</span>`).join('');
+  $('#wfrom').textContent=isSky()?'From Dad and Mom, to Sky 💖':'For '+nick()+', from your friend Sky 💖';
+  w.onclick=()=>{w.onclick=null;beep([523,659,784]);
+    if(isSky()&&!S.bday){say(['From Dad and Mom, to Sky. With love.']);birthday()}
+    else{home(true)}}}
+
+/* ---- happy birthday surprise (first time only) ---- */
+function birthday(){const b=$('#bday');b.classList.remove('open');show('bday');
+  b.querySelectorAll('.star,.balloon').forEach(e=>e.remove());
+  for(let i=0;i<26;i++){const s=h('div',{class:'star'},'✦');s.style.left=rnd(100)+'%';s.style.top=rnd(100)+'%';s.style.fontSize=(10+rnd(22))+'px';s.style.animationDelay=(Math.random()*2)+'s';b.append(s)}
+  const d=new Date(),bd=new Date(d.getFullYear(),10,20);const age=Math.max(5,d.getFullYear()-2021-(d<bd?1:0));
+  $('#hbtext').innerHTML=[...'Happy Birthday'].map((c,i)=>c===' '?'<br>':`<span style="animation-delay:${i*.08}s;color:${['#ff9ecf','#ffd86b','#8ee6c4','#8fd3ff','#c9b6ff'][i%5]}">${c}</span>`).join('')+`<br><span class="name">Sky!</span>`;
+  let cs='';for(let i=0;i<age;i++){const x=150-(age-1)*17+i*34;cs+=`<rect x="${x-5}" y="52" width="10" height="46" rx="4" fill="${['#ff7eb6','#7cc4ff','#ffd447','#7fe0a8','#b79bff'][i%5]}"/><path class="flame" data-f="1" d="M${x} 18q14 18 0 32q-14-14 0-32z" fill="#ffb300" stroke="#ff7a00" stroke-width="2"/><circle class="hit" cx="${x}" cy="40" r="20" fill="transparent"/>`}
+  $('#cakebox').innerHTML=`<svg id="cake" viewBox="0 0 300 260">${cs}<rect x="50" y="96" width="200" height="70" rx="18" fill="#ffd9ec"/><path d="M50 118q25 26 50 0t50 0t50 0t50 0v-8a14 14 0 0 0-14-14H64a14 14 0 0 0-14 14z" fill="#fff"/><rect x="24" y="160" width="252" height="76" rx="20" fill="#c9b6ff"/><path d="M24 186q21 26 42 0t42 0t42 0t42 0t42 0t42 0v-10a16 16 0 0 0-16-16H40a16 16 0 0 0-16 16z" fill="#fff3a6"/><g fill="#ff6fb5"><circle cx="70" cy="214" r="6"/><circle cx="120" cy="218" r="6"/><circle cx="170" cy="214" r="6"/><circle cx="220" cy="218" r="6"/></g><rect x="10" y="232" width="280" height="14" rx="7" fill="#fff"/></svg>`;
+  putMali('#bmali');$('#bgo').style.display='none';
+  $('#gift').onclick=()=>{b.classList.add('open');confetti(70);cheer();
+    for(let i=0;i<9;i++){const e=h('div',{class:'balloon'},'🎈');e.style.left=(4+rnd(88))+'%';e.style.animationDuration=(5+Math.random()*4)+'s';e.style.animationDelay=(Math.random()*2.5)+'s';b.append(e)}
+    const G=392,A=440,B=494,C=523,D=587,E=659,F=698,G5=784,q=.3;
+    beep([[G,q*.75],[G,q*.25],[A,q],[G,q],[C,q],[B,q*2],[G,q*.75],[G,q*.25],[A,q],[G,q],[D,q],[C,q*2],[G,q*.75],[G,q*.25],[G5,q],[E,q],[C,q],[B,q],[A,q*2],[F,q*.75],[F,q*.25],[E,q],[C,q],[D,q],[C,q*2.5]],'triangle',.1);
+    say(['Happy birthday, Sky! You are '+age+' years old!',['สุขสันต์วันเกิดนะคะ สกาย','th'],'I am Mali, your unicorn friend. This game is a present from Daddy and Mommy. They love you so much!','Now blow out the candles. Tap each little fire!']);
+    let left=age;$('#cake').querySelectorAll('.hit').forEach(hit=>hit.onclick=()=>{const f=hit.previousElementSibling;if(!f.dataset.f)return;f.dataset.f='';f.style.display='none';tick();sparkle(2);
+      if(--left===0){confetti(90);cheer();fanfare();say(['Yay! Make a wish, Sky!',"Let's play!"]);$('#bgo').style.display=''}});
+    setTimeout(()=>{$('#bgo').style.display=''},25000)};
+  $('#bgo').onclick=()=>{S.bday=Date.now();save();home(true)}}
+
+/* ---- home ---- */
+function home(greet){hush();show('home');setBg();$('#hstars').textContent=S.stars+(aplusCount()?' · 🏆 '+aplusCount():'');$('#hstk').textContent=S.stickers.length;$('#hname').textContent='⭐ '+nick()+"'s Letters ⭐";
+  putMali('#homemali',()=>{cheer();say([T('hello')])});
+  const tr=$('#tracks');tr.innerHTML='';
+  const sw=h('div',{class:'secsw'});[['en','🇺🇸 English'],['th','🇹🇭 ไทย']].forEach(([k,t])=>sw.append(h('button',{class:'secb'+(S.sec===k?' on':'')+(k==='th'?' th':''),onclick:()=>{if(S.sec===k)return;S.sec=k;save();tick();home();say(k==='th'?[['ภาษาไทย','th'],T('hello')]:['English.',T('hello')])}},t)));tr.append(sw);
+  (S.sec==='th'?[[LV.kk,LV.sara,LV.kam],[LV.listh,LV.cafeth,0]]:[[LV.abc,LV.snd,LV.name],[LV.lis,LV.cafe,0]]).forEach(row=>{const r=h('div',{class:'track'});row.forEach(l=>{
+    if(l===0){r.append(h('button',{class:'lv c6',html:`<div class="ic">🦄 👗</div><div class="nm">My unicorn</div><div class="pr">🎁 ${S.wear.length} / ${WEAR.length+WEAR_A.length}</div>`,onclick:()=>{tick();closet()}}));return}
+    if(!l.rounds.length)return;const open=levelOpen(l);
+    r.append(h('button',{class:'lv c'+l.c+(open?'':' lock'),html:`<div class="ic">${l.icon}</div><div class="nm">${l.name}</div><div class="pr">⭐ ${roundsDone(l)} / ${l.rounds.length}</div>`,
+      onclick:()=>{if(open){tick();level(l)}else{boop();say([T('locked')])}}}))});tr.append(r)});
+  if(greet)say([T('hello')])}
+(function(){const b=$('#hold'),bar=b.querySelector('i');let t=null;
+  const stop=()=>{clearTimeout(t);t=null;bar.style.transition='none';bar.style.width='0'};
+  b.addEventListener('pointerdown',()=>{bar.style.transition='width 2s linear';bar.style.width='100%';t=setTimeout(()=>{stop();parent()},2000)});
+  ['pointerup','pointerleave','pointercancel'].forEach(e=>b.addEventListener(e,stop))})();
+$('#bookbtn').onclick=$('#starpill').onclick=()=>book();
+
+/* ---- my unicorn: dress her up with the things she has won ---- */
+function closet(){hush();show('closet');const draw=()=>{putMali('#clmali',()=>{cheer();say([T('closet')])});const rows=$('#clrows');rows.innerHTML='';
+    SLOTS.forEach(([slot,icon,base])=>{const r=h('div',{class:'clrow'},h('b',{},icon));
+      const opt=(val,inner,owned,w)=>{const b=h('button',{class:'opt'+(S.look[slot]===val?' on':'')+(owned?'':' lock'),html:owned?inner:'🔒'+(w&&w[5]?'<small>A+</small>':'')});
+        b.onclick=()=>{if(!owned){boop();say([T(w&&w[5]?'wearlockA':'wearlock')]);return}S.look[slot]=val;save();tick();if(w)say([wearSay(w)]);draw();cheer()};r.append(b)};
+      const sw=c=>`<span class="sw" style="background:${c}"></span>`;
+      const inner=v=>slot==='body'?sw(BODY[v][0]):slot==='mane'?sw('linear-gradient(135deg,'+MANE[v].slice(0,3).join(',')+')'):slot==='horn'?sw(v==='rainbow'?'linear-gradient(#ff7eb6,#ffe27a,#7cc4ff)':HORN[v][0]):WICON[v];
+      opt(base,base?inner(base):'🚫',true,null);
+      [...WEAR,...WEAR_A].filter(w=>w[1]===slot).forEach(w=>opt(w[2],inner(w[2]),S.wear.includes(w[0]),w));rows.append(r)})};
+  draw();say([T('closet')])}
+$('#clback').onclick=()=>home();
+
+/* ---- sticker book ---- */
+function book(){show('book');const g=$('#bookgrid');g.innerHTML='';STICKERS.forEach((s,i)=>g.append(h('div',{class:'stk'+(S.stickers.includes(i)?'':' no')},S.stickers.includes(i)?s:'❓')));say([T('book')])}
+$('#bookback').onclick=()=>home();
+
+/* ---- level: pick a round ---- */
+let curLv=null;
+function level(l){curLv=l;hush();show('level');$('#lvtitle').innerHTML=l.name;putMali('#lvmali',()=>say([].concat(l.say,[T('pickgame')])));
+  const b=$('#bubbles');b.innerHTML='';let nowSet=false;
+  const writing=['abc','kk','name'].includes(l.id),wantPen=writing&&tool()==='pen';
+  l.rounds.forEach((r,i)=>{const pen=!!S.penRounds[l.id+':'+i],done=!!S.rounds[l.id+':'+i],open=roundOpen(l,i);const now=open&&!(wantPen?pen:done)&&!nowSet;if(now)nowSet=true;
+    b.append(h('button',{class:'bub'+(S.grades[l.id+':'+i]==='A+'?' ap':pen?' pen':done?' done':'')+(now?' now':'')+(open?'':' lock'),html:`<div class="g">${done?(pen?'✏️':'')+(S.grades[l.id+':'+i]||'⭐'):open?'▶️':'🔒'}</div><small class="${l.th||r.th?'th':''}">${esc(r.label)}</small>`,
+      onclick:()=>{if(open){tick();startRound(l,i)}else{boop();say([T('locked')])}}}))});
+  const c=$('#chips');c.innerHTML='';const keys=l.order||[...new Set(l.rounds.flatMap(r=>r.keys))];
+  keys.forEach(k=>c.append(h('button',{class:'chip'+(l.th?' th':'')+(S.items[k]?(isHard(k)?' hard':' ok'):''),html:l.chip(k),onclick:()=>say(l.tap(k))})));
+  say([].concat(l.say,[T('pickgame')]))}
+$('#lvback').onclick=()=>home();
+
+/* ---- play a round ---- */
+let cur=null,stepTimer=null;
+function startRound(l,ri){cur={l,ri,steps:l.rounds[ri].steps(),i:0,mark:Date.now(),alive:true};show('play');putMali('#pmali',()=>cur&&cur.again&&cur.again());nextStep()}
+function addTime(){const now=Date.now(),d=Math.min(120000,now-cur.mark);cur.mark=now;const k=today();S.days[k]=(S.days[k]||0)+Math.round(d/1000)}
+function nextStep(){clearTimeout(stepTimer);if(!cur)return;const st=cur.steps[cur.i];
+  $('#dots').innerHTML=cur.steps.map((s,j)=>`<i class="${j<cur.i?'d':j===cur.i?'c':''}"></i>`).join('');
+  const stage=$('#stage');stage.innerHTML='';if(!st)return finishRound();
+  const me=cur,t0=Date.now();
+  const done=(miss,wait,pen)=>{if(cur!==me)return;addTime();if(st.key){rec(st.key,miss,Date.now()-t0,pen);S.stars++;cur.keyed=(cur.keyed||0)+1;if(!miss)cur.clean=(cur.clean||0)+1;if(st.also)rec(st.also,0,0,pen)}save();cur.i++;stepTimer=setTimeout(()=>{if(cur===me)nextStep()},wait||0)};
+  ({ten:traceEN,tth:traceTH,quiz:quizStep,build:buildStep,card:cardStep,follow:followStep})[st.type](stage,st,done)}
+function finishRound(){const id=cur.l.id+':'+cur.ri,first=!S.rounds[id];S.rounds[id]=(S.rounds[id]||0)+1;let stk=null;
+  if(first){const free=STICKERS.map((s,i)=>i).filter(i=>!S.stickers.includes(i));if(free.length){stk=free[0];S.stickers.push(stk)}}
+  const writing=['abc','kk','name'].includes(cur.l.id);let won=false;
+  const GR=['C','B','A','A+'],pct=cur.keyed?(cur.clean||0)/cur.keyed:1,g=pct>=1?'A+':pct>=.8?'A':pct>=.6?'B':'C';
+  if(GR.indexOf(g)>GR.indexOf(S.grades[id]||''))S.grades[id]=g;
+  let nw=null;if(first){const w=WEAR.find(w=>!S.wear.includes(w[0]));if(w)nw=give(w)}
+  const wa=WEAR_A.find(w=>!S.wear.includes(w[0])&&aplusCount()>=w[5]);if(wa)nw=give(wa);
+  if(writing&&cur.usedPen)S.penRounds[id]=(S.penRounds[id]||0)+1;
+  if(writing&&!S.pen&&S.set.tool==='auto'&&[LV.abc,LV.kk,LV.name].reduce((n,l)=>n+roundsDone(l),0)>=PEN_AFTER){S.pen=Date.now();won=true}
+  save();const l=cur.l,ri=cur.ri;cur=null;show('party');putMali('#pmali2');cheer();confetti(won?140:80);fanfare();
+  $('#pgrade').innerHTML=`<div class="grade ${g==='A+'?'gAp':'g'+g}">${g}</div>`;if(g==='A+')confetti(120);
+  $('#ptext').textContent=won?'✏️ Magic pencil!':'⭐ '+S.stars;$('#pstk').innerHTML=(won?'<div class="penbadge">✏️</div>':'')+(stk!=null&&!won&&!nw?`<div class="stk">${STICKERS[stk]}</div>`:'');
+  $('#pnew').textContent=nw?'🎁 '+(WICON[nw[2]]||'🎨')+' '+nw[3]+'!':'';
+  say([T({'A+':'gAp',A:'gA',B:'gB',C:'gC'}[g]),nw?T('newwear'):null,nw?wearSay(nw):(stk!=null?T('sticker'):null),won?T('penwon'):null]);
+  const more=ri+1<l.rounds.length;$('#pnext').style.display=more?'':'none';
+  $('#pnext').onclick=()=>won?level(l):startRound(l,ri+1);$('#phome').onclick=()=>level(l)}
+$('#quit').onclick=()=>{clearTimeout(stepTimer);const l=cur&&cur.l;if(cur){addTime();save()}cur=null;hush();l?level(l):home()};
+
+/* ---- step: a card that teaches one new thing ---- */
+function cardStep(stage,st,done){stage.append(h('div',{class:'prompt',html:st.html}));
+  const nx=h('button',{class:'btn pink next pulse',style:'visibility:hidden',onclick:()=>{tick();done(0)}},'▶️');stage.append(nx);
+  cur.again=()=>say(st.say);cur.again();setTimeout(()=>nx.style.visibility='',1200)}
+
+/* ---- step: listen and choose ---- */
+function quizStep(stage,st,done){let miss=0,over=false;
+  const top=h('div',{class:'prompt',html:st.top});stage.append(top);
+  cur.again=()=>say(st.say);top.onclick=()=>{if(st.help)say(st.help);else cur.again()};
+  if(st.help)top.append(h('span',{class:'sm'},'🔊'));
+  const row=h('div',{class:'choices'});stage.append(row);
+  st.choices.forEach(c=>{const b=h('button',{class:'ch'+(st.wide?' wide':''),html:c.html});
+    b.onclick=()=>{if(over)return;
+      if(c.ok){over=true;b.classList.add('yes');ding();sparkle(5);cheer();say([].concat(st.after||[],[praise()]));done(miss,2300)}
+      else{miss++;b.classList.add('no');boop();if(c.say)say([].concat([c.say],[retry()]));else say([retry()]);
+        if(miss>=2)[...row.children].forEach((x,i)=>st.choices[i].ok&&x.classList.add('glow'))}};
+    row.append(b)});
+  cur.again()}
+
+/* ---- step: listen to the directions, then tap the things in the right order ---- */
+function followStep(stage,st,done){let pos=0,miss=0,m=0,heard=0,over=false;
+  const top=h('div',{class:'bubble',html:`<span>${st.guest||'👂'}</span>`+st.seq.map((_,i)=>`<span class="pip">${i+1}</span>`).join('')+'<span class="pip" style="background:none">🔊</span>'});stage.append(top);
+  const pips=[...top.querySelectorAll('.pip')],grid=h('div',{class:'choices board'});stage.append(grid);
+  const reset=()=>{pos=0;pips.forEach(p=>p.classList.remove('on'));[...grid.children].forEach(x=>x.classList.remove('hit'))};
+  cur.again=()=>{heard++;if(heard>2)miss++;say(st.say)};top.onclick=()=>cur.again();   // one free "say it again"
+  st.board.forEach(it=>{const b=h('button',{class:'ch',html:it.html});
+    b.onclick=()=>{if(over)return;
+      if(it.id===st.seq[pos]){pips[pos].classList.add('on');pos++;m=0;tick();b.classList.add('hit');[...grid.children].forEach(x=>x.classList.remove('glow'));
+        if(pos===st.seq.length){over=true;ding();sparkle(5);cheer();say([praise()]);done(miss,1900)}}
+      else{miss++;m++;boop();b.classList.remove('no2');void b.offsetWidth;b.classList.add('no2');reset();say([T('listen')].concat(st.say));
+        if(m>=2)[...grid.children][st.board.findIndex(x=>x.id===st.seq[0])].classList.add('glow')}};
+    grid.append(b)});
+  cur.again()}
+
+/* ---- step: build a short word from letter tiles ---- */
+function buildStep(stage,st,done){const w=st.word;let pos=0,miss=0,m=0;
+  const top=h('div',{class:'prompt',style:'min-height:0;font-size:min(16vh,20vw,140px)',html:`<span>${CVC[w]}</span>`});stage.append(top);
+  const slots=h('div',{class:'slots'},[...w].map(()=>h('div',{class:'slot'})));stage.append(slots);
+  const extra=shuffle([...'abcdefghijklmnoprstuw'].filter(c=>!w.includes(c))).slice(0,2);
+  const tiles=h('div',{class:'choices'});stage.append(tiles);
+  const allc=[...w].every(c=>CLIPS[c]);
+  cur.again=()=>say([st.first?T('build'):null].concat(allc?[...w].map(c=>[c,'clip']):[[w,'en',.45]],[w]));top.onclick=cur.again;
+  shuffle([...w,...extra]).forEach(c=>{const t=h('button',{class:'tile',html:eng(c)});
+    t.onclick=()=>{if(pos>=w.length)return;
+      if(c===w[pos]){slots.children[pos].innerHTML=eng(c);slots.children[pos].classList.add('f');t.classList.add('used');[...tiles.children].forEach(x=>x.classList.remove('glow'));pos++;m=0;tick();
+        if(pos===w.length){ding();sparkle(6);cheer();say((allc?[...w].map(x=>[x,'clip']):[[w,'en',.45]]).concat([w+'!',praise()]));done(miss,allc?4200:2600)}
+        else say([CLIPS[c]?[c,'clip']:(SOUND[c]&&S.set.sounds?SOUND[c]:NAME[c])])}
+      else{miss++;m++;t.classList.remove('no');void t.offsetWidth;t.classList.add('no');boop();
+        if(m>=2)[...tiles.children].find(x=>!x.classList.contains('used')&&x.dataset.c===w[pos]).classList.add('glow')}};
+    t.dataset.c=c;tiles.append(t)});
+  cur.again()}
+
+/* ---- step: trace an English letter, stroke by stroke, in the right order ---- */
+const INK=['#ff6fb5','#ff9e57','#39c58f','#58a6ff','#9b6bff'];
+function traceEN(stage,st,done){const ch=st.ch,mode=st.mode,G=glyph(ch),low=ch.toLowerCase();
+  const pen=tool()==='pen';
+  const wrap=h('div',{class:'wrap'}),cv=h('canvas',{width:800,height:800}),iv=h('canvas',{width:800,height:800,style:'pointer-events:none'}),tic=h('div',{class:'toolic',style:'top:auto;bottom:8px'},pen?'✏️':'☝️');
+  wrap.append(cv,iv,tic,h('div',{class:'emo'},st.word?(st.food||'✍️'):KW[low][1]));stage.append(wrap);
+  if(st.word)wrap.append(h('div',{class:'wordstrip',html:st.word.map((c,i)=>`<span class="${i<st.at?'dn':i===st.at?'cu':''}">${eng(c,1)}</span>`).join('')}));
+  const intro=st.word?[].concat(st.intro||[],[(ch===low?'Little ':'Big ')+NAME[low]+'.']):sayLetter(ch);
+  const x=cv.getContext('2d'),ik=iv.getContext('2d'),sc=4.4,oy=84,ox=420-(G.x0+G.w/2)*sc;
+  const P=p=>[ox+p[0]*sc,oy+p[1]*sc],TOL=pen?11:17,LOOK=24,TW=pen?40:62,PW=pen?40:46;
+  let aid=null,lastC=null,penSeen=false,lastNudge=0;
+  /* school writing paper: sky line, middle line, ground line, bottom line */
+  function paper(){const L=(yy,col,dash,w)=>{x.lineWidth=w||5;x.setLineDash(dash||[]);x.strokeStyle=col;x.beginPath();x.moveTo(64,yy);x.lineTo(776,yy);x.stroke();x.setLineDash([])};
+    x.fillStyle='#f3faff';x.fillRect(64,oy,712,50*sc);x.fillStyle='#fff8ec';x.fillRect(64,oy+100*sc,712,40*sc);
+    L(oy,'#5bb8f5');L(oy+50*sc,'#9fd0ff',[18,16]);L(oy+100*sc,'#4fbf6a',null,6);L(oy+140*sc,'#c9a27a');
+    x.font='34px serif';x.textAlign='center';x.textBaseline='middle';x.fillText('☁️',34,oy);x.fillText('✈️',34,oy+50*sc);x.fillText('🌱',34,oy+100*sc-6);x.fillText('🪱',34,oy+140*sc)}
+  let si=0,pi=0,miss=0,down=false,demo=null,finished=false,idle=null,lastHint=0,raf=0;
+  function path(d,w,col,dash){x.save();x.translate(ox,oy);x.scale(sc,sc);x.lineWidth=w/sc;x.strokeStyle=col;x.lineCap='round';x.lineJoin='round';if(dash)x.setLineDash(dash.map(v=>v/sc));x.stroke(new Path2D(d));x.restore()}
+  function poly(pts,n,w,col){if(n<1)return;x.beginPath();const a=P(pts[0]);x.moveTo(a[0],a[1]);for(let i=1;i<=n;i++){const q=P(pts[i]);x.lineTo(q[0],q[1])}x.lineWidth=w;x.lineCap='round';x.lineJoin='round';x.strokeStyle=col;x.stroke()}
+  function star(p,r,col){x.save();x.translate(p[0],p[1]);x.beginPath();for(let i=0;i<10;i++){const a=-Math.PI/2+i*Math.PI/5,R=i%2?r*.45:r;x.lineTo(Math.cos(a)*R,Math.sin(a)*R)}x.closePath();x.fillStyle=col;x.fill();x.lineWidth=4;x.strokeStyle='#fff';x.stroke();x.restore()}
+  function draw(){x.clearRect(0,0,800,800);paper();
+    G.strokes.forEach(s=>path(s.d,TW,pen?'rgba(214,210,255,.55)':'#ecebff'));
+    x.globalAlpha=pen?.4:1;
+    G.strokes.forEach((s,i)=>{if(i<si||finished)path(s.d,PW,INK[i%5])});
+    x.globalAlpha=1;
+    if(finished)return;
+    const s=G.strokes[si];
+    if(mode===1)path(s.d,pen?5:7,'#8f86d8',pen?[2,14]:[2,20]);
+    x.globalAlpha=pen?.4:1;poly(s.pts,pi,PW,INK[si%5]);x.globalAlpha=1;
+    if(mode===1)G.strokes.forEach((t,i)=>{if(i>si){const q=P(t.pts[0]);x.beginPath();x.arc(q[0],q[1],17,0,7);x.fillStyle='#c9c4e8';x.fill();x.fillStyle='#fff';x.font='bold 22px sans-serif';x.textAlign='center';x.textBaseline='middle';x.fillText(i+1,q[0],q[1]+1)}});
+    const q=P(s.pts[pi]);
+    if(pi===0){x.beginPath();x.arc(q[0],q[1],pen?21:27,0,7);x.fillStyle='#29c36a';x.fill();x.lineWidth=5;x.strokeStyle='#fff';x.stroke();x.fillStyle='#fff';x.font='bold 30px sans-serif';x.textAlign='center';x.textBaseline='middle';x.fillText(si+1,q[0],q[1]+2);
+      if(mode===1&&s.pts.length>26){const a=P(s.pts[14]),b=P(s.pts[26]),an=Math.atan2(b[1]-a[1],b[0]-a[0]);x.save();x.translate(b[0],b[1]);x.rotate(an);x.beginPath();x.moveTo(12,0);x.lineTo(-14,-15);x.lineTo(-14,15);x.closePath();x.fillStyle='#29c36a';x.fill();x.restore()}}
+    else if(!pen)star(q,mode===1?30:22,'#ffd447');
+    if(demo){star(P(G.strokes[demo.si].pts[demo.pi]),34,'#ffd447')}}
+  function runDemo(from,cb){cancelAnimationFrame(raf);let dsi=from,t0=performance.now();
+    const stepf=now=>{if(!cv.isConnected)return;const s=G.strokes[dsi],dur=Math.max(420,s.len*9),f=Math.max(0,Math.min(1,(now-t0)/dur));demo={si:dsi,pi:Math.round(f*(s.pts.length-1))};draw();
+      if(f>=1){if(cb&&dsi<G.strokes.length-1){dsi++;t0=now+180;raf=requestAnimationFrame(stepf)}else{demo=null;draw();cb&&cb()}}else raf=requestAnimationFrame(stepf)};
+    raf=requestAnimationFrame(stepf)}
+  function armIdle(){clearTimeout(idle);idle=setTimeout(()=>{if(finished||!cv.isConnected)return;if(!down&&!demo){runDemo(si,null);hint()}armIdle()},8000)}
+  function hint(){const now=Date.now();if(now-lastHint<5000)return;lastHint=now;say([T('dot')])}
+  const cpos=e=>{const r=cv.getBoundingClientRect();return [(e.clientX-r.left)*800/r.width,(e.clientY-r.top)*800/r.height]};
+  const pos=e=>{const c=cpos(e);return [(c[0]-ox)/sc,(c[1]-oy)/sc]};
+  /* pencil time: a finger or a resting palm does not write. A finger that really tries gets a friendly reminder. */
+  function nudge(){const now=Date.now();if(now-lastNudge<7000)return;lastNudge=now;tic.classList.remove('nudge');void tic.offsetWidth;tic.classList.add('nudge');say([T('usepen')])}
+  function inkSeg(a,b,pr){ik.strokeStyle='#3b2a63';ik.lineWidth=7+10*(pr||.5);ik.lineCap='round';ik.lineJoin='round';ik.beginPath();ik.moveTo(a[0],a[1]);ik.lineTo(b[0],b[1]);ik.stroke()}
+  const dist=(a,b)=>Math.hypot(a[0]-b[0],a[1]-b[1]);
+  function strokeDone(){tick();si++;pi=0;if(si>=G.strokes.length){finished=true;clearTimeout(idle);draw();ding();sparkle(6);cheer();
+      if(pen&&cur)cur.usedPen=true;
+      const snd=!st.word&&CLIPS[low]?[KW[low][0]+'.',[low,'clip']]:[];
+      say([NAME[low]+'!'].concat(snd,[mode===1?T('again'):praise()]));done(miss,(mode===1?1700:2200)+(snd.length?1900:0),pen)}}
+  function move(p){if(finished||demo)return;const s=G.strokes[si];
+    if(s.len<6){if(dist(p,s.pts[0])<TOL*1.6){pi=s.pts.length-1;strokeDone()}return}
+    let best=-1,bd=TOL;for(let j=pi;j<=Math.min(s.pts.length-1,pi+LOOK);j++){const d=dist(p,s.pts[j]);if(d<=bd){bd=d;best=j}}
+    if(best>pi){pi=best;armIdle()}
+    if(pi>=s.pts.length-4)strokeDone()}
+  cv.addEventListener('pointerdown',e=>{if(finished||demo||down)return;const p=pos(e);
+    if(pen&&e.pointerType==='touch'){if(!penSeen&&dist(p,G.strokes[si].pts[pi])<TOL*3)nudge();return}
+    if(e.pointerType==='pen')penSeen=true;
+    try{cv.setPointerCapture(e.pointerId)}catch(_){}down=true;aid=e.pointerId;lastC=cpos(e);
+    if(dist(p,G.strokes[si].pts[pi])>TOL*2.4){miss++;boop();hint()}move(p);draw()});
+  cv.addEventListener('pointermove',e=>{if(!down||e.pointerId!==aid)return;coal(e).forEach(ev=>{if(pen){const c=cpos(ev);inkSeg(lastC,c,ev.pressure);lastC=c}move(pos(ev))});draw()});
+  const up=e=>{if(e.pointerId===aid){down=false;aid=null}};cv.addEventListener('pointerup',up);cv.addEventListener('pointercancel',up);
+  const y0=G.strokes[0].pts[0][1],lineSay=y0<=15?T('sky'):y0>=40&&y0<=66?T('mid'):T('between'),how=pen?T('pentrace'):T('trace');
+  cur.again=()=>{say(intro.concat([lineSay,how]));if(!finished&&!down&&!demo)runDemo(si,null)};
+  draw();
+  if(mode===1){say(intro.concat([lineSay,T('watch')]));setTimeout(()=>runDemo(0,()=>{say([how]);armIdle()}),500)}
+  else{say(st.word?intro.concat([lineSay]):[NAME[low]+'.',lineSay]);armIdle()}
+  window.__trace={G,P,pen,get si(){return si},get pi(){return pi},get finished(){return finished},get demo(){return !!demo}}}
+
+/* ---- step: trace a Thai letter or word (start at the head, then cover the letter) ---- */
+const THF='700 SIZEpx SkyThai,"Thonburi","Sarabun",sans-serif';
+function traceTH(stage,st,done){const text=st.text,isWord=!!st.word,info=isWord?(WORDS[text]||[0,0,st.food?st.food[0]:'✍️','']):THM[text];
+  const wrap=h('div',{class:'wrap'}),gc=h('canvas',{width:800,height:800}),ic=h('canvas',{width:800,height:800});
+  const pen=tool()==='pen',tic=h('div',{class:'toolic',style:'top:auto;bottom:84px'},pen?'✏️':'☝️');let penSeen=false,lastNudge=0,aid=null;
+  function nudge(){const now=Date.now();if(now-lastNudge<7000)return;lastNudge=now;tic.classList.remove('nudge');void tic.offsetWidth;tic.classList.add('nudge');say([T('usepen')])}
+  wrap.append(gc,ic,tic,h('div',{class:'tag th'},isWord?'':info[1]),h('div',{class:'emo'},info[2]));
+  const tools=h('div',{class:'tools'},h('button',{class:'btn small',onclick:()=>clearInk(false)},'🧽'));wrap.append(tools);stage.append(wrap);
+  const g=gc.getContext('2d'),k=ic.getContext('2d');let size=300;
+  const setF=c=>{c.font=THF.replace('SIZE',size);c.textAlign='left';c.textBaseline='alphabetic'};
+  setF(g);let m=g.measureText(text);
+  {const w=m.actualBoundingBoxLeft+m.actualBoundingBoxRight,hh=m.actualBoundingBoxAscent+m.actualBoundingBoxDescent;size=Math.floor(size*Math.min(isWord?660/w:520/w,isWord?560/hh:540/hh));setF(g);m=g.measureText(text)}
+  const gx=400-(m.actualBoundingBoxRight-m.actualBoundingBoxLeft)/2,gy=420+(m.actualBoundingBoxAscent-m.actualBoundingBoxDescent)/2;
+  function mask(extra){const c=document.createElement('canvas');c.width=c.height=200;const x=c.getContext('2d');x.scale(.25,.25);setF(x);x.fillStyle='#000';x.fillText(text,gx,gy);
+    if(extra){x.lineWidth=extra;x.lineJoin='round';x.strokeStyle='#000';x.strokeText(text,gx,gy)}return x.getImageData(0,0,200,200).data}
+  const M=mask(0),MW=mask(isWord?56:80);let maskN=0,bx0=200,bx1=0,by0=200,by1=0;
+  for(let i=0;i<40000;i++)if(M[i*4+3]>100){maskN++;const X=i%200,Y=(i/200)|0;if(X<bx0)bx0=X;if(X>bx1)bx1=X;if(Y<by0)by0=Y;if(Y>by1)by1=Y}
+  g.fillStyle='#ecebff';g.fillText(text,gx,gy);g.lineWidth=6;g.setLineDash([2,16]);g.lineCap='round';g.strokeStyle='#8f86d8';g.strokeText(text,gx,gy);g.setLineDash([]);
+  let dot=null;const f=!isWord&&DOT[text];
+  if(f){dot=[(bx0+f[0]*(bx1-bx0))*4,(by0+f[1]*(by1-by0))*4];g.beginPath();g.arc(dot[0],dot[1],26,0,7);g.fillStyle='#29c36a';g.fill();g.lineWidth=5;g.strokeStyle='#fff';g.stroke();
+    const r=h('div',{class:'dotring'});r.style.left=dot[0]/8+'%';r.style.top=dot[1]/8+'%';wrap.append(r)}
+  let drawing=false,last=null,started=!dot,finished=false,miss=0,hue=rnd(360),lastCheck=0,lastHint=0;
+  const tmp=document.createElement('canvas');tmp.width=tmp.height=200;const tx=tmp.getContext('2d',{willReadFrequently:true});
+  function score(){tx.clearRect(0,0,200,200);tx.drawImage(ic,0,0,200,200);const d=tx.getImageData(0,0,200,200).data;let hit=0,inkN=0,out=0;
+    for(let i=3;i<d.length;i+=4){if(d[i]>100){inkN++;if(M[i]>100)hit++;if(MW[i]<=100)out++}}
+    return {cover:maskN?hit/maskN:0,stray:inkN?out/inkN:1,inkN}}
+  function clearInk(auto){k.clearRect(0,0,800,800);started=!dot;if(auto){miss++;boop();say([T('oops')])}}
+  function hint(){const now=Date.now();if(now-lastHint<4500)return;lastHint=now;say([T('dot')])}
+  function win(){finished=true;if(pen&&cur)cur.usedPen=true;ding();sparkle(7);cheer();say(isWord?[[text,'th'],info[3],praise()]:[thSay(text),praise()]);done(miss,2600,pen)}
+  function check(final){if(finished)return;const s=score();if(s.cover>=.62&&s.stray<=.38)return win();
+    if(final&&s.inkN>maskN*.6&&s.stray>.5)clearInk(true)}
+  const pos=e=>{const r=ic.getBoundingClientRect();return [(e.clientX-r.left)*800/r.width,(e.clientY-r.top)*800/r.height]};
+  function seg(a,b){hue=(hue+3)%360;k.strokeStyle=k.fillStyle='hsl('+hue+',90%,64%)';k.lineWidth=isWord?56:72;k.lineCap='round';k.lineJoin='round';k.beginPath();k.moveTo(a[0],a[1]);k.lineTo(b[0],b[1]);k.stroke()}
+  ic.addEventListener('pointerdown',e=>{if(finished||drawing)return;const p=pos(e);
+    if(pen&&e.pointerType==='touch'){if(!penSeen&&(!dot||Math.hypot(p[0]-dot[0],p[1]-dot[1])<160))nudge();return}
+    if(e.pointerType==='pen')penSeen=true;aid=e.pointerId;
+    if(!started){if(Math.hypot(p[0]-dot[0],p[1]-dot[1])>125){miss++;boop();hint();return}started=true}
+    try{ic.setPointerCapture(e.pointerId)}catch(_){}drawing=true;last=p;seg(p,[p[0]+.1,p[1]])});
+  ic.addEventListener('pointermove',e=>{if(!drawing||finished||e.pointerId!==aid)return;coal(e).forEach(ev=>{const p=pos(ev);seg(last,p);last=p});
+    const now=Date.now();if(now-lastCheck>140){lastCheck=now;check(false)}});
+  const up=e=>{if(!drawing||e.pointerId!==aid)return;drawing=false;check(true)};ic.addEventListener('pointerup',up);ic.addEventListener('pointercancel',up);
+  const how=pen?T('usepen'):T('trace');
+  cur.again=()=>say(isWord?[[text,'th',.7],how]:[thSay(text),['พูดตามเลยค่ะ','th'],how,dot?T('dot'):null]);
+  if(cur.i===0)cur.again();else say(isWord?[[text,'th',.7],how]:[thSay(text),['พูดตามเลยค่ะ','th']]);
+  window.__trace={th:true,pen,dot,gc,score,M,get finished(){return finished}}}
+
+/* ================= parent page ================= */
+const label=k=>{const [t,v]=[k.slice(0,k.indexOf(':')),k.slice(k.indexOf(':')+1)];if(t==='lis')return 'Listening: '+((LIS_R.find(r=>r[0]===v)||[])[1]||v);if(t==='cafe')return v==='th'?'Café orders (Thai)':'Café orders (English)';if(t==='cf'||t==='cw')return 'Café word '+v;
+  return {tr:'Write '+(v===v.toLowerCase()?'small ':'big ')+v,snd:'First sound: '+v,cvc:'Word: '+v,th:'เขียน '+v,sv:'สระ '+v,tw:'คำ '+v}[t]};
+function parent(){hush();show('parent');const b=$('#pbody');const days=[];for(let i=6;i>=0;i--){const d=new Date(Date.now()-i*864e5);const k=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');days.push([k.slice(5),Math.round((S.days[k]||0)/60)])}
+  const allKeys=Object.keys(S.items);const hard=allKeys.filter(isHard).sort((a,c)=>hardScore(c)-hardScore(a)).slice(0,8);
+  let html=`<h2>This week</h2><div class="box">⭐ ${S.stars} stars · 📒 ${S.stickers.length} stickers · ${Object.keys(S.days).length} days played<br>Minutes each day: ${days.map(d=>`<b>${d[1]}</b> <span class="key">(${d[0]})</span>`).join(' · ')}</div>`;
+  html+=`<h2>Where she gets stuck</h2><div class="box">${hard.length?hard.map(k=>{const it=S.items[k];return `<div><b>${label(k)}</b>: last time ${it.lm} slip${it.lm===1?'':'s'}, ${Math.round(it.lt/1000)} seconds. Practiced ${it.n} time${it.n===1?'':'s'}.</div>`}).join(''):'Nothing tricky yet. Orange boxes below will show the hard ones.'}
+   <div class="key" style="margin-top:8px">A "slip" is a wrong tap, starting in the wrong place, or scribbling off the letter. The app brings the hardest ones back for review by itself.</div></div>`;
+  const gl=LEVELS.filter(l=>l.rounds.length).map(l=>{const gs=l.rounds.map((r,i)=>S.grades[l.id+':'+i]).filter(Boolean);return gs.length?`<div><b>${l.name}</b>: ${gs.join(' · ')}</div>`:''}).join('');
+  html+=`<h2>Grades</h2><div class="box">${gl||'No grades yet.'}<div class="key" style="margin-top:8px">A+ means every step right the first time, with no slips. A = 80% or more. B = 60% or more. The best grade for each game is kept. Each A+ shows as a trophy on the home screen, and A+ grades win the tiara (1), golden wings (3) and magic sparkles (6).</div></div>`;
+  html+=`<h2>What she has learned</h2><div class="key">Green = done. Orange = done but hard for her. Gray = not yet. Dark frame = written with the pencil.</div>`;
+  LEVELS.forEach(l=>{const keys=l.order||[...new Set(l.rounds.flatMap(r=>r.keys))];const n=keys.filter(k=>S.items[k]).length;
+    html+=`<div class="box"><b>${l.name}</b>: ${n} of ${keys.length} · games finished ${roundsDone(l)} of ${l.rounds.length}${levelOpen(l)?'':' · 🔒 locked'}<div class="meter"><i style="width:${100*n/keys.length}%"></i></div><div class="grid">${keys.map(k=>`<div class="it ${S.items[k]?(isHard(k)?'hard':'ok'):''}"${S.items[k]&&S.items[k].pen?' style="box-shadow:0 0 0 3px #3b2a63 inset"':''}>${k.slice(k.indexOf(':')+1)}</div>`).join('')}</div></div>`});
+  html+=`<h2>Share with friends</h2><div class="box" id="sharebox"></div>`;
+  html+=`<h2>Settings</h2><div class="box">
+   <div><button class="p" id="s-names">✏️ Names: ${esc(KID?[KID.nick,KID.first,KID.last].filter(Boolean).join(' · '):'')}</button> <span class="key">Change the nickname, first name and last name.</span></div>
+   <div><button class="p" id="s-tool">Writing tool: ${{auto:'Automatic (finger first, then pencil)',finger:'Finger only',pen:'Pencil only'}[S.set.tool]}</button> <span class="key">${S.pen?'She earned the pencil on '+new Date(S.pen).toLocaleDateString()+'.':'Automatic: she earns the pencil after '+PEN_AFTER+' finished writing games.'} In pencil time a finger or resting palm does not write. A mouse always works.</span></div>
+   <div><button class="p ${S.set.unlock?'on':''}" id="s-unlock">${S.set.unlock?'✅ Everything is unlocked':'🔒 Unlock everything'}</button> <span class="key">Jump to the letters her teacher is doing this week.</span></div>
+   <div><button class="p" id="s-talk">Mali's instructions: ${{en:'English always',sec:'Thai inside the Thai part',th:'Thai always'}[S.set.talk]}</button> <span class="key">The letters and words are always said in their own language.</span></div>
+   <div><button class="p ${S.set.sounds?'on':''}" id="s-snd">Letter sounds ("buh"): ${S.set.sounds?'on':'off'}</button> <span class="key">Turn off if the iPad voice says them badly.</span></div></div>
+  <h2>Check the voices</h2><div class="box"><div id="vinfo"></div>
+   <button class="p" id="v-en">🔊 English test</button><button class="p" id="v-th">🔊 Thai test</button>
+   <div class="key" style="margin:10px 0 2px">Choose the English voice (tap to hear it):</div><div id="vl-en"></div>
+   <div class="key" style="margin:10px 0 2px">Choose the Thai voice (tap to hear it):</div><div id="vl-th"></div>
+   <div class="key" style="margin:8px 0 2px">Tap a letter to hear its sound the way Sky will hear it:</div><div class="grid" id="sgrid"></div></div>
+  <h2>Family voices (stay on this iPad only)</h2><div class="box"><div>Mom teaches the Thai letters, Dad teaches the English letters, and both cheer her on. Record the clips on an iPhone, name them from the list (<b>en-a</b>, <b>th-01</b>, <b>cheer-01</b>), send them to this iPad, then add them here. Any clip that is missing uses the usual voice.</div>
+   <div style="margin:10px 0"><label class="p" style="display:inline-block;cursor:pointer;background:#efe6ff;border-radius:14px;padding:12px 16px;font-weight:700;color:#4a3a78">➕ Add voice files<input id="fv-in" type="file" accept="audio/*,.m4a,.mp3,.wav,.aac,.caf" multiple style="display:none"></label>
+   <button class="p danger" id="fv-clear">Remove family voices</button></div>
+   <div id="fv-count"></div><div id="fv-msg" class="key"></div><div class="grid" id="fv-grid"></div>
+   <div id="pk-box" style="margin-top:12px"></div></div>
+  <h2>Letter sounds in a real voice (phonics)</h2><div class="box"><div>The iPad voice says letter names well, but not the short letter sounds. Record each sound once (Mom, Dad or her teacher) and Mali will use your voice: letter, sound, picture word, then "Now you say it!".</div>
+   <div class="key" style="margin:6px 0">Tap a letter, wait for the beep, say only the short sound. It plays back. Tap again to redo. <b id="rc-count"></b></div><div class="grid" id="rcgrid"></div><div id="rc-msg" class="key"></div></div>
+  <h2>Birthday and reset</h2><div class="box"><button class="p" id="s-bday">🎂 Show the birthday surprise again next time</button><br>
+   <button class="p danger" id="s-reset">Erase all progress (start fresh for Sky)</button></div>
+  <div class="key">Everything is saved only on this iPad. No account, no internet.</div>`;
+  b.innerHTML=html;
+  const vi=()=>{pickVoices();$('#vinfo').innerHTML=`English voice: <b>${Voice.en?Voice.en.name:'not found'}</b><br>Thai voice: <b>${Voice.th?Voice.th.name:'not found'}</b>${Voice.th?'':'<br><span style="color:#b00020">No Thai voice yet. On the iPad: Settings → Accessibility → Spoken Content → Voices → Thai → download Kanya.</span>'}`};vi();setTimeout(vi,800);
+  const vlist=()=>{pickVoices();[['en','vl-en','ven','Hi Sky! I am Mali. A, apple.'],['th','vl-th','vth','สวัสดีค่ะ กอ ไก่ ขอ ไข่']].forEach(([pre,id,key,demo])=>{const el=document.getElementById(id);if(!el)return;el.innerHTML='';
+      const vs=(Voice.all||[]).filter(v=>v.lang.toLowerCase().replace('_','-').startsWith(pre)).sort((a,b)=>(b.lang.toLowerCase().includes('us')-a.lang.toLowerCase().includes('us'))||a.name.localeCompare(b.name)).slice(0,24);
+      if(!vs.length){el.textContent='No voices found on this device yet.';return}
+      vs.forEach(v=>{const cur=(pre==='en'?Voice.en:Voice.th);el.append(h('button',{class:'p'+(cur&&cur.name===v.name?' on':''),onclick:()=>{S.set[key]=v.name;save();pickVoices();vi();vlist();say([[demo,pre]])}},v.name+' ('+v.lang+')'))})})};
+  vlist();setTimeout(vlist,900);
+  $('#v-en').onclick=()=>say(['Hi Sky! I am Mali. A, apple. B, ball.']);$('#v-th').onclick=()=>say([['สวัสดีค่ะ สกาย กอ ไก่ ขอ ไข่ สระ อา','th']]);
+  const sg=$('#sgrid');Object.keys(SOUND).forEach(l=>sg.append(h('button',{class:'it',style:'background:#efe6ff;color:#4a3a78',onclick:()=>say([NAME[l]+' says '+SOUND[l]+'.'])},l)));
+  $('#s-names').onclick=()=>setup();
+  const FVIDS=[...'abcdefghijklmnopqrstuvwxyz'].map(l=>'en-'+l).concat(TH.map(t=>thId(t[0])),CHEERS.map(c=>c[0]));
+  const fvLabel=id=>id.slice(0,3)==='en-'?id.slice(3).toUpperCase()+id.slice(3):id.slice(0,3)==='th-'?TH[+id.slice(3)-1][0]:'💬'+(+id.slice(6));
+  const fvDraw=()=>{const cnt=p=>FVIDS.filter(i=>i.startsWith(p)&&CLIPS[i]).length;$('#fv-count').innerHTML=`On this iPad: English <b>${cnt('en-')}</b> of 26 · Thai <b>${cnt('th-')}</b> of 44 · Cheers <b>${cnt('cheer-')}</b> of 10`;
+    const g=$('#fv-grid');g.innerHTML='';FVIDS.forEach(id=>g.append(h('button',{class:'it'+(CLIPS[id]?' ok':'')+(id.slice(0,3)==='th-'?' th':''),title:id,onclick:()=>{$('#fv-msg').textContent=id+(CLIPS[id]?' (family voice)':PACK[id]?' (voice pack)':' (not added yet, uses the usual voice)');hush();if(hasClip(id))playClip(id)}},fvLabel(id))))};
+  $('#fv-in').onchange=async e=>{const files=[...e.target.files];let ok=0;const bad=[];
+    for(const f of files){const id=f.name.replace(/\.[^.]+$/,'').trim().toLowerCase().replace(/\s+/g,'-');if(!FVIDS.includes(id)){bad.push(f.name);continue}
+      try{const url=await new Promise((res,rej)=>{const fr=new FileReader();fr.onload=()=>res(fr.result);fr.onerror=rej;fr.readAsDataURL(f)});await clipSave(id,url);ok++}catch(_){bad.push(f.name)}}
+    e.target.value='';$('#fv-msg').textContent='Added '+ok+' clip'+(ok===1?'':'s')+'.'+(bad.length?' Not added (name not on the list): '+bad.slice(0,6).join(', ')+(bad.length>6?' ...':''):'');fvDraw()};
+  let fvArm=false;$('#fv-clear').onclick=async e=>{if(!fvArm){fvArm=true;e.target.textContent='Tap again to remove them';return}for(const id of FVIDS)if(CLIPS[id])await clipDel(id);parent()};
+  fvDraw();
+  const pk=$('#pk-box');if(PACKS.length){pk.innerHTML='<div class="key" style="margin-bottom:4px">Ready-made voice (used when there is no family clip):</div>';
+    [{id:'',name:'iPad voice'}].concat(PACKS).forEach(p=>pk.append(h('button',{class:'p'+((S.set.pack||'')===p.id?' on':''),onclick:()=>{S.set.pack=p.id;save();packUse(p.id,true);parent()}},p.name||p.id)))}
+  const HOW={a:'a (apple)',b:'b (ball)',c:'k (cat)',d:'d (dog)',e:'e (egg)',f:'fff',g:'g (goat)',h:'h (hat)',i:'i (insect)',j:'j (jet)',k:'k (kite)',l:'lll',m:'mmm',n:'nnn',o:'o (octopus)',p:'p (pig)',q:'kw (queen)',r:'rrr',s:'sss',t:'t (tiger)',u:'u (up)',v:'vvv',w:'w (whale)',x:'ks (fox)',y:'y (yo-yo)',z:'zzz'};
+  const rcDraw=()=>{const g=$('#rcgrid');if(!g)return;g.innerHTML='';$('#rc-count').textContent=Object.keys(CLIPS).length+' of 26 recorded.';
+    Object.keys(HOW).forEach(l=>{const b=h('button',{class:'it'+(CLIPS[l]?' ok':''),style:'height:auto;min-width:96px;padding:8px 10px;flex-direction:column;font-size:16px;line-height:1.2'+(CLIPS[l]?'':';background:#efe6ff;color:#4a3a78')},h('b',{style:'font-size:26px'},l.toUpperCase()+l),HOW[l]);
+      b.onclick=async()=>{const msg=$('#rc-msg');if(!navigator.mediaDevices||!window.MediaRecorder){msg.textContent='Recording needs the web address (https) and a newer iPad or Mac browser.';return}
+        try{hush();b.style.background='#ff5a6e';b.style.color='#fff';msg.textContent='Get ready...';await wait(500);beep([880],'sine',.2,.12);await wait(260);msg.textContent='Say the sound now: '+HOW[l];
+          await recordClip(l,1700);msg.textContent='Saved. Playing it back.';rcDraw();await playClip(l)}
+        catch(e){msg.textContent='Could not use the microphone. Allow the microphone for this page, then try again.';rcDraw()}};
+      g.append(b);if(CLIPS[l])g.append(h('button',{class:'it',style:'min-width:34px;background:#fff;color:#888',onclick:async()=>{await clipDel(l);rcDraw()}},'✕'))})};
+  rcDraw();
+  const sb=$('#sharebox'),base=location.origin+location.pathname.replace(/index\.html$/,'');
+  const codes=()=>{try{return JSON.parse(localStorage.getItem(CODEKEY))||[]}catch(_){return []}};
+  const listHtml=()=>{const c=codes().slice(-8).reverse();return c.length?'<div class="key" style="margin-top:10px">Codes you made: '+c.map(x=>esc(x.name||'friend')+' (until '+new Date(x.day*864e5).toLocaleDateString()+')').join(' · ')+'</div>':''};
+  if(!gateOn())sb.innerHTML='Friend scan codes are made here once the app is opened from its web address (https). Right now it is open from a file or home Wi-Fi.';
+  else if(!isOwner())sb.innerHTML="To invite a friend, ask Sky's dad for a scan code. Each family gets its own code.";
+  else{sb.innerHTML=`<div>Make a new scan code for <b>one friend</b>. Every code is different.</div>
+     <div style="margin:8px 0"><input id="fr-name" placeholder="Friend's name (for your notes)" maxlength="30" style="font-size:20px;padding:10px 12px;border-radius:12px;border:2px solid #d9cdf2;width:min(100%,360px)"></div>
+     <button class="p" data-d="1">Good for 1 day</button><button class="p" data-d="3">Good for 3 days</button><button class="p" data-d="7">Good for 7 days</button>
+     <div id="fr-out"></div><div id="fr-list">${listHtml()}</div>
+     <div class="key" style="margin-top:8px">The code opens the app on a new iPad until its last day, then it stops. An iPad that already opened the app keeps working. A code is not locked to one iPad: that needs a small server (see PLANS.md).</div>`;
+    sb.querySelectorAll('button[data-d]').forEach(b=>b.onclick=async()=>{const days=+b.dataset.d,out=$('#fr-out');try{const code=await makeCode(days),url=base+'?k='+code;const q=qrcode(0,'L');q.addData(url);q.make();
+        const c=codes();c.push({name:$('#fr-name').value.trim(),day:today0()+days});localStorage.setItem(CODEKEY,JSON.stringify(c.slice(-60)));
+        out.innerHTML=`<div class="qr" style="margin-top:10px"><img alt="Scan code" src="${q.createDataURL(5,12)}"><div><b>${esc($('#fr-name').value.trim()||'Friend')}</b>: scan with the iPad camera.<br>Works until ${new Date((today0()+days)*864e5).toLocaleDateString()}.<br>Then in Safari: Share, Add to Home Screen, the same day.<div class="key" style="word-break:break-all;margin-top:6px">${esc(url)}</div></div></div>`;$('#fr-list').innerHTML=listHtml()}
+      catch(e){out.textContent='Could not make a code on this device.'}})}
+  $('#s-tool').onclick=()=>{S.set.tool={auto:'finger',finger:'pen',pen:'auto'}[S.set.tool];save();parent()};
+  $('#s-unlock').onclick=()=>{S.set.unlock=!S.set.unlock;save();parent()};
+  $('#s-talk').onclick=()=>{S.set.talk={en:'sec',sec:'th',th:'en'}[S.set.talk];save();parent()};
+  $('#s-snd').onclick=()=>{S.set.sounds=!S.set.sounds;save();parent()};
+  $('#s-bday').onclick=e=>{S.bday=0;save();e.target.textContent='🎂 Okay! It will show the next time the app opens.'};
+  let armed=false;$('#s-reset').onclick=e=>{if(!armed){armed=true;e.target.textContent='Tap again to erase everything';return}try{localStorage.removeItem(KEY);localStorage.removeItem('skystars');localStorage.removeItem('skydone');localStorage.removeItem('skypos')}catch(_){}location.reload()}}
+$('#parback').onclick=()=>home();
+
+/* ================= start ================= */
+document.addEventListener('gesturestart',e=>e.preventDefault());
+document.addEventListener('dblclick',e=>e.preventDefault());
+async function boot(){await clipsLoad();await Promise.race([packsLoad(),wait(1500)]);let g='ok';try{g=await gate()}catch(_){g='bad'}if(g!=='ok')return locked(g);if(KID){kidChanged();welcome()}else setup()}
+/* offline helper: only when opened from a secure web address, never from a plain file */
+if('serviceWorker' in navigator&&(location.protocol==='https:'||location.hostname==='localhost'||location.hostname==='127.0.0.1'))window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
+window.__eng=eng;window.__app={PACK,hasClip,packUse,packs:()=>PACKS,CHEERS,CLIPS,recordClip,playClip,say,setBg,BGS,makeCode,checkCode,isOwner,tool,mali,closet,setup,WEAR,WEAR_A,kid:()=>KID,S:()=>S,LEVELS,startRound,level,home,parent,glyph,DOT,TH,save,finishRound:()=>finishRound(),cur:()=>cur};
+</script>
+<script>
+/* QR code maker for the "Share with friends" scan code. qrcode-generator by Kazuhiko Arase, MIT license. */
+//---------------------------------------------------------------------
+//
+// QR Code Generator for JavaScript
+//
+// Copyright (c) 2009 Kazuhiko Arase
+//
+// URL: http://www.d-project.com/
+//
+// Licensed under the MIT license:
+//  http://www.opensource.org/licenses/mit-license.php
+//
+// The word 'QR Code' is registered trademark of
+// DENSO WAVE INCORPORATED
+//  http://www.denso-wave.com/qrcode/faqpatent-e.html
+//
+//---------------------------------------------------------------------
+
+var qrcode = function() {
+
+  //---------------------------------------------------------------------
+  // qrcode
+  //---------------------------------------------------------------------
+
+  /**
+   * qrcode
+   * @param typeNumber 1 to 40
+   * @param errorCorrectionLevel 'L','M','Q','H'
+   */
+  var qrcode = function(typeNumber, errorCorrectionLevel) {
+
+    var PAD0 = 0xEC;
+    var PAD1 = 0x11;
+
+    var _typeNumber = typeNumber;
+    var _errorCorrectionLevel = QRErrorCorrectionLevel[errorCorrectionLevel];
+    var _modules = null;
+    var _moduleCount = 0;
+    var _dataCache = null;
+    var _dataList = [];
+
+    var _this = {};
+
+    var makeImpl = function(test, maskPattern) {
+
+      _moduleCount = _typeNumber * 4 + 17;
+      _modules = function(moduleCount) {
+        var modules = new Array(moduleCount);
+        for (var row = 0; row < moduleCount; row += 1) {
+          modules[row] = new Array(moduleCount);
+          for (var col = 0; col < moduleCount; col += 1) {
+            modules[row][col] = null;
+          }
+        }
+        return modules;
+      }(_moduleCount);
+
+      setupPositionProbePattern(0, 0);
+      setupPositionProbePattern(_moduleCount - 7, 0);
+      setupPositionProbePattern(0, _moduleCount - 7);
+      setupPositionAdjustPattern();
+      setupTimingPattern();
+      setupTypeInfo(test, maskPattern);
+
+      if (_typeNumber >= 7) {
+        setupTypeNumber(test);
+      }
+
+      if (_dataCache == null) {
+        _dataCache = createData(_typeNumber, _errorCorrectionLevel, _dataList);
+      }
+
+      mapData(_dataCache, maskPattern);
+    };
+
+    var setupPositionProbePattern = function(row, col) {
+
+      for (var r = -1; r <= 7; r += 1) {
+
+        if (row + r <= -1 || _moduleCount <= row + r) continue;
+
+        for (var c = -1; c <= 7; c += 1) {
+
+          if (col + c <= -1 || _moduleCount <= col + c) continue;
+
+          if ( (0 <= r && r <= 6 && (c == 0 || c == 6) )
+              || (0 <= c && c <= 6 && (r == 0 || r == 6) )
+              || (2 <= r && r <= 4 && 2 <= c && c <= 4) ) {
+            _modules[row + r][col + c] = true;
+          } else {
+            _modules[row + r][col + c] = false;
+          }
+        }
+      }
+    };
+
+    var getBestMaskPattern = function() {
+
+      var minLostPoint = 0;
+      var pattern = 0;
+
+      for (var i = 0; i < 8; i += 1) {
+
+        makeImpl(true, i);
+
+        var lostPoint = QRUtil.getLostPoint(_this);
+
+        if (i == 0 || minLostPoint > lostPoint) {
+          minLostPoint = lostPoint;
+          pattern = i;
+        }
+      }
+
+      return pattern;
+    };
+
+    var setupTimingPattern = function() {
+
+      for (var r = 8; r < _moduleCount - 8; r += 1) {
+        if (_modules[r][6] != null) {
+          continue;
+        }
+        _modules[r][6] = (r % 2 == 0);
+      }
+
+      for (var c = 8; c < _moduleCount - 8; c += 1) {
+        if (_modules[6][c] != null) {
+          continue;
+        }
+        _modules[6][c] = (c % 2 == 0);
+      }
+    };
+
+    var setupPositionAdjustPattern = function() {
+
+      var pos = QRUtil.getPatternPosition(_typeNumber);
+
+      for (var i = 0; i < pos.length; i += 1) {
+
+        for (var j = 0; j < pos.length; j += 1) {
+
+          var row = pos[i];
+          var col = pos[j];
+
+          if (_modules[row][col] != null) {
+            continue;
+          }
+
+          for (var r = -2; r <= 2; r += 1) {
+
+            for (var c = -2; c <= 2; c += 1) {
+
+              if (r == -2 || r == 2 || c == -2 || c == 2
+                  || (r == 0 && c == 0) ) {
+                _modules[row + r][col + c] = true;
+              } else {
+                _modules[row + r][col + c] = false;
+              }
+            }
+          }
+        }
+      }
+    };
+
+    var setupTypeNumber = function(test) {
+
+      var bits = QRUtil.getBCHTypeNumber(_typeNumber);
+
+      for (var i = 0; i < 18; i += 1) {
+        var mod = (!test && ( (bits >> i) & 1) == 1);
+        _modules[Math.floor(i / 3)][i % 3 + _moduleCount - 8 - 3] = mod;
+      }
+
+      for (var i = 0; i < 18; i += 1) {
+        var mod = (!test && ( (bits >> i) & 1) == 1);
+        _modules[i % 3 + _moduleCount - 8 - 3][Math.floor(i / 3)] = mod;
+      }
+    };
+
+    var setupTypeInfo = function(test, maskPattern) {
+
+      var data = (_errorCorrectionLevel << 3) | maskPattern;
+      var bits = QRUtil.getBCHTypeInfo(data);
+
+      // vertical
+      for (var i = 0; i < 15; i += 1) {
+
+        var mod = (!test && ( (bits >> i) & 1) == 1);
+
+        if (i < 6) {
+          _modules[i][8] = mod;
+        } else if (i < 8) {
+          _modules[i + 1][8] = mod;
+        } else {
+          _modules[_moduleCount - 15 + i][8] = mod;
+        }
+      }
+
+      // horizontal
+      for (var i = 0; i < 15; i += 1) {
+
+        var mod = (!test && ( (bits >> i) & 1) == 1);
+
+        if (i < 8) {
+          _modules[8][_moduleCount - i - 1] = mod;
+        } else if (i < 9) {
+          _modules[8][15 - i - 1 + 1] = mod;
+        } else {
+          _modules[8][15 - i - 1] = mod;
+        }
+      }
+
+      // fixed module
+      _modules[_moduleCount - 8][8] = (!test);
+    };
+
+    var mapData = function(data, maskPattern) {
+
+      var inc = -1;
+      var row = _moduleCount - 1;
+      var bitIndex = 7;
+      var byteIndex = 0;
+      var maskFunc = QRUtil.getMaskFunction(maskPattern);
+
+      for (var col = _moduleCount - 1; col > 0; col -= 2) {
+
+        if (col == 6) col -= 1;
+
+        while (true) {
+
+          for (var c = 0; c < 2; c += 1) {
+
+            if (_modules[row][col - c] == null) {
+
+              var dark = false;
+
+              if (byteIndex < data.length) {
+                dark = ( ( (data[byteIndex] >>> bitIndex) & 1) == 1);
+              }
+
+              var mask = maskFunc(row, col - c);
+
+              if (mask) {
+                dark = !dark;
+              }
+
+              _modules[row][col - c] = dark;
+              bitIndex -= 1;
+
+              if (bitIndex == -1) {
+                byteIndex += 1;
+                bitIndex = 7;
+              }
+            }
+          }
+
+          row += inc;
+
+          if (row < 0 || _moduleCount <= row) {
+            row -= inc;
+            inc = -inc;
+            break;
+          }
+        }
+      }
+    };
+
+    var createBytes = function(buffer, rsBlocks) {
+
+      var offset = 0;
+
+      var maxDcCount = 0;
+      var maxEcCount = 0;
+
+      var dcdata = new Array(rsBlocks.length);
+      var ecdata = new Array(rsBlocks.length);
+
+      for (var r = 0; r < rsBlocks.length; r += 1) {
+
+        var dcCount = rsBlocks[r].dataCount;
+        var ecCount = rsBlocks[r].totalCount - dcCount;
+
+        maxDcCount = Math.max(maxDcCount, dcCount);
+        maxEcCount = Math.max(maxEcCount, ecCount);
+
+        dcdata[r] = new Array(dcCount);
+
+        for (var i = 0; i < dcdata[r].length; i += 1) {
+          dcdata[r][i] = 0xff & buffer.getBuffer()[i + offset];
+        }
+        offset += dcCount;
+
+        var rsPoly = QRUtil.getErrorCorrectPolynomial(ecCount);
+        var rawPoly = qrPolynomial(dcdata[r], rsPoly.getLength() - 1);
+
+        var modPoly = rawPoly.mod(rsPoly);
+        ecdata[r] = new Array(rsPoly.getLength() - 1);
+        for (var i = 0; i < ecdata[r].length; i += 1) {
+          var modIndex = i + modPoly.getLength() - ecdata[r].length;
+          ecdata[r][i] = (modIndex >= 0)? modPoly.getAt(modIndex) : 0;
+        }
+      }
+
+      var totalCodeCount = 0;
+      for (var i = 0; i < rsBlocks.length; i += 1) {
+        totalCodeCount += rsBlocks[i].totalCount;
+      }
+
+      var data = new Array(totalCodeCount);
+      var index = 0;
+
+      for (var i = 0; i < maxDcCount; i += 1) {
+        for (var r = 0; r < rsBlocks.length; r += 1) {
+          if (i < dcdata[r].length) {
+            data[index] = dcdata[r][i];
+            index += 1;
+          }
+        }
+      }
+
+      for (var i = 0; i < maxEcCount; i += 1) {
+        for (var r = 0; r < rsBlocks.length; r += 1) {
+          if (i < ecdata[r].length) {
+            data[index] = ecdata[r][i];
+            index += 1;
+          }
+        }
+      }
+
+      return data;
+    };
+
+    var createData = function(typeNumber, errorCorrectionLevel, dataList) {
+
+      var rsBlocks = QRRSBlock.getRSBlocks(typeNumber, errorCorrectionLevel);
+
+      var buffer = qrBitBuffer();
+
+      for (var i = 0; i < dataList.length; i += 1) {
+        var data = dataList[i];
+        buffer.put(data.getMode(), 4);
+        buffer.put(data.getLength(), QRUtil.getLengthInBits(data.getMode(), typeNumber) );
+        data.write(buffer);
+      }
+
+      // calc num max data.
+      var totalDataCount = 0;
+      for (var i = 0; i < rsBlocks.length; i += 1) {
+        totalDataCount += rsBlocks[i].dataCount;
+      }
+
+      if (buffer.getLengthInBits() > totalDataCount * 8) {
+        throw 'code length overflow. ('
+          + buffer.getLengthInBits()
+          + '>'
+          + totalDataCount * 8
+          + ')';
+      }
+
+      // end code
+      if (buffer.getLengthInBits() + 4 <= totalDataCount * 8) {
+        buffer.put(0, 4);
+      }
+
+      // padding
+      while (buffer.getLengthInBits() % 8 != 0) {
+        buffer.putBit(false);
+      }
+
+      // padding
+      while (true) {
+
+        if (buffer.getLengthInBits() >= totalDataCount * 8) {
+          break;
+        }
+        buffer.put(PAD0, 8);
+
+        if (buffer.getLengthInBits() >= totalDataCount * 8) {
+          break;
+        }
+        buffer.put(PAD1, 8);
+      }
+
+      return createBytes(buffer, rsBlocks);
+    };
+
+    _this.addData = function(data, mode) {
+
+      mode = mode || 'Byte';
+
+      var newData = null;
+
+      switch(mode) {
+      case 'Numeric' :
+        newData = qrNumber(data);
+        break;
+      case 'Alphanumeric' :
+        newData = qrAlphaNum(data);
+        break;
+      case 'Byte' :
+        newData = qr8BitByte(data);
+        break;
+      case 'Kanji' :
+        newData = qrKanji(data);
+        break;
+      default :
+        throw 'mode:' + mode;
+      }
+
+      _dataList.push(newData);
+      _dataCache = null;
+    };
+
+    _this.isDark = function(row, col) {
+      if (row < 0 || _moduleCount <= row || col < 0 || _moduleCount <= col) {
+        throw row + ',' + col;
+      }
+      return _modules[row][col];
+    };
+
+    _this.getModuleCount = function() {
+      return _moduleCount;
+    };
+
+    _this.make = function() {
+      if (_typeNumber < 1) {
+        var typeNumber = 1;
+
+        for (; typeNumber < 40; typeNumber++) {
+          var rsBlocks = QRRSBlock.getRSBlocks(typeNumber, _errorCorrectionLevel);
+          var buffer = qrBitBuffer();
+
+          for (var i = 0; i < _dataList.length; i++) {
+            var data = _dataList[i];
+            buffer.put(data.getMode(), 4);
+            buffer.put(data.getLength(), QRUtil.getLengthInBits(data.getMode(), typeNumber) );
+            data.write(buffer);
+          }
+
+          var totalDataCount = 0;
+          for (var i = 0; i < rsBlocks.length; i++) {
+            totalDataCount += rsBlocks[i].dataCount;
+          }
+
+          if (buffer.getLengthInBits() <= totalDataCount * 8) {
+            break;
+          }
+        }
+
+        _typeNumber = typeNumber;
+      }
+
+      makeImpl(false, getBestMaskPattern() );
+    };
+
+    _this.createTableTag = function(cellSize, margin) {
+
+      cellSize = cellSize || 2;
+      margin = (typeof margin == 'undefined')? cellSize * 4 : margin;
+
+      var qrHtml = '';
+
+      qrHtml += '<table style="';
+      qrHtml += ' border-width: 0px; border-style: none;';
+      qrHtml += ' border-collapse: collapse;';
+      qrHtml += ' padding: 0px; margin: ' + margin + 'px;';
+      qrHtml += '">';
+      qrHtml += '<tbody>';
+
+      for (var r = 0; r < _this.getModuleCount(); r += 1) {
+
+        qrHtml += '<tr>';
+
+        for (var c = 0; c < _this.getModuleCount(); c += 1) {
+          qrHtml += '<td style="';
+          qrHtml += ' border-width: 0px; border-style: none;';
+          qrHtml += ' border-collapse: collapse;';
+          qrHtml += ' padding: 0px; margin: 0px;';
+          qrHtml += ' width: ' + cellSize + 'px;';
+          qrHtml += ' height: ' + cellSize + 'px;';
+          qrHtml += ' background-color: ';
+          qrHtml += _this.isDark(r, c)? '#000000' : '#ffffff';
+          qrHtml += ';';
+          qrHtml += '"/>';
+        }
+
+        qrHtml += '</tr>';
+      }
+
+      qrHtml += '</tbody>';
+      qrHtml += '</table>';
+
+      return qrHtml;
+    };
+
+    _this.createSvgTag = function(cellSize, margin, alt, title) {
+
+      var opts = {};
+      if (typeof arguments[0] == 'object') {
+        // Called by options.
+        opts = arguments[0];
+        // overwrite cellSize and margin.
+        cellSize = opts.cellSize;
+        margin = opts.margin;
+        alt = opts.alt;
+        title = opts.title;
+      }
+
+      cellSize = cellSize || 2;
+      margin = (typeof margin == 'undefined')? cellSize * 4 : margin;
+
+      // Compose alt property surrogate
+      alt = (typeof alt === 'string') ? {text: alt} : alt || {};
+      alt.text = alt.text || null;
+      alt.id = (alt.text) ? alt.id || 'qrcode-description' : null;
+
+      // Compose title property surrogate
+      title = (typeof title === 'string') ? {text: title} : title || {};
+      title.text = title.text || null;
+      title.id = (title.text) ? title.id || 'qrcode-title' : null;
+
+      var size = _this.getModuleCount() * cellSize + margin * 2;
+      var c, mc, r, mr, qrSvg='', rect;
+
+      rect = 'l' + cellSize + ',0 0,' + cellSize +
+        ' -' + cellSize + ',0 0,-' + cellSize + 'z ';
+
+      qrSvg += '<svg version="1.1" xmlns="http://www.w3.org/2000/svg"';
+      qrSvg += !opts.scalable ? ' width="' + size + 'px" height="' + size + 'px"' : '';
+      qrSvg += ' viewBox="0 0 ' + size + ' ' + size + '" ';
+      qrSvg += ' preserveAspectRatio="xMinYMin meet"';
+      qrSvg += (title.text || alt.text) ? ' role="img" aria-labelledby="' +
+          escapeXml([title.id, alt.id].join(' ').trim() ) + '"' : '';
+      qrSvg += '>';
+      qrSvg += (title.text) ? '<title id="' + escapeXml(title.id) + '">' +
+          escapeXml(title.text) + '</title>' : '';
+      qrSvg += (alt.text) ? '<description id="' + escapeXml(alt.id) + '">' +
+          escapeXml(alt.text) + '</description>' : '';
+      qrSvg += '<rect width="100%" height="100%" fill="white" cx="0" cy="0"/>';
+      qrSvg += '<path d="';
+
+      for (r = 0; r < _this.getModuleCount(); r += 1) {
+        mr = r * cellSize + margin;
+        for (c = 0; c < _this.getModuleCount(); c += 1) {
+          if (_this.isDark(r, c) ) {
+            mc = c*cellSize+margin;
+            qrSvg += 'M' + mc + ',' + mr + rect;
+          }
+        }
+      }
+
+      qrSvg += '" stroke="transparent" fill="black"/>';
+      qrSvg += '</svg>';
+
+      return qrSvg;
+    };
+
+    _this.createDataURL = function(cellSize, margin) {
+
+      cellSize = cellSize || 2;
+      margin = (typeof margin == 'undefined')? cellSize * 4 : margin;
+
+      var size = _this.getModuleCount() * cellSize + margin * 2;
+      var min = margin;
+      var max = size - margin;
+
+      return createDataURL(size, size, function(x, y) {
+        if (min <= x && x < max && min <= y && y < max) {
+          var c = Math.floor( (x - min) / cellSize);
+          var r = Math.floor( (y - min) / cellSize);
+          return _this.isDark(r, c)? 0 : 1;
+        } else {
+          return 1;
+        }
+      } );
+    };
+
+    _this.createImgTag = function(cellSize, margin, alt) {
+
+      cellSize = cellSize || 2;
+      margin = (typeof margin == 'undefined')? cellSize * 4 : margin;
+
+      var size = _this.getModuleCount() * cellSize + margin * 2;
+
+      var img = '';
+      img += '<img';
+      img += '\u0020src="';
+      img += _this.createDataURL(cellSize, margin);
+      img += '"';
+      img += '\u0020width="';
+      img += size;
+      img += '"';
+      img += '\u0020height="';
+      img += size;
+      img += '"';
+      if (alt) {
+        img += '\u0020alt="';
+        img += escapeXml(alt);
+        img += '"';
+      }
+      img += '/>';
+
+      return img;
+    };
+
+    var escapeXml = function(s) {
+      var escaped = '';
+      for (var i = 0; i < s.length; i += 1) {
+        var c = s.charAt(i);
+        switch(c) {
+        case '<': escaped += '&lt;'; break;
+        case '>': escaped += '&gt;'; break;
+        case '&': escaped += '&amp;'; break;
+        case '"': escaped += '&quot;'; break;
+        default : escaped += c; break;
+        }
+      }
+      return escaped;
+    };
+
+    var _createHalfASCII = function(margin) {
+      var cellSize = 1;
+      margin = (typeof margin == 'undefined')? cellSize * 2 : margin;
+
+      var size = _this.getModuleCount() * cellSize + margin * 2;
+      var min = margin;
+      var max = size - margin;
+
+      var y, x, r1, r2, p;
+
+      var blocks = {
+        '██': '█',
+        '█ ': '▀',
+        ' █': '▄',
+        '  ': ' '
+      };
+
+      var blocksLastLineNoMargin = {
+        '██': '▀',
+        '█ ': '▀',
+        ' █': ' ',
+        '  ': ' '
+      };
+
+      var ascii = '';
+      for (y = 0; y < size; y += 2) {
+        r1 = Math.floor((y - min) / cellSize);
+        r2 = Math.floor((y + 1 - min) / cellSize);
+        for (x = 0; x < size; x += 1) {
+          p = '█';
+
+          if (min <= x && x < max && min <= y && y < max && _this.isDark(r1, Math.floor((x - min) / cellSize))) {
+            p = ' ';
+          }
+
+          if (min <= x && x < max && min <= y+1 && y+1 < max && _this.isDark(r2, Math.floor((x - min) / cellSize))) {
+            p += ' ';
+          }
+          else {
+            p += '█';
+          }
+
+          // Output 2 characters per pixel, to create full square. 1 character per pixels gives only half width of square.
+          ascii += (margin < 1 && y+1 >= max) ? blocksLastLineNoMargin[p] : blocks[p];
+        }
+
+        ascii += '\n';
+      }
+
+      if (size % 2 && margin > 0) {
+        return ascii.substring(0, ascii.length - size - 1) + Array(size+1).join('▀');
+      }
+
+      return ascii.substring(0, ascii.length-1);
+    };
+
+    _this.createASCII = function(cellSize, margin) {
+      cellSize = cellSize || 1;
+
+      if (cellSize < 2) {
+        return _createHalfASCII(margin);
+      }
+
+      cellSize -= 1;
+      margin = (typeof margin == 'undefined')? cellSize * 2 : margin;
+
+      var size = _this.getModuleCount() * cellSize + margin * 2;
+      var min = margin;
+      var max = size - margin;
+
+      var y, x, r, p;
+
+      var white = Array(cellSize+1).join('██');
+      var black = Array(cellSize+1).join('  ');
+
+      var ascii = '';
+      var line = '';
+      for (y = 0; y < size; y += 1) {
+        r = Math.floor( (y - min) / cellSize);
+        line = '';
+        for (x = 0; x < size; x += 1) {
+          p = 1;
+
+          if (min <= x && x < max && min <= y && y < max && _this.isDark(r, Math.floor((x - min) / cellSize))) {
+            p = 0;
+          }
+
+          // Output 2 characters per pixel, to create full square. 1 character per pixels gives only half width of square.
+          line += p ? white : black;
+        }
+
+        for (r = 0; r < cellSize; r += 1) {
+          ascii += line + '\n';
+        }
+      }
+
+      return ascii.substring(0, ascii.length-1);
+    };
+
+    _this.renderTo2dContext = function(context, cellSize) {
+      cellSize = cellSize || 2;
+      var length = _this.getModuleCount();
+      for (var row = 0; row < length; row++) {
+        for (var col = 0; col < length; col++) {
+          context.fillStyle = _this.isDark(row, col) ? 'black' : 'white';
+          context.fillRect(col * cellSize, row * cellSize, cellSize, cellSize);
+        }
+      }
+    }
+
+    return _this;
+  };
+
+  //---------------------------------------------------------------------
+  // qrcode.stringToBytes
+  //---------------------------------------------------------------------
+
+  qrcode.stringToBytesFuncs = {
+    'default' : function(s) {
+      var bytes = [];
+      for (var i = 0; i < s.length; i += 1) {
+        var c = s.charCodeAt(i);
+        bytes.push(c & 0xff);
+      }
+      return bytes;
+    }
+  };
+
+  qrcode.stringToBytes = qrcode.stringToBytesFuncs['default'];
+
+  //---------------------------------------------------------------------
+  // qrcode.createStringToBytes
+  //---------------------------------------------------------------------
+
+  /**
+   * @param unicodeData base64 string of byte array.
+   * [16bit Unicode],[16bit Bytes], ...
+   * @param numChars
+   */
+  qrcode.createStringToBytes = function(unicodeData, numChars) {
+
+    // create conversion map.
+
+    var unicodeMap = function() {
+
+      var bin = base64DecodeInputStream(unicodeData);
+      var read = function() {
+        var b = bin.read();
+        if (b == -1) throw 'eof';
+        return b;
+      };
+
+      var count = 0;
+      var unicodeMap = {};
+      while (true) {
+        var b0 = bin.read();
+        if (b0 == -1) break;
+        var b1 = read();
+        var b2 = read();
+        var b3 = read();
+        var k = String.fromCharCode( (b0 << 8) | b1);
+        var v = (b2 << 8) | b3;
+        unicodeMap[k] = v;
+        count += 1;
+      }
+      if (count != numChars) {
+        throw count + ' != ' + numChars;
+      }
+
+      return unicodeMap;
+    }();
+
+    var unknownChar = '?'.charCodeAt(0);
+
+    return function(s) {
+      var bytes = [];
+      for (var i = 0; i < s.length; i += 1) {
+        var c = s.charCodeAt(i);
+        if (c < 128) {
+          bytes.push(c);
+        } else {
+          var b = unicodeMap[s.charAt(i)];
+          if (typeof b == 'number') {
+            if ( (b & 0xff) == b) {
+              // 1byte
+              bytes.push(b);
+            } else {
+              // 2bytes
+              bytes.push(b >>> 8);
+              bytes.push(b & 0xff);
+            }
+          } else {
+            bytes.push(unknownChar);
+          }
+        }
+      }
+      return bytes;
+    };
+  };
+
+  //---------------------------------------------------------------------
+  // QRMode
+  //---------------------------------------------------------------------
+
+  var QRMode = {
+    MODE_NUMBER :    1 << 0,
+    MODE_ALPHA_NUM : 1 << 1,
+    MODE_8BIT_BYTE : 1 << 2,
+    MODE_KANJI :     1 << 3
+  };
+
+  //---------------------------------------------------------------------
+  // QRErrorCorrectionLevel
+  //---------------------------------------------------------------------
+
+  var QRErrorCorrectionLevel = {
+    L : 1,
+    M : 0,
+    Q : 3,
+    H : 2
+  };
+
+  //---------------------------------------------------------------------
+  // QRMaskPattern
+  //---------------------------------------------------------------------
+
+  var QRMaskPattern = {
+    PATTERN000 : 0,
+    PATTERN001 : 1,
+    PATTERN010 : 2,
+    PATTERN011 : 3,
+    PATTERN100 : 4,
+    PATTERN101 : 5,
+    PATTERN110 : 6,
+    PATTERN111 : 7
+  };
+
+  //---------------------------------------------------------------------
+  // QRUtil
+  //---------------------------------------------------------------------
+
+  var QRUtil = function() {
+
+    var PATTERN_POSITION_TABLE = [
+      [],
+      [6, 18],
+      [6, 22],
+      [6, 26],
+      [6, 30],
+      [6, 34],
+      [6, 22, 38],
+      [6, 24, 42],
+      [6, 26, 46],
+      [6, 28, 50],
+      [6, 30, 54],
+      [6, 32, 58],
+      [6, 34, 62],
+      [6, 26, 46, 66],
+      [6, 26, 48, 70],
+      [6, 26, 50, 74],
+      [6, 30, 54, 78],
+      [6, 30, 56, 82],
+      [6, 30, 58, 86],
+      [6, 34, 62, 90],
+      [6, 28, 50, 72, 94],
+      [6, 26, 50, 74, 98],
+      [6, 30, 54, 78, 102],
+      [6, 28, 54, 80, 106],
+      [6, 32, 58, 84, 110],
+      [6, 30, 58, 86, 114],
+      [6, 34, 62, 90, 118],
+      [6, 26, 50, 74, 98, 122],
+      [6, 30, 54, 78, 102, 126],
+      [6, 26, 52, 78, 104, 130],
+      [6, 30, 56, 82, 108, 134],
+      [6, 34, 60, 86, 112, 138],
+      [6, 30, 58, 86, 114, 142],
+      [6, 34, 62, 90, 118, 146],
+      [6, 30, 54, 78, 102, 126, 150],
+      [6, 24, 50, 76, 102, 128, 154],
+      [6, 28, 54, 80, 106, 132, 158],
+      [6, 32, 58, 84, 110, 136, 162],
+      [6, 26, 54, 82, 110, 138, 166],
+      [6, 30, 58, 86, 114, 142, 170]
+    ];
+    var G15 = (1 << 10) | (1 << 8) | (1 << 5) | (1 << 4) | (1 << 2) | (1 << 1) | (1 << 0);
+    var G18 = (1 << 12) | (1 << 11) | (1 << 10) | (1 << 9) | (1 << 8) | (1 << 5) | (1 << 2) | (1 << 0);
+    var G15_MASK = (1 << 14) | (1 << 12) | (1 << 10) | (1 << 4) | (1 << 1);
+
+    var _this = {};
+
+    var getBCHDigit = function(data) {
+      var digit = 0;
+      while (data != 0) {
+        digit += 1;
+        data >>>= 1;
+      }
+      return digit;
+    };
+
+    _this.getBCHTypeInfo = function(data) {
+      var d = data << 10;
+      while (getBCHDigit(d) - getBCHDigit(G15) >= 0) {
+        d ^= (G15 << (getBCHDigit(d) - getBCHDigit(G15) ) );
+      }
+      return ( (data << 10) | d) ^ G15_MASK;
+    };
+
+    _this.getBCHTypeNumber = function(data) {
+      var d = data << 12;
+      while (getBCHDigit(d) - getBCHDigit(G18) >= 0) {
+        d ^= (G18 << (getBCHDigit(d) - getBCHDigit(G18) ) );
+      }
+      return (data << 12) | d;
+    };
+
+    _this.getPatternPosition = function(typeNumber) {
+      return PATTERN_POSITION_TABLE[typeNumber - 1];
+    };
+
+    _this.getMaskFunction = function(maskPattern) {
+
+      switch (maskPattern) {
+
+      case QRMaskPattern.PATTERN000 :
+        return function(i, j) { return (i + j) % 2 == 0; };
+      case QRMaskPattern.PATTERN001 :
+        return function(i, j) { return i % 2 == 0; };
+      case QRMaskPattern.PATTERN010 :
+        return function(i, j) { return j % 3 == 0; };
+      case QRMaskPattern.PATTERN011 :
+        return function(i, j) { return (i + j) % 3 == 0; };
+      case QRMaskPattern.PATTERN100 :
+        return function(i, j) { return (Math.floor(i / 2) + Math.floor(j / 3) ) % 2 == 0; };
+      case QRMaskPattern.PATTERN101 :
+        return function(i, j) { return (i * j) % 2 + (i * j) % 3 == 0; };
+      case QRMaskPattern.PATTERN110 :
+        return function(i, j) { return ( (i * j) % 2 + (i * j) % 3) % 2 == 0; };
+      case QRMaskPattern.PATTERN111 :
+        return function(i, j) { return ( (i * j) % 3 + (i + j) % 2) % 2 == 0; };
+
+      default :
+        throw 'bad maskPattern:' + maskPattern;
+      }
+    };
+
+    _this.getErrorCorrectPolynomial = function(errorCorrectLength) {
+      var a = qrPolynomial([1], 0);
+      for (var i = 0; i < errorCorrectLength; i += 1) {
+        a = a.multiply(qrPolynomial([1, QRMath.gexp(i)], 0) );
+      }
+      return a;
+    };
+
+    _this.getLengthInBits = function(mode, type) {
+
+      if (1 <= type && type < 10) {
+
+        // 1 - 9
+
+        switch(mode) {
+        case QRMode.MODE_NUMBER    : return 10;
+        case QRMode.MODE_ALPHA_NUM : return 9;
+        case QRMode.MODE_8BIT_BYTE : return 8;
+        case QRMode.MODE_KANJI     : return 8;
+        default :
+          throw 'mode:' + mode;
+        }
+
+      } else if (type < 27) {
+
+        // 10 - 26
+
+        switch(mode) {
+        case QRMode.MODE_NUMBER    : return 12;
+        case QRMode.MODE_ALPHA_NUM : return 11;
+        case QRMode.MODE_8BIT_BYTE : return 16;
+        case QRMode.MODE_KANJI     : return 10;
+        default :
+          throw 'mode:' + mode;
+        }
+
+      } else if (type < 41) {
+
+        // 27 - 40
+
+        switch(mode) {
+        case QRMode.MODE_NUMBER    : return 14;
+        case QRMode.MODE_ALPHA_NUM : return 13;
+        case QRMode.MODE_8BIT_BYTE : return 16;
+        case QRMode.MODE_KANJI     : return 12;
+        default :
+          throw 'mode:' + mode;
+        }
+
+      } else {
+        throw 'type:' + type;
+      }
+    };
+
+    _this.getLostPoint = function(qrcode) {
+
+      var moduleCount = qrcode.getModuleCount();
+
+      var lostPoint = 0;
+
+      // LEVEL1
+
+      for (var row = 0; row < moduleCount; row += 1) {
+        for (var col = 0; col < moduleCount; col += 1) {
+
+          var sameCount = 0;
+          var dark = qrcode.isDark(row, col);
+
+          for (var r = -1; r <= 1; r += 1) {
+
+            if (row + r < 0 || moduleCount <= row + r) {
+              continue;
+            }
+
+            for (var c = -1; c <= 1; c += 1) {
+
+              if (col + c < 0 || moduleCount <= col + c) {
+                continue;
+              }
+
+              if (r == 0 && c == 0) {
+                continue;
+              }
+
+              if (dark == qrcode.isDark(row + r, col + c) ) {
+                sameCount += 1;
+              }
+            }
+          }
+
+          if (sameCount > 5) {
+            lostPoint += (3 + sameCount - 5);
+          }
+        }
+      };
+
+      // LEVEL2
+
+      for (var row = 0; row < moduleCount - 1; row += 1) {
+        for (var col = 0; col < moduleCount - 1; col += 1) {
+          var count = 0;
+          if (qrcode.isDark(row, col) ) count += 1;
+          if (qrcode.isDark(row + 1, col) ) count += 1;
+          if (qrcode.isDark(row, col + 1) ) count += 1;
+          if (qrcode.isDark(row + 1, col + 1) ) count += 1;
+          if (count == 0 || count == 4) {
+            lostPoint += 3;
+          }
+        }
+      }
+
+      // LEVEL3
+
+      for (var row = 0; row < moduleCount; row += 1) {
+        for (var col = 0; col < moduleCount - 6; col += 1) {
+          if (qrcode.isDark(row, col)
+              && !qrcode.isDark(row, col + 1)
+              &&  qrcode.isDark(row, col + 2)
+              &&  qrcode.isDark(row, col + 3)
+              &&  qrcode.isDark(row, col + 4)
+              && !qrcode.isDark(row, col + 5)
+              &&  qrcode.isDark(row, col + 6) ) {
+            lostPoint += 40;
+          }
+        }
+      }
+
+      for (var col = 0; col < moduleCount; col += 1) {
+        for (var row = 0; row < moduleCount - 6; row += 1) {
+          if (qrcode.isDark(row, col)
+              && !qrcode.isDark(row + 1, col)
+              &&  qrcode.isDark(row + 2, col)
+              &&  qrcode.isDark(row + 3, col)
+              &&  qrcode.isDark(row + 4, col)
+              && !qrcode.isDark(row + 5, col)
+              &&  qrcode.isDark(row + 6, col) ) {
+            lostPoint += 40;
+          }
+        }
+      }
+
+      // LEVEL4
+
+      var darkCount = 0;
+
+      for (var col = 0; col < moduleCount; col += 1) {
+        for (var row = 0; row < moduleCount; row += 1) {
+          if (qrcode.isDark(row, col) ) {
+            darkCount += 1;
+          }
+        }
+      }
+
+      var ratio = Math.abs(100 * darkCount / moduleCount / moduleCount - 50) / 5;
+      lostPoint += ratio * 10;
+
+      return lostPoint;
+    };
+
+    return _this;
+  }();
+
+  //---------------------------------------------------------------------
+  // QRMath
+  //---------------------------------------------------------------------
+
+  var QRMath = function() {
+
+    var EXP_TABLE = new Array(256);
+    var LOG_TABLE = new Array(256);
+
+    // initialize tables
+    for (var i = 0; i < 8; i += 1) {
+      EXP_TABLE[i] = 1 << i;
+    }
+    for (var i = 8; i < 256; i += 1) {
+      EXP_TABLE[i] = EXP_TABLE[i - 4]
+        ^ EXP_TABLE[i - 5]
+        ^ EXP_TABLE[i - 6]
+        ^ EXP_TABLE[i - 8];
+    }
+    for (var i = 0; i < 255; i += 1) {
+      LOG_TABLE[EXP_TABLE[i] ] = i;
+    }
+
+    var _this = {};
+
+    _this.glog = function(n) {
+
+      if (n < 1) {
+        throw 'glog(' + n + ')';
+      }
+
+      return LOG_TABLE[n];
+    };
+
+    _this.gexp = function(n) {
+
+      while (n < 0) {
+        n += 255;
+      }
+
+      while (n >= 256) {
+        n -= 255;
+      }
+
+      return EXP_TABLE[n];
+    };
+
+    return _this;
+  }();
+
+  //---------------------------------------------------------------------
+  // qrPolynomial
+  //---------------------------------------------------------------------
+
+  function qrPolynomial(num, shift) {
+
+    if (typeof num.length == 'undefined') {
+      throw num.length + '/' + shift;
+    }
+
+    var _num = function() {
+      var offset = 0;
+      while (offset < num.length && num[offset] == 0) {
+        offset += 1;
+      }
+      var _num = new Array(num.length - offset + shift);
+      for (var i = 0; i < num.length - offset; i += 1) {
+        _num[i] = num[i + offset];
+      }
+      return _num;
+    }();
+
+    var _this = {};
+
+    _this.getAt = function(index) {
+      return _num[index];
+    };
+
+    _this.getLength = function() {
+      return _num.length;
+    };
+
+    _this.multiply = function(e) {
+
+      var num = new Array(_this.getLength() + e.getLength() - 1);
+
+      for (var i = 0; i < _this.getLength(); i += 1) {
+        for (var j = 0; j < e.getLength(); j += 1) {
+          num[i + j] ^= QRMath.gexp(QRMath.glog(_this.getAt(i) ) + QRMath.glog(e.getAt(j) ) );
+        }
+      }
+
+      return qrPolynomial(num, 0);
+    };
+
+    _this.mod = function(e) {
+
+      if (_this.getLength() - e.getLength() < 0) {
+        return _this;
+      }
+
+      var ratio = QRMath.glog(_this.getAt(0) ) - QRMath.glog(e.getAt(0) );
+
+      var num = new Array(_this.getLength() );
+      for (var i = 0; i < _this.getLength(); i += 1) {
+        num[i] = _this.getAt(i);
+      }
+
+      for (var i = 0; i < e.getLength(); i += 1) {
+        num[i] ^= QRMath.gexp(QRMath.glog(e.getAt(i) ) + ratio);
+      }
+
+      // recursive call
+      return qrPolynomial(num, 0).mod(e);
+    };
+
+    return _this;
+  };
+
+  //---------------------------------------------------------------------
+  // QRRSBlock
+  //---------------------------------------------------------------------
+
+  var QRRSBlock = function() {
+
+    var RS_BLOCK_TABLE = [
+
+      // L
+      // M
+      // Q
+      // H
+
+      // 1
+      [1, 26, 19],
+      [1, 26, 16],
+      [1, 26, 13],
+      [1, 26, 9],
+
+      // 2
+      [1, 44, 34],
+      [1, 44, 28],
+      [1, 44, 22],
+      [1, 44, 16],
+
+      // 3
+      [1, 70, 55],
+      [1, 70, 44],
+      [2, 35, 17],
+      [2, 35, 13],
+
+      // 4
+      [1, 100, 80],
+      [2, 50, 32],
+      [2, 50, 24],
+      [4, 25, 9],
+
+      // 5
+      [1, 134, 108],
+      [2, 67, 43],
+      [2, 33, 15, 2, 34, 16],
+      [2, 33, 11, 2, 34, 12],
+
+      // 6
+      [2, 86, 68],
+      [4, 43, 27],
+      [4, 43, 19],
+      [4, 43, 15],
+
+      // 7
+      [2, 98, 78],
+      [4, 49, 31],
+      [2, 32, 14, 4, 33, 15],
+      [4, 39, 13, 1, 40, 14],
+
+      // 8
+      [2, 121, 97],
+      [2, 60, 38, 2, 61, 39],
+      [4, 40, 18, 2, 41, 19],
+      [4, 40, 14, 2, 41, 15],
+
+      // 9
+      [2, 146, 116],
+      [3, 58, 36, 2, 59, 37],
+      [4, 36, 16, 4, 37, 17],
+      [4, 36, 12, 4, 37, 13],
+
+      // 10
+      [2, 86, 68, 2, 87, 69],
+      [4, 69, 43, 1, 70, 44],
+      [6, 43, 19, 2, 44, 20],
+      [6, 43, 15, 2, 44, 16],
+
+      // 11
+      [4, 101, 81],
+      [1, 80, 50, 4, 81, 51],
+      [4, 50, 22, 4, 51, 23],
+      [3, 36, 12, 8, 37, 13],
+
+      // 12
+      [2, 116, 92, 2, 117, 93],
+      [6, 58, 36, 2, 59, 37],
+      [4, 46, 20, 6, 47, 21],
+      [7, 42, 14, 4, 43, 15],
+
+      // 13
+      [4, 133, 107],
+      [8, 59, 37, 1, 60, 38],
+      [8, 44, 20, 4, 45, 21],
+      [12, 33, 11, 4, 34, 12],
+
+      // 14
+      [3, 145, 115, 1, 146, 116],
+      [4, 64, 40, 5, 65, 41],
+      [11, 36, 16, 5, 37, 17],
+      [11, 36, 12, 5, 37, 13],
+
+      // 15
+      [5, 109, 87, 1, 110, 88],
+      [5, 65, 41, 5, 66, 42],
+      [5, 54, 24, 7, 55, 25],
+      [11, 36, 12, 7, 37, 13],
+
+      // 16
+      [5, 122, 98, 1, 123, 99],
+      [7, 73, 45, 3, 74, 46],
+      [15, 43, 19, 2, 44, 20],
+      [3, 45, 15, 13, 46, 16],
+
+      // 17
+      [1, 135, 107, 5, 136, 108],
+      [10, 74, 46, 1, 75, 47],
+      [1, 50, 22, 15, 51, 23],
+      [2, 42, 14, 17, 43, 15],
+
+      // 18
+      [5, 150, 120, 1, 151, 121],
+      [9, 69, 43, 4, 70, 44],
+      [17, 50, 22, 1, 51, 23],
+      [2, 42, 14, 19, 43, 15],
+
+      // 19
+      [3, 141, 113, 4, 142, 114],
+      [3, 70, 44, 11, 71, 45],
+      [17, 47, 21, 4, 48, 22],
+      [9, 39, 13, 16, 40, 14],
+
+      // 20
+      [3, 135, 107, 5, 136, 108],
+      [3, 67, 41, 13, 68, 42],
+      [15, 54, 24, 5, 55, 25],
+      [15, 43, 15, 10, 44, 16],
+
+      // 21
+      [4, 144, 116, 4, 145, 117],
+      [17, 68, 42],
+      [17, 50, 22, 6, 51, 23],
+      [19, 46, 16, 6, 47, 17],
+
+      // 22
+      [2, 139, 111, 7, 140, 112],
+      [17, 74, 46],
+      [7, 54, 24, 16, 55, 25],
+      [34, 37, 13],
+
+      // 23
+      [4, 151, 121, 5, 152, 122],
+      [4, 75, 47, 14, 76, 48],
+      [11, 54, 24, 14, 55, 25],
+      [16, 45, 15, 14, 46, 16],
+
+      // 24
+      [6, 147, 117, 4, 148, 118],
+      [6, 73, 45, 14, 74, 46],
+      [11, 54, 24, 16, 55, 25],
+      [30, 46, 16, 2, 47, 17],
+
+      // 25
+      [8, 132, 106, 4, 133, 107],
+      [8, 75, 47, 13, 76, 48],
+      [7, 54, 24, 22, 55, 25],
+      [22, 45, 15, 13, 46, 16],
+
+      // 26
+      [10, 142, 114, 2, 143, 115],
+      [19, 74, 46, 4, 75, 47],
+      [28, 50, 22, 6, 51, 23],
+      [33, 46, 16, 4, 47, 17],
+
+      // 27
+      [8, 152, 122, 4, 153, 123],
+      [22, 73, 45, 3, 74, 46],
+      [8, 53, 23, 26, 54, 24],
+      [12, 45, 15, 28, 46, 16],
+
+      // 28
+      [3, 147, 117, 10, 148, 118],
+      [3, 73, 45, 23, 74, 46],
+      [4, 54, 24, 31, 55, 25],
+      [11, 45, 15, 31, 46, 16],
+
+      // 29
+      [7, 146, 116, 7, 147, 117],
+      [21, 73, 45, 7, 74, 46],
+      [1, 53, 23, 37, 54, 24],
+      [19, 45, 15, 26, 46, 16],
+
+      // 30
+      [5, 145, 115, 10, 146, 116],
+      [19, 75, 47, 10, 76, 48],
+      [15, 54, 24, 25, 55, 25],
+      [23, 45, 15, 25, 46, 16],
+
+      // 31
+      [13, 145, 115, 3, 146, 116],
+      [2, 74, 46, 29, 75, 47],
+      [42, 54, 24, 1, 55, 25],
+      [23, 45, 15, 28, 46, 16],
+
+      // 32
+      [17, 145, 115],
+      [10, 74, 46, 23, 75, 47],
+      [10, 54, 24, 35, 55, 25],
+      [19, 45, 15, 35, 46, 16],
+
+      // 33
+      [17, 145, 115, 1, 146, 116],
+      [14, 74, 46, 21, 75, 47],
+      [29, 54, 24, 19, 55, 25],
+      [11, 45, 15, 46, 46, 16],
+
+      // 34
+      [13, 145, 115, 6, 146, 116],
+      [14, 74, 46, 23, 75, 47],
+      [44, 54, 24, 7, 55, 25],
+      [59, 46, 16, 1, 47, 17],
+
+      // 35
+      [12, 151, 121, 7, 152, 122],
+      [12, 75, 47, 26, 76, 48],
+      [39, 54, 24, 14, 55, 25],
+      [22, 45, 15, 41, 46, 16],
+
+      // 36
+      [6, 151, 121, 14, 152, 122],
+      [6, 75, 47, 34, 76, 48],
+      [46, 54, 24, 10, 55, 25],
+      [2, 45, 15, 64, 46, 16],
+
+      // 37
+      [17, 152, 122, 4, 153, 123],
+      [29, 74, 46, 14, 75, 47],
+      [49, 54, 24, 10, 55, 25],
+      [24, 45, 15, 46, 46, 16],
+
+      // 38
+      [4, 152, 122, 18, 153, 123],
+      [13, 74, 46, 32, 75, 47],
+      [48, 54, 24, 14, 55, 25],
+      [42, 45, 15, 32, 46, 16],
+
+      // 39
+      [20, 147, 117, 4, 148, 118],
+      [40, 75, 47, 7, 76, 48],
+      [43, 54, 24, 22, 55, 25],
+      [10, 45, 15, 67, 46, 16],
+
+      // 40
+      [19, 148, 118, 6, 149, 119],
+      [18, 75, 47, 31, 76, 48],
+      [34, 54, 24, 34, 55, 25],
+      [20, 45, 15, 61, 46, 16]
+    ];
+
+    var qrRSBlock = function(totalCount, dataCount) {
+      var _this = {};
+      _this.totalCount = totalCount;
+      _this.dataCount = dataCount;
+      return _this;
+    };
+
+    var _this = {};
+
+    var getRsBlockTable = function(typeNumber, errorCorrectionLevel) {
+
+      switch(errorCorrectionLevel) {
+      case QRErrorCorrectionLevel.L :
+        return RS_BLOCK_TABLE[(typeNumber - 1) * 4 + 0];
+      case QRErrorCorrectionLevel.M :
+        return RS_BLOCK_TABLE[(typeNumber - 1) * 4 + 1];
+      case QRErrorCorrectionLevel.Q :
+        return RS_BLOCK_TABLE[(typeNumber - 1) * 4 + 2];
+      case QRErrorCorrectionLevel.H :
+        return RS_BLOCK_TABLE[(typeNumber - 1) * 4 + 3];
+      default :
+        return undefined;
+      }
+    };
+
+    _this.getRSBlocks = function(typeNumber, errorCorrectionLevel) {
+
+      var rsBlock = getRsBlockTable(typeNumber, errorCorrectionLevel);
+
+      if (typeof rsBlock == 'undefined') {
+        throw 'bad rs block @ typeNumber:' + typeNumber +
+            '/errorCorrectionLevel:' + errorCorrectionLevel;
+      }
+
+      var length = rsBlock.length / 3;
+
+      var list = [];
+
+      for (var i = 0; i < length; i += 1) {
+
+        var count = rsBlock[i * 3 + 0];
+        var totalCount = rsBlock[i * 3 + 1];
+        var dataCount = rsBlock[i * 3 + 2];
+
+        for (var j = 0; j < count; j += 1) {
+          list.push(qrRSBlock(totalCount, dataCount) );
+        }
+      }
+
+      return list;
+    };
+
+    return _this;
+  }();
+
+  //---------------------------------------------------------------------
+  // qrBitBuffer
+  //---------------------------------------------------------------------
+
+  var qrBitBuffer = function() {
+
+    var _buffer = [];
+    var _length = 0;
+
+    var _this = {};
+
+    _this.getBuffer = function() {
+      return _buffer;
+    };
+
+    _this.getAt = function(index) {
+      var bufIndex = Math.floor(index / 8);
+      return ( (_buffer[bufIndex] >>> (7 - index % 8) ) & 1) == 1;
+    };
+
+    _this.put = function(num, length) {
+      for (var i = 0; i < length; i += 1) {
+        _this.putBit( ( (num >>> (length - i - 1) ) & 1) == 1);
+      }
+    };
+
+    _this.getLengthInBits = function() {
+      return _length;
+    };
+
+    _this.putBit = function(bit) {
+
+      var bufIndex = Math.floor(_length / 8);
+      if (_buffer.length <= bufIndex) {
+        _buffer.push(0);
+      }
+
+      if (bit) {
+        _buffer[bufIndex] |= (0x80 >>> (_length % 8) );
+      }
+
+      _length += 1;
+    };
+
+    return _this;
+  };
+
+  //---------------------------------------------------------------------
+  // qrNumber
+  //---------------------------------------------------------------------
+
+  var qrNumber = function(data) {
+
+    var _mode = QRMode.MODE_NUMBER;
+    var _data = data;
+
+    var _this = {};
+
+    _this.getMode = function() {
+      return _mode;
+    };
+
+    _this.getLength = function(buffer) {
+      return _data.length;
+    };
+
+    _this.write = function(buffer) {
+
+      var data = _data;
+
+      var i = 0;
+
+      while (i + 2 < data.length) {
+        buffer.put(strToNum(data.substring(i, i + 3) ), 10);
+        i += 3;
+      }
+
+      if (i < data.length) {
+        if (data.length - i == 1) {
+          buffer.put(strToNum(data.substring(i, i + 1) ), 4);
+        } else if (data.length - i == 2) {
+          buffer.put(strToNum(data.substring(i, i + 2) ), 7);
+        }
+      }
+    };
+
+    var strToNum = function(s) {
+      var num = 0;
+      for (var i = 0; i < s.length; i += 1) {
+        num = num * 10 + chatToNum(s.charAt(i) );
+      }
+      return num;
+    };
+
+    var chatToNum = function(c) {
+      if ('0' <= c && c <= '9') {
+        return c.charCodeAt(0) - '0'.charCodeAt(0);
+      }
+      throw 'illegal char :' + c;
+    };
+
+    return _this;
+  };
+
+  //---------------------------------------------------------------------
+  // qrAlphaNum
+  //---------------------------------------------------------------------
+
+  var qrAlphaNum = function(data) {
+
+    var _mode = QRMode.MODE_ALPHA_NUM;
+    var _data = data;
+
+    var _this = {};
+
+    _this.getMode = function() {
+      return _mode;
+    };
+
+    _this.getLength = function(buffer) {
+      return _data.length;
+    };
+
+    _this.write = function(buffer) {
+
+      var s = _data;
+
+      var i = 0;
+
+      while (i + 1 < s.length) {
+        buffer.put(
+          getCode(s.charAt(i) ) * 45 +
+          getCode(s.charAt(i + 1) ), 11);
+        i += 2;
+      }
+
+      if (i < s.length) {
+        buffer.put(getCode(s.charAt(i) ), 6);
+      }
+    };
+
+    var getCode = function(c) {
+
+      if ('0' <= c && c <= '9') {
+        return c.charCodeAt(0) - '0'.charCodeAt(0);
+      } else if ('A' <= c && c <= 'Z') {
+        return c.charCodeAt(0) - 'A'.charCodeAt(0) + 10;
+      } else {
+        switch (c) {
+        case ' ' : return 36;
+        case '$' : return 37;
+        case '%' : return 38;
+        case '*' : return 39;
+        case '+' : return 40;
+        case '-' : return 41;
+        case '.' : return 42;
+        case '/' : return 43;
+        case ':' : return 44;
+        default :
+          throw 'illegal char :' + c;
+        }
+      }
+    };
+
+    return _this;
+  };
+
+  //---------------------------------------------------------------------
+  // qr8BitByte
+  //---------------------------------------------------------------------
+
+  var qr8BitByte = function(data) {
+
+    var _mode = QRMode.MODE_8BIT_BYTE;
+    var _data = data;
+    var _bytes = qrcode.stringToBytes(data);
+
+    var _this = {};
+
+    _this.getMode = function() {
+      return _mode;
+    };
+
+    _this.getLength = function(buffer) {
+      return _bytes.length;
+    };
+
+    _this.write = function(buffer) {
+      for (var i = 0; i < _bytes.length; i += 1) {
+        buffer.put(_bytes[i], 8);
+      }
+    };
+
+    return _this;
+  };
+
+  //---------------------------------------------------------------------
+  // qrKanji
+  //---------------------------------------------------------------------
+
+  var qrKanji = function(data) {
+
+    var _mode = QRMode.MODE_KANJI;
+    var _data = data;
+
+    var stringToBytes = qrcode.stringToBytesFuncs['SJIS'];
+    if (!stringToBytes) {
+      throw 'sjis not supported.';
+    }
+    !function(c, code) {
+      // self test for sjis support.
+      var test = stringToBytes(c);
+      if (test.length != 2 || ( (test[0] << 8) | test[1]) != code) {
+        throw 'sjis not supported.';
+      }
+    }('\u53cb', 0x9746);
+
+    var _bytes = stringToBytes(data);
+
+    var _this = {};
+
+    _this.getMode = function() {
+      return _mode;
+    };
+
+    _this.getLength = function(buffer) {
+      return ~~(_bytes.length / 2);
+    };
+
+    _this.write = function(buffer) {
+
+      var data = _bytes;
+
+      var i = 0;
+
+      while (i + 1 < data.length) {
+
+        var c = ( (0xff & data[i]) << 8) | (0xff & data[i + 1]);
+
+        if (0x8140 <= c && c <= 0x9FFC) {
+          c -= 0x8140;
+        } else if (0xE040 <= c && c <= 0xEBBF) {
+          c -= 0xC140;
+        } else {
+          throw 'illegal char at ' + (i + 1) + '/' + c;
+        }
+
+        c = ( (c >>> 8) & 0xff) * 0xC0 + (c & 0xff);
+
+        buffer.put(c, 13);
+
+        i += 2;
+      }
+
+      if (i < data.length) {
+        throw 'illegal char at ' + (i + 1);
+      }
+    };
+
+    return _this;
+  };
+
+  //=====================================================================
+  // GIF Support etc.
+  //
+
+  //---------------------------------------------------------------------
+  // byteArrayOutputStream
+  //---------------------------------------------------------------------
+
+  var byteArrayOutputStream = function() {
+
+    var _bytes = [];
+
+    var _this = {};
+
+    _this.writeByte = function(b) {
+      _bytes.push(b & 0xff);
+    };
+
+    _this.writeShort = function(i) {
+      _this.writeByte(i);
+      _this.writeByte(i >>> 8);
+    };
+
+    _this.writeBytes = function(b, off, len) {
+      off = off || 0;
+      len = len || b.length;
+      for (var i = 0; i < len; i += 1) {
+        _this.writeByte(b[i + off]);
+      }
+    };
+
+    _this.writeString = function(s) {
+      for (var i = 0; i < s.length; i += 1) {
+        _this.writeByte(s.charCodeAt(i) );
+      }
+    };
+
+    _this.toByteArray = function() {
+      return _bytes;
+    };
+
+    _this.toString = function() {
+      var s = '';
+      s += '[';
+      for (var i = 0; i < _bytes.length; i += 1) {
+        if (i > 0) {
+          s += ',';
+        }
+        s += _bytes[i];
+      }
+      s += ']';
+      return s;
+    };
+
+    return _this;
+  };
+
+  //---------------------------------------------------------------------
+  // base64EncodeOutputStream
+  //---------------------------------------------------------------------
+
+  var base64EncodeOutputStream = function() {
+
+    var _buffer = 0;
+    var _buflen = 0;
+    var _length = 0;
+    var _base64 = '';
+
+    var _this = {};
+
+    var writeEncoded = function(b) {
+      _base64 += String.fromCharCode(encode(b & 0x3f) );
+    };
+
+    var encode = function(n) {
+      if (n < 0) {
+        // error.
+      } else if (n < 26) {
+        return 0x41 + n;
+      } else if (n < 52) {
+        return 0x61 + (n - 26);
+      } else if (n < 62) {
+        return 0x30 + (n - 52);
+      } else if (n == 62) {
+        return 0x2b;
+      } else if (n == 63) {
+        return 0x2f;
+      }
+      throw 'n:' + n;
+    };
+
+    _this.writeByte = function(n) {
+
+      _buffer = (_buffer << 8) | (n & 0xff);
+      _buflen += 8;
+      _length += 1;
+
+      while (_buflen >= 6) {
+        writeEncoded(_buffer >>> (_buflen - 6) );
+        _buflen -= 6;
+      }
+    };
+
+    _this.flush = function() {
+
+      if (_buflen > 0) {
+        writeEncoded(_buffer << (6 - _buflen) );
+        _buffer = 0;
+        _buflen = 0;
+      }
+
+      if (_length % 3 != 0) {
+        // padding
+        var padlen = 3 - _length % 3;
+        for (var i = 0; i < padlen; i += 1) {
+          _base64 += '=';
+        }
+      }
+    };
+
+    _this.toString = function() {
+      return _base64;
+    };
+
+    return _this;
+  };
+
+  //---------------------------------------------------------------------
+  // base64DecodeInputStream
+  //---------------------------------------------------------------------
+
+  var base64DecodeInputStream = function(str) {
+
+    var _str = str;
+    var _pos = 0;
+    var _buffer = 0;
+    var _buflen = 0;
+
+    var _this = {};
+
+    _this.read = function() {
+
+      while (_buflen < 8) {
+
+        if (_pos >= _str.length) {
+          if (_buflen == 0) {
+            return -1;
+          }
+          throw 'unexpected end of file./' + _buflen;
+        }
+
+        var c = _str.charAt(_pos);
+        _pos += 1;
+
+        if (c == '=') {
+          _buflen = 0;
+          return -1;
+        } else if (c.match(/^\s$/) ) {
+          // ignore if whitespace.
+          continue;
+        }
+
+        _buffer = (_buffer << 6) | decode(c.charCodeAt(0) );
+        _buflen += 6;
+      }
+
+      var n = (_buffer >>> (_buflen - 8) ) & 0xff;
+      _buflen -= 8;
+      return n;
+    };
+
+    var decode = function(c) {
+      if (0x41 <= c && c <= 0x5a) {
+        return c - 0x41;
+      } else if (0x61 <= c && c <= 0x7a) {
+        return c - 0x61 + 26;
+      } else if (0x30 <= c && c <= 0x39) {
+        return c - 0x30 + 52;
+      } else if (c == 0x2b) {
+        return 62;
+      } else if (c == 0x2f) {
+        return 63;
+      } else {
+        throw 'c:' + c;
+      }
+    };
+
+    return _this;
+  };
+
+  //---------------------------------------------------------------------
+  // gifImage (B/W)
+  //---------------------------------------------------------------------
+
+  var gifImage = function(width, height) {
+
+    var _width = width;
+    var _height = height;
+    var _data = new Array(width * height);
+
+    var _this = {};
+
+    _this.setPixel = function(x, y, pixel) {
+      _data[y * _width + x] = pixel;
+    };
+
+    _this.write = function(out) {
+
+      //---------------------------------
+      // GIF Signature
+
+      out.writeString('GIF87a');
+
+      //---------------------------------
+      // Screen Descriptor
+
+      out.writeShort(_width);
+      out.writeShort(_height);
+
+      out.writeByte(0x80); // 2bit
+      out.writeByte(0);
+      out.writeByte(0);
+
+      //---------------------------------
+      // Global Color Map
+
+      // black
+      out.writeByte(0x00);
+      out.writeByte(0x00);
+      out.writeByte(0x00);
+
+      // white
+      out.writeByte(0xff);
+      out.writeByte(0xff);
+      out.writeByte(0xff);
+
+      //---------------------------------
+      // Image Descriptor
+
+      out.writeString(',');
+      out.writeShort(0);
+      out.writeShort(0);
+      out.writeShort(_width);
+      out.writeShort(_height);
+      out.writeByte(0);
+
+      //---------------------------------
+      // Local Color Map
+
+      //---------------------------------
+      // Raster Data
+
+      var lzwMinCodeSize = 2;
+      var raster = getLZWRaster(lzwMinCodeSize);
+
+      out.writeByte(lzwMinCodeSize);
+
+      var offset = 0;
+
+      while (raster.length - offset > 255) {
+        out.writeByte(255);
+        out.writeBytes(raster, offset, 255);
+        offset += 255;
+      }
+
+      out.writeByte(raster.length - offset);
+      out.writeBytes(raster, offset, raster.length - offset);
+      out.writeByte(0x00);
+
+      //---------------------------------
+      // GIF Terminator
+      out.writeString(';');
+    };
+
+    var bitOutputStream = function(out) {
+
+      var _out = out;
+      var _bitLength = 0;
+      var _bitBuffer = 0;
+
+      var _this = {};
+
+      _this.write = function(data, length) {
+
+        if ( (data >>> length) != 0) {
+          throw 'length over';
+        }
+
+        while (_bitLength + length >= 8) {
+          _out.writeByte(0xff & ( (data << _bitLength) | _bitBuffer) );
+          length -= (8 - _bitLength);
+          data >>>= (8 - _bitLength);
+          _bitBuffer = 0;
+          _bitLength = 0;
+        }
+
+        _bitBuffer = (data << _bitLength) | _bitBuffer;
+        _bitLength = _bitLength + length;
+      };
+
+      _this.flush = function() {
+        if (_bitLength > 0) {
+          _out.writeByte(_bitBuffer);
+        }
+      };
+
+      return _this;
+    };
+
+    var getLZWRaster = function(lzwMinCodeSize) {
+
+      var clearCode = 1 << lzwMinCodeSize;
+      var endCode = (1 << lzwMinCodeSize) + 1;
+      var bitLength = lzwMinCodeSize + 1;
+
+      // Setup LZWTable
+      var table = lzwTable();
+
+      for (var i = 0; i < clearCode; i += 1) {
+        table.add(String.fromCharCode(i) );
+      }
+      table.add(String.fromCharCode(clearCode) );
+      table.add(String.fromCharCode(endCode) );
+
+      var byteOut = byteArrayOutputStream();
+      var bitOut = bitOutputStream(byteOut);
+
+      // clear code
+      bitOut.write(clearCode, bitLength);
+
+      var dataIndex = 0;
+
+      var s = String.fromCharCode(_data[dataIndex]);
+      dataIndex += 1;
+
+      while (dataIndex < _data.length) {
+
+        var c = String.fromCharCode(_data[dataIndex]);
+        dataIndex += 1;
+
+        if (table.contains(s + c) ) {
+
+          s = s + c;
+
+        } else {
+
+          bitOut.write(table.indexOf(s), bitLength);
+
+          if (table.size() < 0xfff) {
+
+            if (table.size() == (1 << bitLength) ) {
+              bitLength += 1;
+            }
+
+            table.add(s + c);
+          }
+
+          s = c;
+        }
+      }
+
+      bitOut.write(table.indexOf(s), bitLength);
+
+      // end code
+      bitOut.write(endCode, bitLength);
+
+      bitOut.flush();
+
+      return byteOut.toByteArray();
+    };
+
+    var lzwTable = function() {
+
+      var _map = {};
+      var _size = 0;
+
+      var _this = {};
+
+      _this.add = function(key) {
+        if (_this.contains(key) ) {
+          throw 'dup key:' + key;
+        }
+        _map[key] = _size;
+        _size += 1;
+      };
+
+      _this.size = function() {
+        return _size;
+      };
+
+      _this.indexOf = function(key) {
+        return _map[key];
+      };
+
+      _this.contains = function(key) {
+        return typeof _map[key] != 'undefined';
+      };
+
+      return _this;
+    };
+
+    return _this;
+  };
+
+  var createDataURL = function(width, height, getPixel) {
+    var gif = gifImage(width, height);
+    for (var y = 0; y < height; y += 1) {
+      for (var x = 0; x < width; x += 1) {
+        gif.setPixel(x, y, getPixel(x, y) );
+      }
+    }
+
+    var b = byteArrayOutputStream();
+    gif.write(b);
+
+    var base64 = base64EncodeOutputStream();
+    var bytes = b.toByteArray();
+    for (var i = 0; i < bytes.length; i += 1) {
+      base64.writeByte(bytes[i]);
+    }
+    base64.flush();
+
+    return 'data:image/gif;base64,' + base64;
+  };
+
+  //---------------------------------------------------------------------
+  // returns qrcode function.
+
+  return qrcode;
+}();
+
+// multibyte support
+!function() {
+
+  qrcode.stringToBytesFuncs['UTF-8'] = function(s) {
+    // http://stackoverflow.com/questions/18729405/how-to-convert-utf8-string-to-byte-array
+    function toUTF8Array(str) {
+      var utf8 = [];
+      for (var i=0; i < str.length; i++) {
+        var charcode = str.charCodeAt(i);
+        if (charcode < 0x80) utf8.push(charcode);
+        else if (charcode < 0x800) {
+          utf8.push(0xc0 | (charcode >> 6),
+              0x80 | (charcode & 0x3f));
+        }
+        else if (charcode < 0xd800 || charcode >= 0xe000) {
+          utf8.push(0xe0 | (charcode >> 12),
+              0x80 | ((charcode>>6) & 0x3f),
+              0x80 | (charcode & 0x3f));
+        }
+        // surrogate pair
+        else {
+          i++;
+          // UTF-16 encodes 0x10000-0x10FFFF by
+          // subtracting 0x10000 and splitting the
+          // 20 bits of 0x0-0xFFFFF into two halves
+          charcode = 0x10000 + (((charcode & 0x3ff)<<10)
+            | (str.charCodeAt(i) & 0x3ff));
+          utf8.push(0xf0 | (charcode >>18),
+              0x80 | ((charcode>>12) & 0x3f),
+              0x80 | ((charcode>>6) & 0x3f),
+              0x80 | (charcode & 0x3f));
+        }
+      }
+      return utf8;
+    }
+    return toUTF8Array(s);
+  };
+
+}();
+
+(function (factory) {
+  if (typeof define === 'function' && define.amd) {
+      define([], factory);
+  } else if (typeof exports === 'object') {
+      module.exports = factory();
+  }
+}(function () {
+    return qrcode;
+}));
+
+</script>
+<script>
+/* Thai school-style font (Sarabun Bold, free SIL Open Font License), packed inside this file so tracing looks the same on every device and works with no internet. */
+(function(){var B='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';
+try{var f=new FontFace('SkyThai','url(data:font/woff2;base64,'+B+')',{weight:'700'});document.fonts.add(f);f.load().then(boot,boot)}catch(e){boot()}})();
+</script>
+</body></html>
