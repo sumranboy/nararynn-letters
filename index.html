@@ -326,7 +326,7 @@ const NOTE=n=>440*Math.pow(2,(n-69)/12);
 const MEL=[72,76,79,76,77,76,74,0, 72,76,79,84,81,79,0,0, 77,81,79,76,77,76,74,72, 74,76,74,71,72,0,0,0, 72,76,79,76,77,76,74,0, 81,79,77,76,74,76,77,79, 81,84,81,79,77,76,74,76, 72,79,76,74,72,0,0,0];
 const BASS=[48,0,55,0,53,0,55,0, 48,0,55,0,57,0,55,0, 53,0,57,0,48,0,55,0, 50,0,55,0,48,0,43,0, 48,0,55,0,53,0,55,0, 57,0,53,0,50,0,55,0, 53,0,57,0,48,0,55,0, 48,0,43,0,48,0,0,0];
 let mus=null;
-function musicStart(){if(mus||!sfxOn()||!ac||ac.state!=='running')return;const g=ac.createGain();g.gain.value=.05;g.connect(ac.destination);
+function musicStart(){if(mus||!sfxOn()||!ac)return;if(ac.state!=='running'){ac.resume().then(()=>{if(ac.state==='running'&&MUSIC_SCR.includes(scr))musicStart()}).catch(()=>{});return}const g=ac.createGain();g.gain.value=.05;g.connect(ac.destination);
   const step=60/112/2;let i=0,t=ac.currentTime+.1;
   const tone=(f,at,d,type,v)=>{const o=ac.createOscillator(),e=ac.createGain();o.type=type;o.frequency.value=f;o.connect(e);e.connect(g);e.gain.setValueAtTime(.0001,at);e.gain.exponentialRampToValueAtTime(v,at+.02);e.gain.exponentialRampToValueAtTime(.0001,at+d);o.start(at);o.stop(at+d+.02)};
   const timer=setInterval(()=>{while(t<ac.currentTime+.4){const k=i%MEL.length;if(MEL[k])tone(NOTE(MEL[k]),t,step*.9,'triangle',.9);if(BASS[k])tone(NOTE(BASS[k]),t,step*1.8,'sine',.7);t+=step;i++}
