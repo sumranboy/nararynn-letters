@@ -333,7 +333,7 @@ function mkU([t,lang,rate]){const u=new SpeechSynthesisUtterance(isSky()?t:lang=
   u.rate=rate||(lang==='th'?.8:.9);u.pitch=1.15;return u}
 /* say(['Hello',['สวัสดี','th'],['cat','en',.5],['b','clip']])  each part: text, or [text, lang, speed], or a recorded letter sound */
 function say(parts){if(!('speechSynthesis' in window))return;if(!Voice.n)pickVoices();
-  parts=[].concat(parts).filter(Boolean).map(p=>typeof p==='string'?[p,'en']:p).map(p=>p[1]==='th'&&hasClip(tid(p[0]))&&(isSky()||!/สกาย/.test(p[0]))?[tid(p[0]),'clip']:p).filter(p=>p[1]!=='clip'||hasClip(p[0]));const tok=++sayTok;stopClip();
+  parts=[].concat(parts).filter(Boolean).map(p=>typeof p==='string'?[p,'en']:p).map(p=>p[1]==='th'&&hasClip(tid(p[0]))&&(isSky()||!/สกาย/.test(p[0]))?[tid(p[0]),'clip']:p[1]==='en'&&hasClip(eid(p[0]))&&(isSky()||!/\bSky\b/.test(p[0]))?[eid(p[0]),'clip']:p).filter(p=>p[1]!=='clip'||hasClip(p[0]));const tok=++sayTok;stopClip();
   if(parts.some(p=>p[1]==='clip'))return saySeq(parts,tok);
   const go=()=>{if(tok!==sayTok)return;for(const p of parts){if(p[1]==='th'&&Voice.n&&!Voice.th)continue;try{speechSynthesis.speak(mkU(p))}catch(_){}}};
   try{if(speechSynthesis.speaking||speechSynthesis.pending){speechSynthesis.cancel();setTimeout(go,90)}else go()}catch(_){}}
@@ -342,6 +342,7 @@ async function saySeq(parts,tok){try{speechSynthesis.cancel()}catch(_){}await wa
     if(p[1]==='clip'){await playClip(p[0]);await wait(140)}
     else if(!(p[1]==='th'&&Voice.n&&!Voice.th))await new Promise(res=>{const u=mkU(p);let fin=false;const end=()=>{if(!fin){fin=true;res()}};u.onend=u.onerror=end;try{speechSynthesis.speak(u)}catch(_){end()}setTimeout(end,1500+p[0].length*120)})}}
 const tid=t=>'w-'+t.trim().replace(/\s+/g,'-');
+const eid=t=>'e-'+t.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');  // Dad's English line clips: e-hi-sky-what-do-you-want-to-play
 const hush=()=>{sayTok++;stopClip();try{speechSynthesis.cancel()}catch(_){}};
 /* ---- letter sounds recorded in a real voice (phonics). Kept on this device. ---- */
 const CLIPS={},CLIPBUF={},PACK={};let clipSrc=null,PACKS=[];
@@ -1101,13 +1102,13 @@ function parent(){hush();show('parent');const b=$('#pbody');const days=[];for(le
   $('#s-names').onclick=()=>setup();
   const FVIDS=[...'abcdefghijklmnopqrstuvwxyz'].map(l=>'en-'+l).concat(TH.map(t=>thId(t[0])),CHEERS.map(c=>c[0]));
   const fvLabel=id=>id.slice(0,3)==='en-'?id.slice(3).toUpperCase()+id.slice(3):id.slice(0,3)==='th-'?TH[+id.slice(3)-1][0]:'💬'+(+id.slice(6));
-  const fvDraw=()=>{const cnt=p=>FVIDS.filter(i=>i.startsWith(p)&&CLIPS[i]).length;$('#fv-count').innerHTML=`On this iPad: English <b>${cnt('en-')}</b> of 26 · Thai <b>${cnt('th-')}</b> of 44 · Cheers <b>${cnt('cheer-')}</b> of 10 · Words and talk <b>${Object.keys(CLIPS).filter(k=>/^(w|bday)-/.test(k)).length}</b>`;
+  const fvDraw=()=>{const cnt=p=>FVIDS.filter(i=>i.startsWith(p)&&CLIPS[i]).length;$('#fv-count').innerHTML=`On this iPad: English <b>${cnt('en-')}</b> of 26 · Thai <b>${cnt('th-')}</b> of 44 · Cheers <b>${cnt('cheer-')}</b> of 10 · Words and talk <b>${Object.keys(CLIPS).filter(k=>/^(w|bday|e)-/.test(k)).length}</b>`;
     const g=$('#fv-grid');g.innerHTML='';FVIDS.forEach(id=>g.append(h('button',{class:'it'+(CLIPS[id]?' ok':'')+(id.slice(0,3)==='th-'?' th':''),title:id,onclick:()=>{$('#fv-msg').textContent=id+(CLIPS[id]?' (family voice)':PACK[id]?' (voice pack)':' (not added yet, uses the usual voice)');hush();if(hasClip(id))playClip(id)}},fvLabel(id))))};
   $('#fv-in').onchange=async e=>{const files=[...e.target.files];let ok=0;const bad=[];
-    for(const f of files){const id=f.name.replace(/\.[^.]+$/,'').trim().toLowerCase().replace(/\s+/g,'-');if(!FVIDS.includes(id)&&!/^(w|bday)-/.test(id)){bad.push(f.name);continue}
+    for(const f of files){const id=f.name.replace(/\.[^.]+$/,'').trim().toLowerCase().replace(/\s+/g,'-');if(!FVIDS.includes(id)&&!/^(w|bday|e)-/.test(id)){bad.push(f.name);continue}
       try{const url=await new Promise((res,rej)=>{const fr=new FileReader();fr.onload=()=>res(fr.result);fr.onerror=rej;fr.readAsDataURL(f)});await clipSave(id,url);ok++}catch(_){bad.push(f.name)}}
     e.target.value='';$('#fv-msg').textContent='Added '+ok+' clip'+(ok===1?'':'s')+'.'+(bad.length?' Not added (name not on the list): '+bad.slice(0,6).join(', ')+(bad.length>6?' ...':''):'');fvDraw()};
-  let fvArm=false;$('#fv-clear').onclick=async e=>{if(!fvArm){fvArm=true;e.target.textContent='Tap again to remove them';return}for(const id of Object.keys(CLIPS))if(FVIDS.includes(id)||/^(w|bday)-/.test(id))await clipDel(id);parent()};
+  let fvArm=false;$('#fv-clear').onclick=async e=>{if(!fvArm){fvArm=true;e.target.textContent='Tap again to remove them';return}for(const id of Object.keys(CLIPS))if(FVIDS.includes(id)||/^(w|bday|e)-/.test(id))await clipDel(id);parent()};
   fvDraw();
   const pk=$('#pk-box');if(PACKS.length){pk.innerHTML='<div class="key" style="margin-bottom:4px">Ready-made voice (used when there is no family clip):</div>';
     [{id:'',name:'iPad voice'}].concat(PACKS).forEach(p=>pk.append(h('button',{class:'p'+((S.set.pack||'')===p.id?' on':''),onclick:()=>{S.set.pack=p.id;save();packUse(p.id,true);parent()}},p.name||p.id)))}
