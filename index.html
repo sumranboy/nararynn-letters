@@ -318,6 +318,31 @@ function beep(notes,type='triangle',vol=.22,step=.13){try{ac=ac||new (window.Aud
   let t=ac.currentTime+.01;notes.forEach(n=>{const f=Array.isArray(n)?n[0]:n,d=Array.isArray(n)?n[1]:step;if(f){const o=ac.createOscillator(),g=ac.createGain();o.type=type;o.frequency.value=f;o.connect(g);g.connect(ac.destination);
     g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(vol,t+.02);g.gain.exponentialRampToValueAtTime(.0001,t+d*.95);o.start(t);o.stop(t+d)}t+=d})}catch(_){}}
 const ding=()=>beep([659,880,1175]),boop=()=>beep([220,196],'sine',.18,.12),tick=()=>beep([880],'sine',.12,.06),fanfare=()=>beep([523,659,784,1047,784,1047],'triangle',.22,.14);
+/* ---- music and tap sounds (our own tune, made here; parent page can turn them off) ---- */
+const sfxOn=()=>!(S&&S.set&&S.set.music===false);
+const MUSIC_SCR=['welcome','home','level'];   // opening and game-choosing pages only, never inside a learning game
+const NOTE=n=>440*Math.pow(2,(n-69)/12);
+// a happy 8-bar tune in C (melody, bass), one entry per eighth note; 0 = rest
+const MEL=[72,76,79,76,77,76,74,0, 72,76,79,84,81,79,0,0, 77,81,79,76,77,76,74,72, 74,76,74,71,72,0,0,0, 72,76,79,76,77,76,74,0, 81,79,77,76,74,76,77,79, 81,84,81,79,77,76,74,76, 72,79,76,74,72,0,0,0];
+const BASS=[48,0,55,0,53,0,55,0, 48,0,55,0,57,0,55,0, 53,0,57,0,48,0,55,0, 50,0,55,0,48,0,43,0, 48,0,55,0,53,0,55,0, 57,0,53,0,50,0,55,0, 53,0,57,0,48,0,55,0, 48,0,43,0,48,0,0,0];
+let mus=null;
+function musicStart(){if(mus||!sfxOn()||!ac||ac.state!=='running')return;const g=ac.createGain();g.gain.value=.05;g.connect(ac.destination);
+  const step=60/112/2;let i=0,t=ac.currentTime+.1;
+  const tone=(f,at,d,type,v)=>{const o=ac.createOscillator(),e=ac.createGain();o.type=type;o.frequency.value=f;o.connect(e);e.connect(g);e.gain.setValueAtTime(.0001,at);e.gain.exponentialRampToValueAtTime(v,at+.02);e.gain.exponentialRampToValueAtTime(.0001,at+d);o.start(at);o.stop(at+d+.02)};
+  const timer=setInterval(()=>{while(t<ac.currentTime+.4){const k=i%MEL.length;if(MEL[k])tone(NOTE(MEL[k]),t,step*.9,'triangle',.9);if(BASS[k])tone(NOTE(BASS[k]),t,step*1.8,'sine',.7);t+=step;i++}
+    const talking=clipSrc||('speechSynthesis' in window&&speechSynthesis.speaking);g.gain.setTargetAtTime(talking?.012:.05,ac.currentTime,.15)},120);   // quieter while Twinkle talks
+  mus={g,timer}}
+function musicStop(){if(!mus)return;const m=mus;mus=null;clearInterval(m.timer);try{m.g.gain.setTargetAtTime(.0001,ac.currentTime,.2);setTimeout(()=>m.g.disconnect(),900)}catch(_){}}
+const musicFor=id=>MUSIC_SCR.includes(id)&&sfxOn()?musicStart():musicStop();
+const twinkle=()=>beep([[1568,.07],[2093,.07],[2637,.07],[3136,.09],[2637,.07],[3136,.18]],'sine',.12);
+const SFX={pop:()=>beep([[660,.05],[990,.07]],'sine',.2),boing:()=>{beep([[440,.06],[330,.06],[262,.1]],'square',.06)},squeak:()=>beep([[1400,.04],[1900,.05],[2400,.05]],'sine',.1),sparkle:()=>beep([[1047,.05],[1319,.05],[1568,.05],[2093,.08]],'triangle',.14)};
+const sfxFor=b=>/back$|^quit$|^phome$/.test(b.id)?'boing':b.closest('#closet')?'squeak':b.classList.contains('pink')?'sparkle':'pop';
+let twinkled=false;
+document.addEventListener('pointerdown',e=>{const b=e.target.closest('button,[onclick],.it,.lv,.star');
+  try{ac=ac||new (window.AudioContext||window.webkitAudioContext)();if(ac.state==='suspended')ac.resume()}catch(_){}
+  if(!sfxOn()||scr==='parent'||scr==='play')return;   // the games make their own right/wrong sounds
+  if(!twinkled){twinkled=true;twinkle()}else if(b)SFX[sfxFor(b)]();
+  setTimeout(()=>musicFor(scr),60)},true);
 const Voice={en:null,th:null,n:0};
 function pickVoices(){if(!('speechSynthesis' in window))return;const vs=speechSynthesis.getVoices();Voice.n=vs.length;if(!vs.length)return;
   const L=v=>v.lang.replace('_','-').toLowerCase();
@@ -767,7 +792,7 @@ function locked(why){show('locked');putMali('#lockmali');$('#locktitle').textCon
 
 /* ================= screens ================= */
 let scr='welcome';
-function show(id){document.querySelectorAll('.scr').forEach(s=>s.classList.toggle('on',s.id===id));scr=id}
+function show(id){document.querySelectorAll('.scr').forEach(s=>s.classList.toggle('on',s.id===id));scr=id;try{musicFor(id)}catch(_){}}
 
 /* ---- welcome: from Dad and Mom ---- */
 function setup(){show('setup');putMali('#setmali');if(KID){$('#in-nick').value=KID.nick;$('#in-first').value=KID.first||'';$('#in-last').value=KID.last||''}
@@ -1074,7 +1099,7 @@ function parent(){hush();show('parent');const b=$('#pbody');const days=[];for(le
    <div><button class="p" id="s-names">✏️ Names: ${esc(KID?[KID.nick,KID.first,KID.last].filter(Boolean).join(' · '):'')}</button> <span class="key">Change the nickname, first name and last name.</span></div>
    <div><button class="p" id="s-tool">Writing tool: ${{auto:'Automatic (finger first, then pencil)',finger:'Finger only',pen:'Pencil only'}[S.set.tool]}</button> <span class="key">${S.pen?'She earned the pencil on '+new Date(S.pen).toLocaleDateString()+'.':'Automatic: she earns the pencil after '+PEN_AFTER+' finished writing games.'} In pencil time a finger or resting palm does not write. A mouse always works.</span></div>
    <div><button class="p ${S.set.unlock?'on':''}" id="s-unlock">${S.set.unlock?'✅ Everything is unlocked':'🔒 Unlock everything'}</button> <span class="key">Jump to the letters her teacher is doing this week.</span></div>
-   <div><button class="p" id="s-talk">${esc(un())}'s instructions: ${{en:'English always',sec:'Thai inside the Thai part',th:'Thai always'}[S.set.talk]}</button> <span class="key">The letters and words are always said in their own language.</span></div>
+   <div><button class="p" id="s-music">🎵 Music and tap sounds: ${S.set.music===false?'Off':'On'}</button> <button class="p" id="s-talk">${esc(un())}'s instructions: ${{en:'English always',sec:'Thai inside the Thai part',th:'Thai always'}[S.set.talk]}</button> <span class="key">The letters and words are always said in their own language.</span></div>
    <div><button class="p ${S.set.sounds?'on':''}" id="s-snd">Letter sounds ("buh"): ${S.set.sounds?'on':'off'}</button> <span class="key">Turn off if the iPad voice says them badly.</span></div></div>
   <h2>Check the voices</h2><div class="box"><div id="vinfo"></div>
    <button class="p" id="v-en">🔊 English test</button><button class="p" id="v-th">🔊 Thai test</button>
@@ -1138,6 +1163,7 @@ function parent(){hush();show('parent');const b=$('#pbody');const days=[];for(le
       catch(e){out.textContent='Could not make a code on this device.'}})}
   $('#s-tool').onclick=()=>{S.set.tool={auto:'finger',finger:'pen',pen:'auto'}[S.set.tool];save();parent()};
   $('#s-unlock').onclick=()=>{S.set.unlock=!S.set.unlock;save();parent()};
+  $('#s-music').onclick=()=>{S.set.music=S.set.music===false;save();musicStop();parent()};
   $('#s-talk').onclick=()=>{S.set.talk={en:'sec',sec:'th',th:'en'}[S.set.talk];save();parent()};
   $('#s-snd').onclick=()=>{S.set.sounds=!S.set.sounds;save();parent()};
   $('#s-bday').onclick=e=>{S.bday=0;save();e.target.textContent='🎂 Okay! It will show the next time the app opens.'};
