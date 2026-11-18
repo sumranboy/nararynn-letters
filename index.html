@@ -333,7 +333,7 @@ function mkU([t,lang,rate]){const u=new SpeechSynthesisUtterance(isSky()?t:lang=
   u.rate=rate||(lang==='th'?.8:.9);u.pitch=1.15;return u}
 /* say(['Hello',['สวัสดี','th'],['cat','en',.5],['b','clip']])  each part: text, or [text, lang, speed], or a recorded letter sound */
 function say(parts){if(!('speechSynthesis' in window))return;if(!Voice.n)pickVoices();
-  parts=[].concat(parts).filter(Boolean).map(p=>typeof p==='string'?[p,'en']:p).map(p=>p[1]==='th'&&hasClip(tid(p[0]))&&(isSky()||!/สกาย/.test(p[0]))?[tid(p[0]),'clip']:p[1]==='en'&&hasClip(eid(p[0]))&&(isSky()||!/\bSky\b/.test(p[0]))?[eid(p[0]),'clip']:p).filter(p=>p[1]!=='clip'||hasClip(p[0]));const tok=++sayTok;stopClip();
+  parts=[].concat(parts).filter(Boolean).map(p=>typeof p==='string'?[p,'en']:p).map(p=>p[1]==='en'&&un()!=='Mali'?[p[0].replace(/\bMali\b/g,un()),...p.slice(1)]:p).map(p=>p[1]==='th'&&hasClip(tid(p[0]))&&(isSky()||!/สกาย/.test(p[0]))?[tid(p[0]),'clip']:p[1]==='en'&&hasClip(eid(p[0]))&&(isSky()||!/\bSky\b/.test(p[0]))?[eid(p[0]),'clip']:p).filter(p=>p[1]!=='clip'||hasClip(p[0]));const tok=++sayTok;stopClip();
   if(parts.some(p=>p[1]==='clip'))return saySeq(parts,tok);
   const go=()=>{if(tok!==sayTok)return;for(const p of parts){if(p[1]==='th'&&Voice.n&&!Voice.th)continue;try{speechSynthesis.speak(mkU(p))}catch(_){}}};
   try{if(speechSynthesis.speaking||speechSynthesis.pending){speechSynthesis.cancel();setTimeout(go,90)}else go()}catch(_){}}
@@ -343,6 +343,7 @@ async function saySeq(parts,tok){try{speechSynthesis.cancel()}catch(_){}await wa
     else if(!(p[1]==='th'&&Voice.n&&!Voice.th))await new Promise(res=>{const u=mkU(p);let fin=false;const end=()=>{if(!fin){fin=true;res()}};u.onend=u.onerror=end;try{speechSynthesis.speak(u)}catch(_){end()}setTimeout(end,1500+p[0].length*120)})}}
 const tid=t=>'w-'+t.trim().replace(/\s+/g,'-');
 const eid=t=>'e-'+t.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');  // Dad's English line clips: e-hi-sky-what-do-you-want-to-play
+const un=()=>(S.set&&S.set.uname)||'Mali';
 const hush=()=>{sayTok++;stopClip();try{speechSynthesis.cancel()}catch(_){}};
 /* ---- letter sounds recorded in a real voice (phonics). Kept on this device. ---- */
 const CLIPS={},CLIPBUF={},PACK={};let clipSrc=null,PACKS=[];
@@ -441,7 +442,7 @@ function mali(look){const U='g'+(++MID),L=look||S.look,B=BODY[L.body]||BODY.whit
     glasses:`<g fill="rgba(255,111,181,.16)" stroke="#ff6fb5" stroke-width="4"><circle cx="76" cy="100" r="18"/><circle cx="124" cy="100" r="18"/><path d="M94 100h12" fill="none"/></g>`,
     wand:`<path d="M134 204L170 150" stroke="#b79bff" stroke-width="6" stroke-linecap="round"/><path d="M170 132l4.5 10 10.8 1.2-8.1 7.2 2.4 10.6-9.6-5.6-9.6 5.6 2.4-10.6-8.1-7.2 10.8-1.2z" fill="#ffd447" stroke="#f0b400" stroke-width="2"/>`,
     aura:`<g fill="#ffd447">${[[8,40],[196,30],[-2,110],[204,100],[26,-6],[176,-10],[10,214],[196,216]].map((p,i)=>`<path class="tw" style="animation:twinkle 1.4s ${i*.17}s infinite;transform-box:fill-box;transform-origin:center" d="M${p[0]} ${p[1]-9}l2.6 6.4 6.4 2.6-6.4 2.6-2.6 6.4-2.6-6.4-6.4-2.6 6.4-2.6z"/>`).join('')}</g>`}[L.extra]||'';
-  return `<svg class="mali" viewBox="-12 -24 228 256" aria-label="Mali the unicorn">
+  return `<svg class="mali" viewBox="-12 -24 228 256" aria-label="${esc(un())} the unicorn">
 <defs><linearGradient id="wingrb${U}" x1="0" x2="1" y1="0" y2="1"><stop offset="0" stop-color="#ff9ecf"/><stop offset=".35" stop-color="#ffe27a"/><stop offset=".7" stop-color="#8ee6c4"/><stop offset="1" stop-color="#8fd3ff"/></linearGradient><linearGradient id="hornrb${U}" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#ff7eb6"/><stop offset=".5" stop-color="#ffe27a"/><stop offset="1" stop-color="#7cc4ff"/></linearGradient></defs>
 ${wing}${cape}
 <g><path d="M138 168q56-26 52 26q-4 26-30 24q20-14 8-32q-10-12-30-6z" fill="${M[2]}"/><path d="M140 176q42-14 38 22q-4 16-22 16q12-12 2-26q-6-8-18-4z" fill="${M[3]}"/><path d="M142 183q28-6 24 16q-2 10-14 10q6-9 0-17q-4-5-10-3z" fill="${M[4]}"/></g>
@@ -1073,7 +1074,7 @@ function parent(){hush();show('parent');const b=$('#pbody');const days=[];for(le
    <div><button class="p" id="s-names">✏️ Names: ${esc(KID?[KID.nick,KID.first,KID.last].filter(Boolean).join(' · '):'')}</button> <span class="key">Change the nickname, first name and last name.</span></div>
    <div><button class="p" id="s-tool">Writing tool: ${{auto:'Automatic (finger first, then pencil)',finger:'Finger only',pen:'Pencil only'}[S.set.tool]}</button> <span class="key">${S.pen?'She earned the pencil on '+new Date(S.pen).toLocaleDateString()+'.':'Automatic: she earns the pencil after '+PEN_AFTER+' finished writing games.'} In pencil time a finger or resting palm does not write. A mouse always works.</span></div>
    <div><button class="p ${S.set.unlock?'on':''}" id="s-unlock">${S.set.unlock?'✅ Everything is unlocked':'🔒 Unlock everything'}</button> <span class="key">Jump to the letters her teacher is doing this week.</span></div>
-   <div><button class="p" id="s-talk">Mali's instructions: ${{en:'English always',sec:'Thai inside the Thai part',th:'Thai always'}[S.set.talk]}</button> <span class="key">The letters and words are always said in their own language.</span></div>
+   <div><div style="margin-bottom:8px">Unicorn's name: <input id="s-uname" maxlength="20" value="${esc(un())}" style="font-size:20px;padding:8px 10px;border-radius:12px;border:2px solid #d9cdf2;width:200px"> <span class="key">Type a new name. It is saved right away.</span></div><button class="p" id="s-talk">${esc(un())}'s instructions: ${{en:'English always',sec:'Thai inside the Thai part',th:'Thai always'}[S.set.talk]}</button> <span class="key">The letters and words are always said in their own language.</span></div>
    <div><button class="p ${S.set.sounds?'on':''}" id="s-snd">Letter sounds ("buh"): ${S.set.sounds?'on':'off'}</button> <span class="key">Turn off if the iPad voice says them badly.</span></div></div>
   <h2>Check the voices</h2><div class="box"><div id="vinfo"></div>
    <button class="p" id="v-en">🔊 English test</button><button class="p" id="v-th">🔊 Thai test</button>
@@ -1085,7 +1086,7 @@ function parent(){hush();show('parent');const b=$('#pbody');const days=[];for(le
    <button class="p danger" id="fv-clear">Remove family voices</button></div>
    <div id="fv-count"></div><div id="fv-msg" class="key"></div><div class="grid" id="fv-grid"></div>
    <div id="pk-box" style="margin-top:12px"></div></div>
-  <h2>Letter sounds in a real voice (phonics)</h2><div class="box"><div>The iPad voice says letter names well, but not the short letter sounds. Record each sound once (Mom, Dad or her teacher) and Mali will use your voice: letter, sound, picture word, then "Now you say it!".</div>
+  <h2>Letter sounds in a real voice (phonics)</h2><div class="box"><div>The iPad voice says letter names well, but not the short letter sounds. Record each sound once (Mom, Dad or her teacher) and ${esc(un())} will use your voice: letter, sound, picture word, then "Now you say it!".</div>
    <div class="key" style="margin:6px 0">Tap a letter, wait for the beep, say only the short sound. It plays back. Tap again to redo. <b id="rc-count"></b></div><div class="grid" id="rcgrid"></div><div id="rc-msg" class="key"></div></div>
   <h2>Birthday and reset</h2><div class="box"><button class="p" id="s-bday">🎂 Show the birthday surprise again next time</button><br>
    <button class="p danger" id="s-reset">Erase all progress (start fresh for Sky)</button></div>
@@ -1137,6 +1138,7 @@ function parent(){hush();show('parent');const b=$('#pbody');const days=[];for(le
       catch(e){out.textContent='Could not make a code on this device.'}})}
   $('#s-tool').onclick=()=>{S.set.tool={auto:'finger',finger:'pen',pen:'auto'}[S.set.tool];save();parent()};
   $('#s-unlock').onclick=()=>{S.set.unlock=!S.set.unlock;save();parent()};
+  $('#s-uname').onchange=e=>{S.set.uname=e.target.value.trim().slice(0,20);save();parent()};
   $('#s-talk').onclick=()=>{S.set.talk={en:'sec',sec:'th',th:'en'}[S.set.talk];save();parent()};
   $('#s-snd').onclick=()=>{S.set.sounds=!S.set.sounds;save();parent()};
   $('#s-bday').onclick=e=>{S.bday=0;save();e.target.textContent='🎂 Okay! It will show the next time the app opens.'};
