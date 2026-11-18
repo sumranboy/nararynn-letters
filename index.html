@@ -343,7 +343,7 @@ async function saySeq(parts,tok){try{speechSynthesis.cancel()}catch(_){}await wa
     else if(!(p[1]==='th'&&Voice.n&&!Voice.th))await new Promise(res=>{const u=mkU(p);let fin=false;const end=()=>{if(!fin){fin=true;res()}};u.onend=u.onerror=end;try{speechSynthesis.speak(u)}catch(_){end()}setTimeout(end,1500+p[0].length*120)})}}
 const tid=t=>'w-'+t.trim().replace(/\s+/g,'-');
 const eid=t=>'e-'+t.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');  // Dad's English line clips: e-hi-sky-what-do-you-want-to-play
-const un=()=>(S.set&&S.set.uname)||'Twinkle';
+const un=()=>'Twinkle';
 const hush=()=>{sayTok++;stopClip();try{speechSynthesis.cancel()}catch(_){}};
 /* ---- letter sounds recorded in a real voice (phonics). Kept on this device. ---- */
 const CLIPS={},CLIPBUF={},PACK={};let clipSrc=null,PACKS=[];
@@ -1074,7 +1074,7 @@ function parent(){hush();show('parent');const b=$('#pbody');const days=[];for(le
    <div><button class="p" id="s-names">✏️ Names: ${esc(KID?[KID.nick,KID.first,KID.last].filter(Boolean).join(' · '):'')}</button> <span class="key">Change the nickname, first name and last name.</span></div>
    <div><button class="p" id="s-tool">Writing tool: ${{auto:'Automatic (finger first, then pencil)',finger:'Finger only',pen:'Pencil only'}[S.set.tool]}</button> <span class="key">${S.pen?'She earned the pencil on '+new Date(S.pen).toLocaleDateString()+'.':'Automatic: she earns the pencil after '+PEN_AFTER+' finished writing games.'} In pencil time a finger or resting palm does not write. A mouse always works.</span></div>
    <div><button class="p ${S.set.unlock?'on':''}" id="s-unlock">${S.set.unlock?'✅ Everything is unlocked':'🔒 Unlock everything'}</button> <span class="key">Jump to the letters her teacher is doing this week.</span></div>
-   <div><div style="margin-bottom:8px">Unicorn's name: <input id="s-uname" maxlength="20" value="${esc(un())}" style="font-size:20px;padding:8px 10px;border-radius:12px;border:2px solid #d9cdf2;width:200px"> <span class="key">Type a new name. It is saved right away.</span></div><button class="p" id="s-talk">${esc(un())}'s instructions: ${{en:'English always',sec:'Thai inside the Thai part',th:'Thai always'}[S.set.talk]}</button> <span class="key">The letters and words are always said in their own language.</span></div>
+   <div><button class="p" id="s-talk">${esc(un())}'s instructions: ${{en:'English always',sec:'Thai inside the Thai part',th:'Thai always'}[S.set.talk]}</button> <span class="key">The letters and words are always said in their own language.</span></div>
    <div><button class="p ${S.set.sounds?'on':''}" id="s-snd">Letter sounds ("buh"): ${S.set.sounds?'on':'off'}</button> <span class="key">Turn off if the iPad voice says them badly.</span></div></div>
   <h2>Check the voices</h2><div class="box"><div id="vinfo"></div>
    <button class="p" id="v-en">🔊 English test</button><button class="p" id="v-th">🔊 Thai test</button>
@@ -1138,7 +1138,6 @@ function parent(){hush();show('parent');const b=$('#pbody');const days=[];for(le
       catch(e){out.textContent='Could not make a code on this device.'}})}
   $('#s-tool').onclick=()=>{S.set.tool={auto:'finger',finger:'pen',pen:'auto'}[S.set.tool];save();parent()};
   $('#s-unlock').onclick=()=>{S.set.unlock=!S.set.unlock;save();parent()};
-  $('#s-uname').onchange=e=>{S.set.uname=e.target.value.trim().slice(0,20);save();parent()};
   $('#s-talk').onclick=()=>{S.set.talk={en:'sec',sec:'th',th:'en'}[S.set.talk];save();parent()};
   $('#s-snd').onclick=()=>{S.set.sounds=!S.set.sounds;save();parent()};
   $('#s-bday').onclick=e=>{S.bday=0;save();e.target.textContent='🎂 Okay! It will show the next time the app opens.'};
