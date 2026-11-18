@@ -152,7 +152,7 @@ body.dark .name,body.dark #lvtitle,body.dark .barT{color:#fff;text-shadow:none}
 .penbadge{width:min(26vw,22vh,190px);height:min(26vw,22vh,190px);border-radius:28%;background:linear-gradient(135deg,#fff3a6,#ffd447);box-shadow:0 0 0 6px #fff,0 10px 0 6px #e8c545;display:flex;align-items:center;justify-content:center;font-size:min(15vw,13vh,120px);animation:pop .6s,wobble 1.2s .6s infinite}
 .bub.pen{background:#d9f3ff;box-shadow:0 7px 0 #7cc4ff}
 input{-webkit-user-select:text;user-select:text;font:inherit;color:inherit}
-#setup{justify-content:center;gap:2vh;overflow:auto;touch-action:pan-y}
+#setup{justify-content:safe center;gap:2vh;overflow:auto;touch-action:pan-y}
 #setup .box{background:#fff;border-radius:30px;box-shadow:0 8px 0 var(--line);padding:22px 26px;width:min(92vw,560px);display:grid;gap:14px}
 #setup h1{margin:0;font-size:min(7vw,40px);text-align:center}
 #setup label{display:grid;gap:4px;font-size:20px}
@@ -227,6 +227,8 @@ input{-webkit-user-select:text;user-select:text;font:inherit;color:inherit}
   <label>Nickname <small>the name the app says out loud</small><input id="in-nick" autocomplete="off" autocapitalize="words" maxlength="16" placeholder="Nickname"></label>
   <label>First name <small>to practice writing it (you can skip this)</small><input id="in-first" autocomplete="off" autocapitalize="words" maxlength="24" placeholder="First name"></label>
   <label>Last name <small>to practice writing it (you can skip this)</small><input id="in-last" autocomplete="off" autocapitalize="words" maxlength="24" placeholder="Last name"></label>
+  <label>Gift from <small>for the birthday surprise, like Aunt Lily (you can skip this)</small><input id="in-from" autocomplete="off" autocapitalize="words" maxlength="30" placeholder="Gift from"></label>
+  <label>Birthday <small>the surprise shows the first time it opens (you can skip this)</small><input id="in-dob" type="date"></label>
   <button class="btn pink" type="submit" style="font-size:40px;height:84px">▶️</button>
   <div style="font-weight:400;font-size:15px;color:#8a7bb5;text-align:center">Names stay on this iPad only. Use English letters.</div>
  </form>
@@ -309,6 +311,10 @@ try{const s=JSON.parse(localStorage.getItem(KEY));if(s&&s.v===2)S=Object.assign(
 const NKEY='sky-letters-kid';let KID=null;
 try{const k=JSON.parse(localStorage.getItem(NKEY));if(k&&k.nick)KID=k}catch(_){}
 const nick=()=>KID?KID.nick:'Sky',isSky=()=>nick().toLowerCase()==='sky';
+// birthday surprise: Sky has hers built in; any other child gets one when a birthday is typed
+const giftFrom=()=>KID&&KID.from||(isSky()?'Dad and Mom':''),kidDob=()=>KID&&KID.dob||(isSky()?'2021-11-20':'');
+function bdayAge(){const b=new Date(kidDob()+'T12:00'),d=new Date();let a=d.getFullYear()-b.getFullYear();const nb=new Date(d.getFullYear(),b.getMonth(),b.getDate(),12);
+  if(d<nb)a--;if(d<nb&&nb-d<30*864e5)a++;return Math.max(1,a)}   // opened up to 30 days early counts as the new age
 const esc=t=>String(t).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 /* which writing tool right now: finger first, the magic pencil after she earns it (parent page can force one) */
 const PEN_AFTER=2;   // finished writing games (with a finger) before the pencil is earned
@@ -798,9 +804,9 @@ let scr='welcome';
 function show(id){document.querySelectorAll('.scr').forEach(s=>s.classList.toggle('on',s.id===id));scr=id;try{musicFor(id)}catch(_){}}
 
 /* ---- welcome: from Dad and Mom ---- */
-function setup(){show('setup');putMali('#setmali');if(KID){$('#in-nick').value=KID.nick;$('#in-first').value=KID.first||'';$('#in-last').value=KID.last||''}
+function setup(){show('setup');putMali('#setmali');if(KID){$('#in-nick').value=KID.nick;$('#in-first').value=KID.first||'';$('#in-last').value=KID.last||'';$('#in-from').value=KID.from||'';$('#in-dob').value=KID.dob||''}
   $('#setform').onsubmit=e=>{e.preventDefault();const cap=v=>v.trim().replace(/\s+/g,' ');const n=cap($('#in-nick').value);if(!n){$('#in-nick').focus();return}
-    KID={nick:n,first:cap($('#in-first').value),last:cap($('#in-last').value)};try{localStorage.setItem(NKEY,JSON.stringify(KID))}catch(_){}
+    KID={nick:n,first:cap($('#in-first').value),last:cap($('#in-last').value),from:cap($('#in-from').value),dob:$('#in-dob').value};try{localStorage.setItem(NKEY,JSON.stringify(KID))}catch(_){}
     document.activeElement&&document.activeElement.blur();kidChanged();beep([523,659,784]);welcome()}}
 function welcome(){show('welcome');const w=$('#welcome');
   w.innerHTML=`<svg class="art" viewBox="0 0 800 600" preserveAspectRatio="xMidYMid slice">
@@ -818,27 +824,27 @@ function welcome(){show('welcome');const w=$('#welcome');
   putMali('#wmali');
   const cols=['#ff6fb5','#ff9e57','#f2b600','#39c58f','#58a6ff','#9b6bff'];
   $('#wtitle').innerHTML=[...(nick()+"'s Letters")].map((c,i)=>c===' '?' ':`<span style="color:${cols[i%6]}">${esc(c)}</span>`).join('');
-  $('#wfrom').textContent=isSky()?'From Dad and Mom, to Sky 💖':'For '+nick()+', from your friend Sky 💖';
+  $('#wfrom').textContent=giftFrom()?'From '+giftFrom()+', to '+nick()+' 💖':'For '+nick()+', from your friend Sky 💖';
   w.onclick=()=>{w.onclick=null;beep([523,659,784]);
-    if(isSky()&&!S.bday){say(['From Dad and Mom, to Sky. With love.']);birthday()}
+    if(kidDob()&&!S.bday){say([giftFrom()?'From '+giftFrom()+', to '+nick()+'. With love.':'']);birthday()}
     else{home(true)}}}
 
 /* ---- happy birthday surprise (first time only) ---- */
 function birthday(){const b=$('#bday');b.classList.remove('open');show('bday');
   b.querySelectorAll('.star,.balloon,.num,.rbow').forEach(e=>e.remove());b.prepend(h('div',{class:'rbow'}));
   for(let i=0;i<30;i++){const s=h('div',{class:'star'},pick(['✦','✨','✨','🌈']));s.style.left=rnd(100)+'%';s.style.top=rnd(100)+'%';s.style.fontSize=(10+rnd(22))+'px';s.style.animationDelay=(Math.random()*2)+'s';b.append(s)}
-  const d=new Date(),bd=new Date(d.getFullYear(),10,20);const age=Math.max(5,d.getFullYear()-2021-(d<bd?1:0));
+  const age=isSky()?Math.max(5,bdayAge()):bdayAge(),candles=Math.min(age,9);
   for(let i=0;i<22;i++){const n=h('div',{class:'num'},String(age));n.style.left=rnd(92)+'%';n.style.top=rnd(90)+'%';n.style.fontSize=(24+rnd(110))+'px';n.style.color=pick(['#ff9ecf','#ffd86b','#8ee6c4','#8fd3ff','#c9b6ff','#fff']);n.style.animationDuration=(1.8+Math.random()*1.6)+'s';n.style.animationDelay=(Math.random()*2.4)+'s';b.append(n)}
-  $('#hbtext').innerHTML=[...'Happy Birthday'].map((c,i)=>c===' '?'<br>':`<span style="animation-delay:${i*.08}s;color:${['#ff9ecf','#ffd86b','#8ee6c4','#8fd3ff','#c9b6ff'][i%5]}">${c}</span>`).join('')+`<br><span class="name">Sky!</span>`;
-  let cs='';for(let i=0;i<age;i++){const x=150-(age-1)*17+i*34;cs+=`<rect x="${x-5}" y="52" width="10" height="46" rx="4" fill="${['#ff7eb6','#7cc4ff','#ffd447','#7fe0a8','#b79bff'][i%5]}"/><path class="flame" data-f="1" d="M${x} 18q14 18 0 32q-14-14 0-32z" fill="#ffb300" stroke="#ff7a00" stroke-width="2"/><circle class="hit" cx="${x}" cy="40" r="20" fill="transparent"/>`}
+  $('#hbtext').innerHTML=[...'Happy Birthday'].map((c,i)=>c===' '?'<br>':`<span style="animation-delay:${i*.08}s;color:${['#ff9ecf','#ffd86b','#8ee6c4','#8fd3ff','#c9b6ff'][i%5]}">${c}</span>`).join('')+`<br><span class="name">${esc(nick())}!</span>`;
+  let cs='';for(let i=0;i<candles;i++){const x=150-(candles-1)*17+i*34;cs+=`<rect x="${x-5}" y="52" width="10" height="46" rx="4" fill="${['#ff7eb6','#7cc4ff','#ffd447','#7fe0a8','#b79bff'][i%5]}"/><path class="flame" data-f="1" d="M${x} 18q14 18 0 32q-14-14 0-32z" fill="#ffb300" stroke="#ff7a00" stroke-width="2"/><circle class="hit" cx="${x}" cy="40" r="20" fill="transparent"/>`}
   $('#cakebox').innerHTML=`<svg id="cake" viewBox="0 0 300 260">${cs}<rect x="50" y="96" width="200" height="70" rx="18" fill="#ffd9ec"/><path d="M50 118q25 26 50 0t50 0t50 0t50 0v-8a14 14 0 0 0-14-14H64a14 14 0 0 0-14 14z" fill="#fff"/><rect x="24" y="160" width="252" height="76" rx="20" fill="#c9b6ff"/><path d="M24 186q21 26 42 0t42 0t42 0t42 0t42 0t42 0v-10a16 16 0 0 0-16-16H40a16 16 0 0 0-16 16z" fill="#fff3a6"/><g fill="#ff6fb5"><circle cx="70" cy="214" r="6"/><circle cx="120" cy="218" r="6"/><circle cx="170" cy="214" r="6"/><circle cx="220" cy="218" r="6"/></g><rect x="10" y="232" width="280" height="14" rx="7" fill="#fff"/></svg>`;
   putMali('#bmali');$('#bgo').style.display='none';
   $('#gift').onclick=()=>{b.classList.add('open');confetti(70);cheer();
     for(let i=0;i<9;i++){const e=h('div',{class:'balloon'},'🎈');e.style.left=(4+rnd(88))+'%';e.style.animationDuration=(5+Math.random()*4)+'s';e.style.animationDelay=(Math.random()*2.5)+'s';b.append(e)}
     const G=392,A=440,B=494,C=523,D=587,E=659,F=698,G5=784,q=.3;
     beep([[G,q*.75],[G,q*.25],[A,q],[G,q],[C,q],[B,q*2],[G,q*.75],[G,q*.25],[A,q],[G,q],[D,q],[C,q*2],[G,q*.75],[G,q*.25],[G5,q],[E,q],[C,q],[B,q],[A,q*2],[F,q*.75],[F,q*.25],[E,q],[C,q],[D,q],[C,q*2.5]],'triangle',.1);
-    say([['bday-together','clip'],'Happy birthday, Sky! You are '+age+' years old!',['สุขสันต์วันเกิดนะคะ สกาย','th'],'I am Mali, your unicorn friend. This game is a present from Daddy and Mommy. They love you so much!','Now blow out the candles. Tap each little fire!']);
-    let left=age;$('#cake').querySelectorAll('.hit').forEach(hit=>hit.onclick=()=>{const f=hit.previousElementSibling;if(!f.dataset.f)return;f.dataset.f='';f.style.display='none';tick();sparkle(2);
+    say([isSky()&&['bday-together','clip'],'Happy birthday, Sky! You are '+age+' years old!',['สุขสันต์วันเกิดนะคะ สกาย','th'],isSky()?'I am Mali, your unicorn friend. This game is a present from Daddy and Mommy. They love you so much!':'I am Mali, your unicorn friend. '+(giftFrom()?'This game is a present from '+giftFrom()+'. They love you so much!':'This game is a present just for you!'),'Now blow out the candles. Tap each little fire!']);
+    let left=candles;$('#cake').querySelectorAll('.hit').forEach(hit=>hit.onclick=()=>{const f=hit.previousElementSibling;if(!f.dataset.f)return;f.dataset.f='';f.style.display='none';tick();sparkle(2);
       if(--left===0){confetti(90);cheer();fanfare();say(['Yay! Make a wish, Sky!',"Let's play!"]);$('#bgo').style.display=''}});
     setTimeout(()=>{$('#bgo').style.display=''},25000)};
   $('#bgo').onclick=()=>{S.bday=Date.now();save();home(true)}}
@@ -1119,7 +1125,7 @@ function parent(){hush();show('parent');const b=$('#pbody');const days=[];for(le
   <h2>Letter sounds in a real voice (phonics)</h2><div class="box"><div>The iPad voice says letter names well, but not the short letter sounds. Record each sound once (a parent or her teacher) and ${esc(un())} will use your voice: letter, sound, picture word, then "Now you say it!".</div>
    <div class="key" style="margin:6px 0">Tap a letter, wait for the beep, say only the short sound. It plays back. Tap again to redo. <b id="rc-count"></b></div><div class="grid" id="rcgrid"></div><div id="rc-msg" class="key"></div></div>
   <h2>Birthday and reset</h2><div class="box"><button class="p" id="s-bday">🎂 Show the birthday surprise again next time</button><br>
-   <button class="p danger" id="s-reset">Erase all progress (start fresh for Sky)</button></div>
+   <button class="p danger" id="s-reset">Erase all progress (start fresh for ${esc(nick())})</button></div>
   <div class="key">Everything is saved only on this iPad. No account, no internet.</div>`;
   b.innerHTML=html;
   const vi=()=>{pickVoices();$('#vinfo').innerHTML=`English voice: <b>${Voice.en?Voice.en.name:'not found'}</b><br>Thai voice: <b>${Voice.th?Voice.th.name:'not found'}</b>${Voice.th?'':'<br><span style="color:#b00020">No Thai voice yet. On the iPad: Settings → Accessibility → Spoken Content → Voices → Thai → download Kanya.</span>'}`};vi();setTimeout(vi,800);
