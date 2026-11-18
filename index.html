@@ -320,7 +320,7 @@ function beep(notes,type='triangle',vol=.22,step=.13){try{ac=ac||new (window.Aud
 const ding=()=>beep([659,880,1175]),boop=()=>beep([220,196],'sine',.18,.12),tick=()=>beep([880],'sine',.12,.06),fanfare=()=>beep([523,659,784,1047,784,1047],'triangle',.22,.14);
 /* ---- music and tap sounds (our own tune, made here; parent page can turn them off) ---- */
 const sfxOn=()=>!(S&&S.set&&S.set.music===false);
-const MUSIC_SCR=['welcome','home','level'];   // opening and game-choosing pages only, never inside a learning game
+const MUSIC_SCR=['setup','welcome','home','level'];   // opening and game-choosing pages only, never inside a learning game
 const NOTE=n=>440*Math.pow(2,(n-69)/12);
 // a happy 8-bar tune in C (melody, bass), one entry per eighth note; 0 = rest
 const MEL=[72,76,79,76,77,76,74,0, 72,76,79,84,81,79,0,0, 77,81,79,76,77,76,74,72, 74,76,74,71,72,0,0,0, 72,76,79,76,77,76,74,0, 81,79,77,76,74,76,77,79, 81,84,81,79,77,76,74,76, 72,79,76,74,72,0,0,0];
