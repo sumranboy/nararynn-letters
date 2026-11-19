@@ -44,6 +44,9 @@ button{font:inherit;color:inherit;border:0;cursor:pointer;touch-action:manipulat
 .mali.cheer .m-open{display:block}.mali.cheer .m-smile{display:none}
 .mali.talk{animation:talkbob .45s ease-in-out infinite;filter:drop-shadow(0 0 18px #fff6) drop-shadow(0 0 30px #ff9ecf)}
 .mali.talk .m-open{display:block;animation:mo .26s steps(1) infinite}.mali.talk .m-smile{display:block;animation:ms .26s steps(1) infinite}
+#bday .cdown{position:absolute;left:50%;top:46%;font-size:min(62vh,70vw);font-weight:900;line-height:1;color:#fff;pointer-events:none;
+  text-shadow:0 0 30px #ff7eb6,0 0 60px #ffd86b;animation:cdown 1.3s ease-out forwards}
+@keyframes cdown{0%{opacity:0;transform:translate(-50%,-50%) scale(.3)}25%{opacity:.75;transform:translate(-50%,-50%) scale(1.1)}100%{opacity:0;transform:translate(-50%,-50%) scale(1.5)}}
 @keyframes mo{50%{opacity:0}}@keyframes ms{0%{opacity:0}50%{opacity:1}}
 @keyframes talkbob{0%,100%{transform:translateY(0) rotate(-3deg) scale(1)}50%{transform:translateY(-5%) rotate(3deg) scale(1.06)}}
 /* welcome */
@@ -850,7 +853,7 @@ function birthday(){const b=$('#bday');b.classList.remove('open');show('bday');
   let cs='';for(let i=0;i<candles;i++){const x=150-(candles-1)*17+i*34;cs+=`<rect x="${x-5}" y="52" width="10" height="46" rx="4" fill="${['#ff7eb6','#7cc4ff','#ffd447','#7fe0a8','#b79bff'][i%5]}"/><path class="flame" data-f="1" d="M${x} 18q14 18 0 32q-14-14 0-32z" fill="#ffb300" stroke="#ff7a00" stroke-width="2"/><circle class="hit" cx="${x}" cy="40" r="20" fill="transparent"/>`}
   $('#cakebox').innerHTML=`<svg id="cake" viewBox="0 0 300 260">${cs}<rect x="50" y="96" width="200" height="70" rx="18" fill="#ffd9ec"/><path d="M50 118q25 26 50 0t50 0t50 0t50 0v-8a14 14 0 0 0-14-14H64a14 14 0 0 0-14 14z" fill="#fff"/><rect x="24" y="160" width="252" height="76" rx="20" fill="#c9b6ff"/><path d="M24 186q21 26 42 0t42 0t42 0t42 0t42 0t42 0v-10a16 16 0 0 0-16-16H40a16 16 0 0 0-16 16z" fill="#fff3a6"/><g fill="#ff6fb5"><circle cx="70" cy="214" r="6"/><circle cx="120" cy="218" r="6"/><circle cx="170" cy="214" r="6"/><circle cx="220" cy="218" r="6"/></g><rect x="10" y="232" width="280" height="14" rx="7" fill="#fff"/></svg>`;
   putMali('#bmali');$('#bgo').style.display='none';
-  ['bday1','bday2','bday3','bday4'].forEach(k=>{PACK['tw-'+k]='voices/twinkle/'+k+'.mp3';fetch(PACK['tw-'+k]).catch(()=>{})});   // fetch early so they are ready (and saved for offline)
+  ['bday1','bday2','bday3','bday4','left1','left2','left3','left4'].forEach(k=>{PACK['tw-'+k]='voices/twinkle/'+k+'.mp3';fetch(PACK['tw-'+k]).catch(()=>{})});   // fetch early so they are ready (and saved for offline)
   const tw=(k,alt)=>isSky()?['tw-'+k,'clip']:alt;
   $('#gift').onclick=()=>{b.classList.add('open');confetti(70);cheer();
     for(let i=0;i<9;i++){const e=h('div',{class:'balloon'},'🎈');e.style.left=(4+rnd(88))+'%';e.style.animationDuration=(5+Math.random()*4)+'s';e.style.animationDelay=(Math.random()*2.5)+'s';b.append(e)}
@@ -858,8 +861,10 @@ function birthday(){const b=$('#bday');b.classList.remove('open');show('bday');
     beep([[G,q*.75],[G,q*.25],[A,q],[G,q],[C,q],[B,q*2],[G,q*.75],[G,q*.25],[A,q],[G,q],[D,q],[C,q*2],[G,q*.75],[G,q*.25],[G5,q],[E,q],[C,q],[B,q],[A,q*2],[F,q*.75],[F,q*.25],[E,q],[C,q],[D,q],[C,q*2.5]],'triangle',.1);
     say([isSky()&&['bday-together','clip'],tw('bday1','Happy birthday, Sky! You are '+age+' years old!'),['สุขสันต์วันเกิดนะคะ สกาย','th'],isSky()?tw('bday2'):'I am Mali, your unicorn friend. '+(giftFrom()?'This game is a present from '+giftFrom()+'. They love you so much!':'This game is a present just for you!'),tw('bday3','Now blow out the candles. Tap each little fire!')]);
     let left=candles;$('#cake').querySelectorAll('.hit').forEach(hit=>hit.onclick=()=>{const f=hit.previousElementSibling;if(!f.dataset.f)return;f.dataset.f='';f.style.display='none';tick();sparkle(2);
-      if(--left===0){confetti(90);cheer();fanfare();say(isSky()?[tw('bday4')]:['Yay! Make a wish, Sky!',"Let's play!"]);$('#bgo').style.display=''}});
-    setTimeout(()=>{$('#bgo').style.display=''},25000)};
+      b.querySelectorAll('.cdown').forEach(e=>e.remove());   // countdown: the number of candles left pops up big behind the cake
+      if(--left>0){b.querySelector('.rbow').after(h('div',{class:'cdown'},String(left)));say([left<5?tw('left'+left,left+' more!'):left+' more!'])}
+      else{confetti(140);cheer();fanfare();say(isSky()?[tw('bday4')]:['Yay! Make a wish!','Now tap the button to go inside!']);setTimeout(()=>{$('#bgo').style.display=''},1200)}});
+    setTimeout(()=>{$('#bgo').style.display=''},180000)};   // only a safety net: the button normally shows after the last candle
   $('#bgo').onclick=()=>{S.bday=Date.now();save();home(true)}}
 
 /* ---- home ---- */
