@@ -81,8 +81,12 @@ button{font:inherit;color:inherit;border:0;cursor:pointer;touch-action:manipulat
 .lv.c5{background:#ffeeda}.lv.c6{background:#fff}.lv.c7{background:#e9fbff}.lv.c8{background:#ffe9f6}.lv.c0{background:#ffe6f2}.lv.c1{background:#fff3c4}.lv.c2{background:#dff6ff}.lv.c3{background:#e6ffe9}.lv.c4{background:#efe6ff}
 .lv.lock{filter:grayscale(.75);opacity:.6}
 .lv.lock::after{content:"🔒";position:absolute;right:8px;top:4px;font-size:min(5vh,40px)}
-#hold{position:relative;overflow:hidden;font-size:16px;background:#ffffffaa;border-radius:999px;padding:8px 14px;color:#8a7bb5}
-#hold i{position:absolute;left:0;top:0;bottom:0;width:0;background:#c9b6ff88}
+#door{position:fixed;right:max(6px,env(safe-area-inset-right));bottom:max(6px,env(safe-area-inset-bottom));width:44px;height:44px;border:0;background:none;font-size:18px;opacity:.25}
+#gate{position:fixed;inset:0;z-index:50;background:#0006;display:flex;align-items:center;justify-content:center}#gate[hidden]{display:none}
+#gate>div{background:#fff;border-radius:24px;padding:20px;max-width:92vw;text-align:center;font-family:system-ui,SkyThai,sans-serif;color:#333}
+#gate p{font-size:22px;margin:0 0 14px}#gate .row{display:flex;gap:12px;justify-content:center}
+#gate .row button{position:relative;overflow:hidden;width:76px;height:76px;font-size:40px;border-radius:18px;border:3px solid #e3d8ff;background:#fbf8ff}
+#gate .row i{position:absolute;left:0;bottom:0;height:0;width:100%;background:#c9b6ff88}
 @media (orientation:portrait){#homemid{flex-direction:column;justify-content:center;gap:3vh}#homemali{height:24vh}#tracks{flex:none;width:100%;gap:2vh}.lv{padding:2vh 6px}.lv .ic{font-size:min(7vh,6.6vw,72px)}#homemali{height:18vh}}
 .secsw{display:flex;gap:12px;justify-content:center}
 .secb{flex:1;max-width:320px;font-size:min(4.6vh,5vw,36px);padding:1.2vh 10px;border-radius:999px;background:#ffffff90;color:#8a7bb5;box-shadow:0 5px 0 var(--line)}
@@ -252,8 +256,9 @@ input{-webkit-user-select:text;user-select:text;font:inherit;color:inherit}
   <button class="pill" id="bookbtn">📒 <span id="hstk">0</span></button>
  </div>
  <div id="homemid"><div id="homemali"></div><div id="tracks"></div></div>
- <button id="hold"><i></i><span style="position:relative">👨‍👩‍👧 Parents: hold 2 seconds</span></button>
+ <button id="door" aria-label="สำหรับพ่อแม่ (For parents)">🔒</button>
 </section>
+<div id="gate" hidden><div><p id="gatesay"></p><div class="row" id="gaterow"></div><p style="font-size:15px;margin:12px 0 0;opacity:.6">แตะที่อื่นเพื่อปิด</p></div></div>
 
 <section id="level" class="scr">
  <div class="bar"><button class="btn small" id="lvback">🏠</button><div id="lvtitle"></div><div class="sp"></div><div id="lvmali" style="height:min(12vh,100px)"></div></div>
@@ -860,10 +865,15 @@ function home(greet){hush();show('home');setBg();$('#hstars').textContent=S.star
     r.append(h('button',{class:'lv c'+l.c+(open?'':' lock'),html:`<div class="ic">${l.icon}</div><div class="nm">${l.name}</div><div class="pr">⭐ ${roundsDone(l)} / ${l.rounds.length}</div>`,
       onclick:()=>{if(open){tick();level(l)}else{boop();say([T('locked')])}}}))});tr.append(r)});
   if(greet)say([T('hello')])}
-(function(){const b=$('#hold'),bar=b.querySelector('i');let t=null;
-  const stop=()=>{clearTimeout(t);t=null;bar.style.transition='none';bar.style.width='0'};
-  b.addEventListener('pointerdown',()=>{bar.style.transition='width 2s linear';bar.style.width='100%';t=setTimeout(()=>{stop();parent()},2000)});
-  ['pointerup','pointerleave','pointercancel'].forEach(e=>b.addEventListener(e,stop))})();
+/* Parents' back door: a faint lock in the corner. The instruction is written in Thai words only (no picture), so Sky can't match it yet.
+   shortcut: Thai-only gate, fine for Sky's family; add an English choice before selling to other families. */
+(function(){const g=$('#gate'),row=$('#gaterow');const P=[['⭐','ดาว'],['🌙','พระจันทร์'],['🍓','สตรอว์เบอร์รี่'],['🌈','รุ้ง']];
+  $('#door').onclick=()=>{const want=P[Math.floor(Math.random()*P.length)];$('#gatesay').textContent='สำหรับพ่อแม่: กดค้างที่รูป "'+want[1]+'" 3 วินาที';
+    row.innerHTML='';P.slice().sort(()=>Math.random()-.5).forEach(([e])=>{const b=h('button',{html:'<i></i>'+e}),bar=b.querySelector('i');let t=null;
+      const stop=()=>{clearTimeout(t);t=null;bar.style.transition='none';bar.style.height='0'};
+      b.addEventListener('pointerdown',ev=>{ev.stopPropagation();if(e!==want[0]){g.hidden=true;return}bar.style.transition='height 3s linear';bar.style.height='100%';t=setTimeout(()=>{stop();g.hidden=true;parent()},3000)});
+      ['pointerup','pointerleave','pointercancel'].forEach(n=>b.addEventListener(n,stop));row.append(b)});g.hidden=false};
+  g.addEventListener('pointerdown',ev=>{if(ev.target===g)g.hidden=true})})();
 $('#bookbtn').onclick=$('#starpill').onclick=()=>book();
 
 /* ---- my unicorn: dress her up with the things she has won ---- */
