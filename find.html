@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Find the unicorn!</title>
+<style>
+/* Birthday scan page: tells Sky to find the Sky's Letters unicorn already on her Home Screen (her names and voices live there). */
+:root{color-scheme:light}
+html,body{margin:0;height:100%;overflow:hidden}
+body{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3vh;text-align:center;color:#3a1030;
+  font-family:"Arial Rounded MT Bold","Trebuchet MS",system-ui,sans-serif;
+  background:linear-gradient(135deg,#ffd1e6,#fff3b8,#c9f5dc,#c8e9ff,#e6d4ff);background-size:400% 400%;animation:sky 10s ease infinite}
+@keyframes sky{50%{background-position:100% 100%}}
+h1{margin:0;font-size:min(11vw,9vh);line-height:1.1}
+h1 span{display:inline-block;animation:bob 1.2s ease-in-out infinite}
+@keyframes bob{50%{transform:translateY(-12px)}}
+.find{font-size:min(6vw,5vh);margin:0}
+.icon{position:relative;width:min(42vw,34vh);height:min(42vw,34vh)}
+.icon img{width:100%;height:100%;border-radius:22%;box-shadow:0 10px 0 #e79ac0,0 0 0 10px #fff;animation:pop 1.6s ease-in-out infinite}
+@keyframes pop{50%{transform:scale(1.08) rotate(-3deg)}}
+.hand{position:absolute;right:-14%;bottom:-18%;font-size:min(16vw,12vh);animation:tap 1.2s ease-in-out infinite}
+@keyframes tap{50%{transform:translate(-10px,-14px)}}
+.sp{position:fixed;pointer-events:none;animation:tw 2s ease-in-out infinite}
+@keyframes tw{50%{opacity:.2;transform:scale(.6)}}
+small{position:fixed;bottom:max(14px,env(safe-area-inset-bottom));left:16px;right:16px;font-size:16px;opacity:.75}
+@media (prefers-reduced-motion:reduce){*{animation:none!important}}
+</style></head>
+<body>
+<h1 id="hb"></h1>
+<p class="find">Find this unicorn on your iPad<br>and tap it! 🦄</p>
+<div class="icon"><img src="icon-512.png" alt="The Sky's Letters unicorn icon"><div class="hand" aria-hidden="true">👆</div></div>
+<small>Grown-up: swipe up from the bottom to go to the Home Screen, then tap the Sky's Letters unicorn.</small>
+<script>
+document.getElementById('hb').innerHTML=[...'Yay, Sky! 🎉'].map((c,i)=>`<span style="animation-delay:${i*.08}s;color:${['#ff5fa8','#f2a100','#2fb87f','#3a9bff','#9b6bff'][i%5]}">${c===' '?'&nbsp;':c}</span>`).join('');
+for(let i=0;i<24;i++){const s=document.createElement('div');s.className='sp';s.textContent=['✨','⭐','🌈','💖'][i%4];
+  s.style.cssText=`left:${Math.random()*96}%;top:${Math.random()*92}%;font-size:${14+Math.random()*30}px;animation-delay:${Math.random()*2}s`;document.body.append(s)}
+</script>
+</body></html>
