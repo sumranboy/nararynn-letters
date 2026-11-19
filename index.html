@@ -830,7 +830,8 @@ function welcome(){show('welcome');const w=$('#welcome');
   const cols=['#ff6fb5','#ff9e57','#f2b600','#39c58f','#58a6ff','#9b6bff'];
   $('#wtitle').innerHTML=[...(nick()+"'s Letters")].map((c,i)=>c===' '?' ':`<span style="color:${cols[i%6]}">${esc(c)}</span>`).join('');
   $('#wfrom').textContent=giftFrom()?'From '+giftFrom()+', to '+nick()+' 💖':'For '+nick()+', from your friend Sky 💖';
-  w.onclick=()=>{w.onclick=null;beep([523,659,784]);
+  w.onclick=()=>{beep([784,1047]);musicStart()};   // tapping the picture only starts the music (the iPad needs a tap before any sound)
+  $('#wgo').onclick=e=>{e.stopPropagation();w.onclick=null;musicStart();beep([523,659,784]);   // only the pink button goes in
     if(kidDob()&&!S.bday){say([giftFrom()?'From '+giftFrom()+', to '+nick()+'. With love.':'']);birthday()}
     else{home(true)}}}
 
