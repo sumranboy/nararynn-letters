@@ -1,43 +1,65 @@
 <!doctype html>
 <html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Find the unicorn!</title>
+<title>Treasure hunt!</title>
 <style>
-/* Birthday scan page: Lana gives Sky her first clue: find the Sky's Letters unicorn already on her Home Screen (her names and voices live there). */
+/* Birthday scan page: SURPRISE! -> Yay Sky, you just turned 5! -> tap the treasure box -> Lana gives the first clue:
+   find the Sky's Letters unicorn already on her Home Screen (her names and voices live there). */
 :root{color-scheme:light}
 html,body{margin:0;height:100%;overflow:hidden}
-body{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3vh;text-align:center;color:#3a1030;
+body{display:flex;align-items:center;justify-content:center;text-align:center;color:#3a1030;
   font-family:"Arial Rounded MT Bold","Trebuchet MS",system-ui,sans-serif;
   background:linear-gradient(135deg,#ffd1e6,#fff3b8,#c9f5dc,#c8e9ff,#e6d4ff);background-size:400% 400%;animation:sky 10s ease infinite}
 @keyframes sky{50%{background-position:100% 100%}}
-h1{margin:0;font-size:min(10vw,8vh);line-height:1.1}
+.stage{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3vh;padding:16px;
+  opacity:0;transform:scale(.4);pointer-events:none;transition:opacity .5s,transform .6s cubic-bezier(.3,1.6,.5,1)}
+.stage.on{opacity:1;transform:none;pointer-events:auto}
+h1{margin:0;font-size:min(13vw,11vh);line-height:1.1}
 h1 span{display:inline-block;animation:bob 1.2s ease-in-out infinite}
 @keyframes bob{50%{transform:translateY(-12px)}}
-.find{font-size:min(6vw,5vh);margin:0}
-.icon{border:0;padding:0;background:none;cursor:pointer;width:min(46vw,36vh);height:min(46vw,36vh);border-radius:22%;animation:wiggle 2.4s ease-in-out infinite}
+.big{font-size:min(17vw,15vh)}
+p{font-size:min(6vw,5vh);margin:0}
+#box{border:0;background:none;cursor:pointer;padding:0;font:inherit;color:inherit;display:flex;flex-direction:column;align-items:center;gap:1vh}
+#box .chest{font-size:min(40vw,30vh);line-height:1;animation:shake 1.4s ease-in-out infinite;filter:drop-shadow(0 0 24px #ffe680)}
+@keyframes shake{0%,60%,100%{transform:rotate(0) scale(1)}70%{transform:rotate(-10deg) scale(1.08)}80%{transform:rotate(10deg) scale(1.08)}90%{transform:rotate(-6deg)}}
+#box b{font-size:min(8vw,6vh);background:#fff;border-radius:999px;padding:.3em .9em;box-shadow:0 6px 0 #e79ac0}
+#box.open .chest{animation:none;transform:scale(1.6) rotate(-8deg);opacity:0;transition:all .6s}
+.icon{border:0;padding:0;background:none;cursor:pointer;width:min(46vw,34vh);height:min(46vw,34vh);border-radius:22%;animation:wiggle 2.4s ease-in-out infinite}
 .icon img{width:100%;height:100%;border-radius:22%;display:block;animation:glow 1.2s ease-in-out infinite}
 @keyframes wiggle{0%,100%{transform:rotate(-9deg) scale(.92)}50%{transform:rotate(9deg) scale(1.12)}}
 @keyframes glow{0%,100%{box-shadow:0 0 0 8px #fff,0 0 22px 10px #ffe680}50%{box-shadow:0 0 0 8px #fff,0 0 60px 30px #ff7eb6}}
-.icon:focus-visible{outline:4px solid #3a1030;outline-offset:10px}
-.hear{font-size:min(4.5vw,3.4vh);margin:0;opacity:.85}
+button:focus-visible{outline:4px solid #3a1030;outline-offset:10px}
 .sp{position:fixed;pointer-events:none;animation:tw 2s ease-in-out infinite}
 @keyframes tw{50%{opacity:.2;transform:scale(.6)}}
+.burst{position:fixed;left:50%;top:50%;pointer-events:none;font-size:34px;animation:fly 1.2s ease-out forwards}
+@keyframes fly{to{transform:translate(var(--x),var(--y)) scale(.4);opacity:0}}
 small{position:fixed;bottom:max(14px,env(safe-area-inset-bottom));left:16px;right:16px;font-size:15px;opacity:.7}
-@media (prefers-reduced-motion:reduce){*{animation:none!important}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style></head>
 <body>
-<h1 id="hb"></h1>
-<p class="find">Go to your Home Screen<br>and find me! 🦄</p>
-<button class="icon" id="me" type="button" aria-label="Hear Lana say your clue"><img src="icon-512.png" alt=""></button>
-<p class="hear">Tap me to hear Lana 🔊</p>
-<small>Grown-up: swipe up from the bottom to go to the Home Screen, then help Sky find the Sky's Letters unicorn.</small>
+<div class="stage" id="s1"><h1 class="big" id="t1"></h1></div>
+<div class="stage" id="s2"><h1 id="t2"></h1><p>You just turned 5! 🎂</p></div>
+<div class="stage" id="s3"><p>Do you want to play a…</p>
+  <button id="box" type="button"><span class="chest" aria-hidden="true">🎁</span><b>Treasure hunt!</b></button>
+  <p style="font-size:min(4.5vw,3.4vh)">Tap the box! 👆</p></div>
+<div class="stage" id="s4"><h1 id="t4"></h1>
+  <p>Go to your Home Screen<br>and find me! 🦄</p>
+  <button class="icon" id="me" type="button" aria-label="Hear Lana say your clue again"><img src="icon-512.png" alt=""></button>
+  <p style="font-size:min(4.5vw,3.4vh)">Tap me to hear Lana again 🔊</p>
+  <small>Grown-up: swipe up from the bottom to go to the Home Screen, then help Sky find the Sky's Letters unicorn.</small></div>
 <script>
-document.getElementById('hb').innerHTML=[...'Your first clue, Sky! 🎉'].map((c,i)=>`<span style="animation-delay:${i*.06}s;color:${['#ff5fa8','#f2a100','#2fb87f','#3a9bff','#9b6bff'][i%5]}">${c===' '?'&nbsp;':c}</span>`).join('');
+const rainbow=(id,txt,d=.06)=>document.getElementById(id).innerHTML=[...txt].map((c,i)=>`<span style="animation-delay:${i*d}s;color:${['#ff5fa8','#f2a100','#2fb87f','#3a9bff','#9b6bff'][i%5]}">${c===' '?'&nbsp;':c}</span>`).join('');
+rainbow('t1','SURPRISE!',.08);rainbow('t2','Yay, Sky! 🎉');rainbow('t4','Your first clue! 🔎');
 for(let i=0;i<24;i++){const s=document.createElement('div');s.className='sp';s.textContent=['✨','⭐','🌈','💖'][i%4];
   s.style.cssText=`left:${Math.random()*96}%;top:${Math.random()*92}%;font-size:${14+Math.random()*30}px;animation-delay:${Math.random()*2}s`;document.body.append(s)}
-const clue=new Audio('clue.mp3');   // Lana (Ava voice) says the clue. iPad needs a tap first, so tapping the unicorn plays it.
+const go=n=>document.querySelectorAll('.stage').forEach(s=>s.classList.toggle('on',s.id==='s'+n));
+const burst=()=>{for(let i=0;i<30;i++){const b=document.createElement('div');b.className='burst';b.textContent=['✨','⭐','💖','🌈','🎉'][i%5];
+  const a=Math.random()*6.28,r=150+Math.random()*300;b.style.setProperty('--x',Math.cos(a)*r+'px');b.style.setProperty('--y',Math.sin(a)*r+'px');
+  document.body.append(b);setTimeout(()=>b.remove(),1300)}};
+go(1);setTimeout(()=>go(2),2200);setTimeout(()=>go(3),5000);
+const clue=new Audio('clue.mp3');   // Lana (Ava voice) says the clue. The iPad only allows sound after a tap, so the box tap starts it.
 const play=()=>{clue.currentTime=0;clue.play().catch(()=>{})};
+document.getElementById('box').onclick=function(){this.classList.add('open');burst();play();setTimeout(()=>go(4),700)};
 document.getElementById('me').onclick=play;
-play();   // works on the iMac; on the iPad it waits for the tap
 </script>
 </body></html>
